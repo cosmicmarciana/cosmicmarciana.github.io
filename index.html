@@ -1,146 +1,199 @@
 <!doctype html>
 <html lang="ca">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Cosmic Marciana — Música gratuïta</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cosmic Marciana — Música gratuïta</title>
 
-  <!-- Fonts: Creepster per al títol, Arial per la resta -->
-  <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+<!-- Fonts: Creepster per al títol, Arial per la resta -->
+<link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
 
-  <style>
-    body {
-      margin:0;
-      font-family: Arial, sans-serif; /* Text llegible */
-      color:#00ff00; /* Text verd */
-      text-align:center;
-      padding:40px;
-      background: linear-gradient(45deg, #ff0000, #cc0000, #ff3333);
-      background-size: 600% 600%;
-      animation: gradientShift 15s ease infinite;
-    }
+<style>
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  color:#00ff00;
+  text-align:center;
+  padding:40px;
+  background: linear-gradient(45deg, #ff0000, #cc0000, #ff3333);
+  background-size: 600% 600%;
+  animation: gradientShift 15s ease infinite;
+}
+@keyframes gradientShift {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
 
-    @keyframes gradientShift {
-      0%{background-position:0% 50%}
-      50%{background-position:100% 50%}
-      100%{background-position:0% 50%}
-    }
+.card {
+  max-width:720px;
+  margin:auto;
+  padding:32px;
+  border-radius:24px;
+  background: rgba(0,0,0,0.2);
+  box-shadow:0 0 40px rgba(0,255,0,0.3);
+}
 
-    .card {
-      max-width:720px;
-      margin:auto;
-      padding:32px;
-      border-radius:24px;
-      background: rgba(0,0,0,0.2);
-      box-shadow:0 0 40px rgba(0,255,0,0.3);
-    }
+h1 {
+  font-family: 'Creepster', cursive;
+  font-size:60px;
+  margin:0 0 10px;
+  color:#00ff00;
+  text-shadow: 0 0 8px #00ff00, 0 0 16px #00ff00, 0 0 24px #00ff00;
+}
 
-    h1 {
-      font-family: 'Creepster', cursive; /* Títol terror */
-      font-size:60px;
-      margin:0 0 10px;
-      color:#00ff00; /* Verd neó */
-      text-shadow: 0 0 8px #00ff00, 0 0 16px #00ff00, 0 0 24px #00ff00;
-    }
+p {
+  opacity:.85;
+  font-size:18px;
+  line-height:1.4;
+  margin:16px 0 24px;
+}
 
-    p {
-      opacity:.85;
-      font-size:18px;
-      line-height:1.4;
-      margin:16px 0 24px;
-    }
+.btn {
+  display:inline-block;
+  margin:10px 10px 0 10px;
+  padding:14px 22px;
+  border-radius:999px;
+  background:#00ff00;
+  color:#ff0000;
+  text-decoration:none;
+  font-weight:700;
+  box-shadow:0 0 8px #00ff00, 0 0 16px #00ff00;
+  transition:0.3s;
+}
+.btn:hover {
+  transform: scale(1.05);
+  box-shadow:0 0 16px #ff0000, 0 0 32px #ff0000;
+}
 
-    .btn {
-      display:inline-block;
-      margin:10px 10px 0 10px;
-      padding:14px 22px;
-      border-radius:999px;
-      background:#00ff00;
-      color:#ff0000;
-      text-decoration:none;
-      font-weight:700;
-      box-shadow:0 0 8px #00ff00, 0 0 16px #00ff00;
-      transition: 0.3s;
-    }
+.track {
+  margin:16px 0;
+  padding:10px;
+  border-radius:12px;
+  background: rgba(0,255,0,0.05);
+  box-shadow:0 0 12px rgba(0,255,0,0.2);
+  transition: box-shadow 0.3s, background 0.3s;
+}
 
-    .btn:hover {
-      transform: scale(1.05);
-      box-shadow:0 0 16px #ff0000, 0 0 32px #ff0000;
-    }
+.track.current {
+  box-shadow: 0 0 20px #00ff00, 0 0 40px #00ff00;
+  background: rgba(0,255,0,0.15);
+}
 
-    .track {
-      margin:16px 0;
-      padding:10px;
-      border-radius:12px;
-      background: rgba(0,255,0,0.05);
-      box-shadow:0 0 12px rgba(0,255,0,0.2);
-    }
+.track-title {
+  font-size:18px;
+  margin-bottom:6px;
+  font-weight:bold;
+  text-align:left;
+  padding-left:10px;
+}
 
-    .track-title {
-      font-size:18px;
-      margin-bottom:6px;
-      font-weight:bold;
-    }
+.audio-wrapper {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
 
-    audio {
-      width:90%;
-      max-width:400px;
-    }
+audio {
+  width:90%;
+  max-width:400px;
+  background:#111;
+  border-radius:12px;
+  outline:none;
+}
 
-    img {
-      width:100%;
-      max-width:420px;
-      border-radius:18px;
-      margin:24px 0;
-      box-shadow:0 0 30px rgba(0,255,0,.25);
-    }
+.play-all-btn {
+  margin-top:20px;
+  padding:12px 20px;
+  border-radius:999px;
+  background:#00ff00;
+  color:#ff0000;
+  font-weight:bold;
+  cursor:pointer;
+  box-shadow:0 0 8px #00ff00, 0 0 16px #00ff00;
+  transition:0.3s;
+}
+.play-all-btn:hover {
+  transform: scale(1.05);
+  box-shadow:0 0 16px #ff0000, 0 0 32px #ff0000;
+}
 
-    .footer {
-      margin-top:30px;
-      font-size:14px;
-      opacity:.6;
-    }
-  </style>
+img {
+  width:100%;
+  max-width:420px;
+  border-radius:18px;
+  margin:24px 0;
+  box-shadow:0 0 30px rgba(0,255,0,.25);
+}
+
+.footer {
+  margin-top:30px;
+  font-size:14px;
+  opacity:.6;
+}
+</style>
 </head>
 <body>
-  <div class="card">
-    <h1>Cosmic Marciana</h1>
-    <p>Et regalo la meva música, però si vols col·laborar perquè pugui seguir fent vinils i més música, pots aportar aquí:</p>
+<div class="card">
+<h1>Cosmic Marciana</h1>
+<p>Et regalo la meva música, però si vols col·laborar perquè pugui seguir fent vinils i més música, pots aportar aquí:</p>
+<a class="btn" href="https://www.paypal.com/paypalme/tuusuari" target="_blank">Col·labora / Dona</a>
 
-    <a class="btn" href="https://www.paypal.com/paypalme/tuusuari" target="_blank">
-      Col·labora / Dona
-    </a>
+<p>Escolta el disc:</p>
+<button class="play-all-btn" onclick="playAll()">Play All</button>
 
-    <p>Escolta el disc:</p>
+<div id="playlist">
+<!-- 11 Cançons -->
+<div class="track"><div class="track-title">Canco 1</div><audio src="canco1.mp3" controls></audio></div>
+<div class="track"><div class="track-title">Canco 2</div><audio src="canco2.mp3" controls></audio></div>
+<div class="track"><div class="track-title">Canco 3</div><audio src="canco3.mp3" controls></audio></div>
+<div class="track"><div class="track-title">Canco 4</div><audio src="canco4.mp3" controls></audio></div>
+<div class="track"><div class="track-title">Canco 5</div><audio src="canco5.mp3" controls></audio></div>
+<div class="track"><div class="track-title">Canco 6</div><audio src="canco6.mp3" controls></audio></div>
+<div class="track"><div class="track-title">Canco 7</div><audio src="canco7.mp3" controls></audio></div>
+<div class="track"><div class="track-title">Canco 8</div><audio src="canco8.mp3" controls></audio></div>
+<div class="track"><div class="track-title">Canco 9</div><audio src="canco9.mp3" controls></audio></div>
+<div class="track"><div class="track-title">Canco 10</div><audio src="canco10.mp3" controls></audio></div>
+<div class="track"><div class="track-title">Canco 11</div><audio src="canco11.mp3" controls></audio></div>
+</div>
 
-    <!-- Llista de reproducció -->
-    <div class="track">
-      <div class="track-title">Canco 1</div>
-      <audio controls>
-        <source src="canco1.mp3" type="audio/mpeg">
-      </audio>
-    </div>
+<img src="cover.png" alt="Portada del disc" />
+<div class="footer">✦ Cosmic Marciana · 2026 · Fet fora dels gegants ✦</div>
+</div>
 
-    <div class="track">
-      <div class="track-title">Canco 2</div>
-      <audio controls>
-        <source src="canco2.mp3" type="audio/mpeg">
-      </audio>
-    </div>
+<script>
+// Play All amb destacat de la pista actual
+const audios = Array.from(document.querySelectorAll('#playlist audio'));
+const tracks = Array.from(document.querySelectorAll('#playlist .track'));
+let current = 0;
 
-    <div class="track">
-      <div class="track-title">Canco 3</div>
-      <audio controls>
-        <source src="canco3.mp3" type="audio/mpeg">
-      </audio>
-    </div>
+function playAll() {
+  if (!audios.length) return;
+  audios.forEach(a => a.pause());
+  tracks.forEach(t => t.classList.remove('current'));
+  current = 0;
+  playCurrent();
+}
 
-    <!-- Portada -->
-    <img src="cover.png" alt="Portada del disc" />
+function playCurrent() {
+  audios[current].play();
+  tracks[current].classList.add('current');
 
-    <div class="footer">
-      ✦ Cosmic Marciana · 2026 · Fet fora dels gegants ✦
-    </div>
-  </div>
+  audios[current].onended = () => {
+    tracks[current].classList.remove('current');
+    current++;
+    if(current < audios.length) playCurrent();
+  }
+}
+
+// Destacar pista si es fa play manualment
+audios.forEach((audio, index) => {
+  audio.addEventListener('play', () => {
+    tracks.forEach(t => t.classList.remove('current'));
+    current = index;
+    tracks[current].classList.add('current');
+  });
+});
+</script>
 </body>
 </html>
