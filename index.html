@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Cosmic Marciana — Nou Disc</title>
+  <title>Cosmic Marciana — Música gratuïta</title>
   
   <!-- Tipografia retro -->
   <link href="https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap" rel="stylesheet">
@@ -47,11 +47,70 @@
       font-size:18px;
       line-height:1.4;
       text-shadow: 0 0 4px #00ffff;
+      margin:16px 0 24px;
     }
 
-    /* Botó neó */
+    /* Botons neó */
     .btn {
       display:inline-block;
-      margin-top:20px;
+      margin:10px 10px 0 10px;
       padding:14px 22px;
-      border
+      border-radius:999px;
+      background:#ff00cc;
+      color:#fff;
+      text-decoration:none;
+      font-weight:700;
+      box-shadow:0 0 8px #ff00cc, 0 0 16px #ff00cc;
+      transition: 0.3s;
+    }
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow:0 0 16px #00ffff, 0 0 32px #00ffff;
+    }
+
+    /* Imatge portada flotant */
+    img {
+      width:100%;
+      max-width:420px;
+      border-radius:18px;
+      margin:24px 0;
+      box-shadow:0 0 30px rgba(0,255,255,.25);
+      filter: hue-rotate(45deg) saturate(1.5);
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100%{transform:translateY(0px);}
+      50%{transform:translateY(-10px);}
+    }
+
+    .footer {
+      margin-top:30px;
+      font-size:14px;
+      opacity:.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Cosmic Marciana</h1>
+    <p>Et regalo la meva música, però si vols col·laborar perquè pugui seguir fent vinils i més música, pots aportar aquí:</p>
+
+    <!-- Botó col·laboració -->
+    <a class="btn" href="https://www.paypal.com/paypalme/tuusuari" target="_blank">
+      Col·labora / Dona
+    </a>
+
+    <p>També pots escoltar el disc gratis aquí:</p>
+
+    <!-- Botó escolta disc -->
+    <a class="btn" href="#">Escolta el disc</a>
+
+    <!-- Imatge portada -->
+    <img src="cover.png" alt="Portada del disc" />
+
+    <div class="footer">
+      ✦ Cosmic Marciana · 2026 · Fet fora dels gegants ✦
+    </div>
+  </div>
+</body>
+</html>
