@@ -46,7 +46,7 @@
 
     .btn {
       display: inline-block;
-      margin-top: 30px;
+      margin-top: 20px;
       padding: 14px 25px;
       background: black;
       color: #00ff00;
@@ -54,6 +54,7 @@
       border-radius: 14px;
       font-size: 18px;
       text-decoration: none;
+      cursor: pointer;
       transition: 0.2s;
     }
 
@@ -63,7 +64,7 @@
     }
 
     .links {
-      margin-top: 35px;
+      margin-top: 30px;
       font-size: 16px;
     }
 
@@ -82,6 +83,19 @@
       font-size: 15px;
       opacity: 0.8;
     }
+
+    /* QR Bizum */
+    #qr-container img {
+      width: 200px;
+      border: 2px solid #00ff00;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    #qr-container p {
+      font-size: 14px;
+      margin-top: 6px;
+    }
   </style>
 </head>
 
@@ -91,7 +105,7 @@
 
     <h1>COSMIC MARCIANA</h1>
 
-    <!-- Portada disc -->
+    <!-- Portada del disc -->
     <a href="player.html">
       <img src="cover1.png" alt="Portada Disc">
     </a>
@@ -104,22 +118,46 @@
     </p>
 
     <!-- Botó escoltar -->
-    <a class="btn" href="player.html">
-      ▶ Escoltar el disc
-    </a>
+    <a class="btn" href="player.html">▶ Escoltar el disc</a>
 
-    <!-- Xarxes -->
+    <!-- Botó col·laborar -->
+    <div style="margin-top:25px;">
+      <button id="collab-btn" class="btn">💚 Col·labora amb Bizum</button>
+    </div>
+
+    <!-- QR + link ocult inicialment -->
+    <div id="qr-container" style="margin-top:15px; display:none;">
+      <img src="bizum-qr.png" alt="Escaneja amb Bizum">
+      <p>Escaneja amb el mòbil per col·laborar 💚</p>
+      <p>o <a href="https://bizum.es/tu-codigo-bizum" target="_blank" style="color:#00ff00;">fes clic aquí per enviar directament</a></p>
+    </div>
+
+    <!-- Xarxes socials -->
     <div class="links">
       <a href="https://www.instagram.com/cosmicmarciana" target="_blank">Instagram</a> |
       <a href="https://open.spotify.com/intl-es/artist/0qSO1brlu9jrjrhmMldEVL" target="_blank">Spotify</a>
     </div>
 
     <!-- Mail -->
-    <div class="mail">
-      cosmicmarciana@gmail.com
-    </div>
+    <div class="mail">cosmicmarciana@gmail.com</div>
 
   </div>
+
+  <!-- Script QR -->
+  <script>
+    const collabBtn = document.getElementById("collab-btn");
+    const qrContainer = document.getElementById("qr-container");
+
+    collabBtn.addEventListener("click", () => {
+      if(qrContainer.style.display === "none") {
+        qrContainer.style.display = "block";
+        collabBtn.textContent = "Tanca QR ❌";
+      } else {
+        qrContainer.style.display = "none";
+        collabBtn.textContent = "💚 Col·labora amb Bizum";
+      }
+    });
+  </script>
 
 </body>
 </html>
