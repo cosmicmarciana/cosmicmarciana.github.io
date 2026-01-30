@@ -20,11 +20,9 @@ h1 {
   font-size: 34px;
   letter-spacing: 3px;
   font-weight: 900;
-  margin-bottom: 22px;
+  margin-bottom: 10px;
   text-transform: uppercase;
-  text-shadow:
-    2px 2px 0 #000,
-    4px 4px 0 #000;
+  text-shadow: 2px 2px 0 #000, 4px 4px 0 #000;
 }
 
 /* MÒBIL */
@@ -51,11 +49,18 @@ h1 {
 }
 .back:hover{ opacity:1; text-decoration:underline; }
 
+#now-playing{
+  margin: 0 0 10px 0;
+  color:#00ff00;
+  opacity:.9;
+  font-size:14px;
+}
+
 img {
   width:100%;
   max-width:360px;
   border-radius:12px;
-  margin:24px 0;
+  margin:18px 0 24px;
   box-shadow:0 0 20px rgba(255,0,0,0.3);
   cursor:pointer;
   transition: transform 0.3s, box-shadow 0.3s;
@@ -72,7 +77,7 @@ img:hover {
   justify-content:center;
   align-items:center;
   gap:20px;
-  margin-bottom:20px;
+  margin-bottom:12px;
 }
 
 button {
@@ -90,8 +95,37 @@ button {
 }
 
 button:hover {
-  transform: scale(1.15);
+  transform: scale(1.12);
   box-shadow:0 0 20px #00ff00,0 0 40px #ff0000;
+}
+
+/* Share button */
+.share-btn{
+  display:inline-block;
+  margin: 6px 0 6px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  width:auto;
+  height:auto;
+  font-size:14px;
+  background:#000;
+  color:#00ff00;
+  border:2px solid #00ff00;
+  box-shadow:none;
+}
+.share-btn:hover{
+  background:#00ff00;
+  color:#000;
+  transform:none;
+  box-shadow:none;
+}
+
+#share-status{
+  min-height:18px;
+  font-size:13px;
+  color:#00ff00;
+  opacity:.9;
+  margin-bottom:8px;
 }
 
 /* Progress */
@@ -202,6 +236,8 @@ button:hover {
 
   <h1>Cosmic Marciana</h1>
 
+  <div id="now-playing">Ara sona: <span id="track-name">—</span></div>
+
   <img id="cover" src="cover1.png" alt="Portada" onclick="togglePlay()">
 
   <!-- Controls -->
@@ -211,6 +247,10 @@ button:hover {
     <button onclick="stopTrack()" aria-label="Stop">⏹</button>
     <button onclick="nextTrack()" aria-label="Següent">⏭</button>
   </div>
+
+  <!-- Share -->
+  <button class="share-btn" onclick="sharePage()" aria-label="Compartir">🔗 Compartir</button>
+  <div id="share-status"></div>
 
   <!-- Progress -->
   <div class="progress-wrapper">
@@ -231,17 +271,17 @@ button:hover {
 
   <!-- Playlist -->
   <div class="playlist">
-    <div class="track" data-index="0">Los pobres más</div>
-    <div class="track" data-index="1">Canco 2</div>
-    <div class="track" data-index="2">Canco 3</div>
-    <div class="track" data-index="3">Canco 4</div>
-    <div class="track" data-index="4">Canco 5</div>
-    <div class="track" data-index="5">Canco 6</div>
-    <div class="track" data-index="6">Canco 7</div>
-    <div class="track" data-index="7">Canco 8</div>
-    <div class="track" data-index="8">Canco 9</div>
-    <div class="track" data-index="9">Canco 10</div>
-    <div class="track" data-index="10">Canco 11</div>
+    <div class="track" data-index="0">Los pobres més</div>
+    <div class="track" data-index="1">Cançó 2</div>
+    <div class="track" data-index="2">Cançó 3</div>
+    <div class="track" data-index="3">Cançó 4</div>
+    <div class="track" data-index="4">Cançó 5</div>
+    <div class="track" data-index="5">Cançó 6</div>
+    <div class="track" data-index="6">Cançó 7</div>
+    <div class="track" data-index="7">Cançó 8</div>
+    <div class="track" data-index="8">Cançó 9</div>
+    <div class="track" data-index="9">Cançó 10</div>
+    <div class="track" data-index="10">Cançó 11</div>
   </div>
 
   <audio id="audio" preload="metadata"></audio>
@@ -261,6 +301,9 @@ const totalTimeEl = document.getElementById("total-time");
 const volumeSlider = document.getElementById("volume-slider");
 const volumeIcon = document.getElementById("volume-icon");
 
+const trackNameEl = document.getElementById("track-name");
+const shareStatusEl = document.getElementById("share-status");
+
 let currentIndex = 0;
 let lastVolume = 1;
 
@@ -275,10 +318,25 @@ const covers = [
   "cover6.png","cover7.png","cover8.png","cover9.png","cover10.png","cover11.png"
 ];
 
+/* Titles (posa aquí els noms reals quan vulguis) */
+const titles = [
+  "Los pobres més","Cançó 2","Cançó 3","Cançó 4","Cançó 5",
+  "Cançó 6","Cançó 7","Cançó 8","Cançó 9","Cançó 10","Cançó 11"
+];
+
 function formatTime(t){
   const m = Math.floor(t / 60);
   const s = Math.floor(t % 60);
   return m + ":" + ("0" + s).slice(-2);
+}
+
+function setShareStatus(msg){
+  if(!shareStatusEl) return;
+  shareStatusEl.textContent = msg || "";
+  if(msg){
+    clearTimeout(setShareStatus._t);
+    setShareStatus._t = setTimeout(()=>{ shareStatusEl.textContent = ""; }, 1400);
+  }
 }
 
 /* Load */
@@ -288,6 +346,8 @@ function loadTrack(index){
 
   tracks.forEach(t=>t.classList.remove("current"));
   tracks[index].classList.add("current");
+
+  if(trackNameEl) trackNameEl.textContent = titles[index] || tracks[index]?.textContent || "—";
 
   coverImg.classList.remove("cover-animate");
   void coverImg.offsetWidth;
@@ -302,13 +362,11 @@ function playTrack(index){
   audio.play().then(()=>{
     playPauseBtn.textContent="⏸";
   }).catch(()=>{
-    // si el navegador bloquea play, no rompe la página
     playPauseBtn.textContent="▶";
   });
 }
 
 function togglePlay(){
-  // si aún no hay src (por seguridad), carga el track actual
   if(!audio.src) loadTrack(currentIndex);
 
   if(audio.paused){
@@ -342,14 +400,19 @@ tracks.forEach(track=>{
   });
 });
 
-/* Time update */
+/* Time update + remember position */
 audio.addEventListener("timeupdate", ()=>{
   if(!audio.duration) return;
 
   currentTimeEl.textContent = formatTime(audio.currentTime);
   totalTimeEl.textContent = formatTime(audio.duration);
-
   progressBar.style.width = (audio.currentTime/audio.duration*100) + "%";
+
+  // Remember progress
+  try{
+    localStorage.setItem("cm_index", String(currentIndex));
+    localStorage.setItem("cm_time", String(audio.currentTime));
+  } catch {}
 });
 
 /* Seek */
@@ -389,8 +452,56 @@ volumeIcon.addEventListener("click", ()=>{
   updateVolumeIcon();
 });
 
-/* INIT */
-loadTrack(0);
+/* Share */
+async function sharePage(){
+  const url = window.location.href;
+  try{
+    if(navigator.share){
+      await navigator.share({ title: "Cosmic Marciana", url });
+      setShareStatus("Compartit 💚");
+    } else if(navigator.clipboard){
+      await navigator.clipboard.writeText(url);
+      setShareStatus("Link copiat 💚");
+    } else {
+      setShareStatus("No es pot copiar aquí");
+    }
+  } catch {
+    // si cancel·len el share, no passa res
+  }
+}
+
+/* Keyboard */
+document.addEventListener("keydown", (e)=>{
+  // evita que espai faci scroll
+  if(e.code === "Space"){
+    e.preventDefault();
+    togglePlay();
+  }
+  if(e.code === "ArrowRight") nextTrack();
+  if(e.code === "ArrowLeft") prevTrack();
+});
+
+/* INIT (restore track + time) */
+try{
+  const savedIndex = parseInt(localStorage.getItem("cm_index") || "0", 10);
+  const savedTime = parseFloat(localStorage.getItem("cm_time") || "0");
+
+  currentIndex = Number.isFinite(savedIndex)
+    ? Math.min(Math.max(savedIndex, 0), tracks.length - 1)
+    : 0;
+
+  loadTrack(currentIndex);
+
+  audio.addEventListener("loadedmetadata", ()=>{
+    if(Number.isFinite(savedTime) && savedTime > 0 && savedTime < audio.duration){
+      audio.currentTime = savedTime;
+    }
+  }, { once:true });
+
+} catch {
+  loadTrack(0);
+}
+
 audio.volume = 1;
 updateVolumeIcon();
 </script>
