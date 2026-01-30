@@ -62,12 +62,19 @@ button {
 }
 button:hover { transform: scale(1.15); box-shadow:0 0 20px #00ff00,0 0 40px #ff0000; }
 
-.progress-container {
+.progress-wrapper {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
   width:80%;
+  margin:auto;
+}
+.progress-container {
+  flex:1;
   height:8px;
   background: rgba(0,255,0,0.3);
   border-radius:4px;
-  margin:auto;
+  margin:0 10px;
   cursor:pointer;
   overflow:hidden;
 }
@@ -81,6 +88,12 @@ button:hover { transform: scale(1.15); box-shadow:0 0 20px #00ff00,0 0 40px #ff0
   transition: width 0.1s linear;
 }
 @keyframes flow { 0%{background-position:0%}100%{background-position:600%} }
+
+#current-time,#total-time {
+  font-size:14px;
+  color:#00ff00;
+  min-width:30px;
+}
 
 .playlist {
   margin-top:20px;
@@ -101,13 +114,33 @@ button:hover { transform: scale(1.15); box-shadow:0 0 20px #00ff00,0 0 40px #ff0
   animation: glow 1.5s infinite alternate;
 }
 @keyframes glow { from{box-shadow:0 0 10px #00ff00,0 0 20px #00ff00;} to{box-shadow:0 0 20px #00ff00,0 0 40px #00ff00;} }
-.track-title { font-size:18px; }
+
+.volume-wrapper {
+  margin-top:15px;
+  width:80%;
+  margin-left:auto;
+  margin-right:auto;
+}
+#volume-slider {
+  width:100%;
+}
+
+/* Animació portada */
+@keyframes coverChange {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.05); }
+  60% { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
+.cover-animate {
+  animation: coverChange 0.5s ease;
+}
 </style>
 </head>
 <body>
 <div class="card">
 <h1>Cosmic Marciana</h1>
-<img src="cover.png" alt="Portada del disc" onclick="playAll()">
+<img src="cover1.png" alt="Portada del disc" onclick="playAll()">
 
 <div class="controls">
   <button onclick="prevTrack()">⏮</button>
@@ -116,8 +149,16 @@ button:hover { transform: scale(1.15); box-shadow:0 0 20px #00ff00,0 0 40px #ff0
   <button onclick="nextTrack()">⏭</button>
 </div>
 
-<div class="progress-container" onclick="seek(event)">
-  <div class="progress-bar" id="progress-bar"></div>
+<div class="progress-wrapper">
+  <span id="current-time">0:00</span>
+  <div class="progress-container" onclick="seek(event)">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+  <span id="total-time">0:00</span>
+</div>
+
+<div class="volume-wrapper">
+  <input type="range" id="volume-slider" min="0" max="100" value="100">
 </div>
 
 <div class="playlist" id="playlist">
@@ -142,6 +183,8 @@ const tracks = Array.from(document.querySelectorAll('.track'));
 const audio = document.getElementById('audio');
 const progressBar = document.getElementById('progress-bar');
 const playPauseBtn = document.getElementById('play-pause');
+const coverImg = document.querySelector('img');
+const volumeSlider = document.getElementById('volume-slider');
 let currentIndex = 0;
 
 const sources = [
@@ -149,10 +192,26 @@ const sources = [
   "canco6.mp3","canco7.mp3","canco8.mp3","canco9.mp3","canco10.mp3","canco11.mp3"
 ];
 
+const covers = [
+  "cover.png","cover2.png","cover3.png","cover4.png","cover5.png",
+  "cover6.png","cover7.png","cover8.png","cover9.png","cover10.png","cover11.png"
+];
+
+audio.volume = 1;
+volumeSlider.addEventListener('input', ()=>{
+  audio.volume = volumeSlider.value / 100;
+});
+
 function loadTrack(index){
   audio.src = sources[index];
+  coverImg.src = covers[index];
   tracks.forEach(t=>t.classList.remove('current'));
   tracks[index].classList.add('current');
+
+  // Animació portada
+  coverImg.classList.remove('cover-animate');
+  void coverImg.offsetWidth; // recalcul per reiniciar animació
+  coverImg.classList.add('cover-animate');
 }
 
 function playTrack(index){
@@ -190,7 +249,14 @@ tracks.forEach(track=>{
 });
 
 audio.addEventListener('timeupdate',()=>{
-  if(audio.duration) progressBar.style.width=(audio.currentTime/audio.duration*100)+'%';
+  if(audio.duration){
+    const cur = Math.floor(audio.currentTime);
+    const dur = Math.floor(audio.duration);
+    const formatTime = t => Math.floor(t/60)+":"+("0"+t%60).slice(-2);
+    document.getElementById('current-time').textContent = formatTime(cur);
+    document.getElementById('total-time').textContent = formatTime(dur);
+    progressBar.style.width = (audio.currentTime/audio.duration*100)+'%';
+  }
 });
 
 function seek(event){
@@ -203,4 +269,3 @@ audio.addEventListener('ended',()=> nextTrack());
 </script>
 </body>
 </html>
-
