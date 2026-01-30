@@ -4,21 +4,22 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Cosmic Marciana — Música gratuïta</title>
-  
-  <!-- Tipografia retro -->
-  <link href="https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap" rel="stylesheet">
-  
+
+  <!-- Fonts: Creepster per al títol, Arial per la resta -->
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+
   <style>
     body {
       margin:0;
-      font-family: 'Rock Salt', cursive;
-      color:#fff;
+      font-family: Arial, sans-serif; /* Text llegible */
+      color:#00ff00; /* Text verd */
       text-align:center;
       padding:40px;
-      background: linear-gradient(135deg, #ff00cc, #6600ff, #00ffff);
+      background: linear-gradient(45deg, #ff0000, #cc0000, #ff3333);
       background-size: 600% 600%;
       animation: gradientShift 15s ease infinite;
     }
+
     @keyframes gradientShift {
       0%{background-position:0% 50%}
       50%{background-position:100% 50%}
@@ -30,21 +31,22 @@
       margin:auto;
       padding:32px;
       border-radius:24px;
-      background:rgba(0,0,0,0.3);
-      box-shadow:0 0 40px rgba(255,0,200,0.3);
+      background: rgba(0,0,0,0.2);
+      box-shadow:0 0 40px rgba(0,255,0,0.3);
     }
 
     h1 {
-      font-size:48px;
+      font-family: 'Creepster', cursive; /* Títol terror */
+      font-size:60px;
       margin:0 0 10px;
-      text-shadow: 0 0 8px #ff00cc, 0 0 16px #ff00cc, 0 0 24px #ff00cc;
+      color:#00ff00; /* Verd neó */
+      text-shadow: 0 0 8px #00ff00, 0 0 16px #00ff00, 0 0 24px #00ff00;
     }
 
     p {
       opacity:.85;
       font-size:18px;
       line-height:1.4;
-      text-shadow: 0 0 4px #00ffff;
       margin:16px 0 24px;
     }
 
@@ -53,16 +55,36 @@
       margin:10px 10px 0 10px;
       padding:14px 22px;
       border-radius:999px;
-      background:#ff00cc;
-      color:#fff;
+      background:#00ff00;
+      color:#ff0000;
       text-decoration:none;
       font-weight:700;
-      box-shadow:0 0 8px #ff00cc, 0 0 16px #ff00cc;
+      box-shadow:0 0 8px #00ff00, 0 0 16px #00ff00;
       transition: 0.3s;
     }
+
     .btn:hover {
       transform: scale(1.05);
-      box-shadow:0 0 16px #00ffff, 0 0 32px #00ffff;
+      box-shadow:0 0 16px #ff0000, 0 0 32px #ff0000;
+    }
+
+    .track {
+      margin:16px 0;
+      padding:10px;
+      border-radius:12px;
+      background: rgba(0,255,0,0.05);
+      box-shadow:0 0 12px rgba(0,255,0,0.2);
+    }
+
+    .track-title {
+      font-size:18px;
+      margin-bottom:6px;
+      font-weight:bold;
+    }
+
+    audio {
+      width:90%;
+      max-width:400px;
     }
 
     img {
@@ -70,19 +92,7 @@
       max-width:420px;
       border-radius:18px;
       margin:24px 0;
-      box-shadow:0 0 30px rgba(0,255,255,.25);
-      filter: hue-rotate(45deg) saturate(1.5);
-      animation: float 6s ease-in-out infinite;
-    }
-    @keyframes float {
-      0%,100%{transform:translateY(0px);}
-      50%{transform:translateY(-10px);}
-    }
-
-    audio {
-      margin:16px 0;
-      width:90%;
-      max-width:400px;
+      box-shadow:0 0 30px rgba(0,255,0,.25);
     }
 
     .footer {
@@ -101,20 +111,31 @@
       Col·labora / Dona
     </a>
 
-    <p>Escolta el disc directament aquí:</p>
+    <p>Escolta el disc:</p>
 
-    <!-- Reproductors per a cada cançó -->
-    <audio controls>
-      <source src="canco1.mp3" type="audio/mpeg">
-      El teu navegador no suporta aquest reproductor.
-    </audio>
+    <!-- Llista de reproducció -->
+    <div class="track">
+      <div class="track-title">Canco 1</div>
+      <audio controls>
+        <source src="canco1.mp3" type="audio/mpeg">
+      </audio>
+    </div>
 
-    <audio controls>
-      <source src="canco2.mp3" type="audio/mpeg">
-      El teu navegador no suporta aquest reproductor.
-    </audio>
+    <div class="track">
+      <div class="track-title">Canco 2</div>
+      <audio controls>
+        <source src="canco2.mp3" type="audio/mpeg">
+      </audio>
+    </div>
 
-    <!-- Imatge portada -->
+    <div class="track">
+      <div class="track-title">Canco 3</div>
+      <audio controls>
+        <source src="canco3.mp3" type="audio/mpeg">
+      </audio>
+    </div>
+
+    <!-- Portada -->
     <img src="cover.png" alt="Portada del disc" />
 
     <div class="footer">
