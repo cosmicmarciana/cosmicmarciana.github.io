@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Cosmic Marciana — Música gratuïta</title>
 
-<!-- Fonts: Creepster per al títol, Arial per la resta -->
 <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
 
 <style>
@@ -24,7 +23,6 @@ body {
   50%{background-position:100% 50%}
   100%{background-position:0% 50%}
 }
-
 .card {
   max-width:720px;
   margin:auto;
@@ -33,22 +31,9 @@ body {
   background: rgba(0,0,0,0.2);
   box-shadow:0 0 40px rgba(0,255,0,0.3);
 }
-
-h1 {
-  font-family: 'Creepster', cursive;
-  font-size:60px;
-  margin:0 0 10px;
-  color:#00ff00;
-  text-shadow: 0 0 8px #00ff00, 0 0 16px #00ff00, 0 0 24px #00ff00;
-}
-
-p {
-  opacity:.85;
-  font-size:18px;
-  line-height:1.4;
-  margin:16px 0 24px;
-}
-
+h1 { font-family: 'Creepster', cursive; font-size:60px; margin:0 0 10px; color:#00ff00;
+  text-shadow: 0 0 8px #00ff00, 0 0 16px #00ff00, 0 0 24px #00ff00; }
+p { opacity:.85; font-size:18px; line-height:1.4; margin:16px 0 24px; }
 .btn, .socials a {
   display:inline-block;
   margin:10px 10px 0 10px;
@@ -58,83 +43,29 @@ p {
   color:#ff0000;
   text-decoration:none;
   font-weight:700;
-  box-shadow:0 0 8px #00ff00, 0 0 16px #00ff00;
+  box-shadow:0 0 8px #00ff00,0 0 16px #00ff00;
   transition:0.3s;
 }
-.btn:hover, .socials a:hover {
-  transform: scale(1.05);
-  box-shadow:0 0 16px #ff0000, 0 0 32px #ff0000;
-}
-
-.track {
-  margin:16px 0;
-  padding:10px;
-  border-radius:12px;
-  background: rgba(0,255,0,0.05);
-  box-shadow:0 0 12px rgba(0,255,0,0.2);
+.btn:hover, .socials a:hover { transform: scale(1.05); box-shadow:0 0 16px #ff0000,0 0 32px #ff0000; }
+img { width:100%; max-width:420px; border-radius:18px; margin:24px 0; box-shadow:0 0 30px rgba(0,255,0,.25); }
+.footer { margin-top:30px; font-size:14px; opacity:.6; }
+.track { 
+  margin:16px 0; padding:10px; border-radius:12px; 
+  background: rgba(0,255,0,0.05); 
+  box-shadow:0 0 12px rgba(0,255,0,0.2); 
+  display:flex; align-items:center; justify-content:space-between;
   transition: box-shadow 0.3s, background 0.3s;
 }
-
-.track.current {
-  box-shadow: 0 0 20px #00ff00, 0 0 40px #00ff00;
-  background: rgba(0,255,0,0.15);
-}
-
-.track-title {
-  font-size:18px;
-  margin-bottom:6px;
-  font-weight:bold;
-  text-align:left;
-  padding-left:10px;
-}
-
-.audio-wrapper {
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-audio {
-  width:90%;
-  max-width:400px;
-  background:#111;
-  border-radius:12px;
-  outline:none;
-}
-
-.play-all-btn {
-  margin-top:20px;
-  padding:12px 20px;
-  border-radius:999px;
-  background:#00ff00;
-  color:#ff0000;
-  font-weight:bold;
-  cursor:pointer;
-  box-shadow:0 0 8px #00ff00, 0 0 16px #00ff00;
-  transition:0.3s;
-}
-.play-all-btn:hover {
-  transform: scale(1.05);
-  box-shadow:0 0 16px #ff0000, 0 0 32px #ff0000;
-}
-
-img {
-  width:100%;
-  max-width:420px;
-  border-radius:18px;
-  margin:24px 0;
-  box-shadow:0 0 30px rgba(0,255,0,.25);
-}
-
-.footer {
-  margin-top:30px;
-  font-size:14px;
-  opacity:.6;
-}
-
-.socials {
-  margin-top:16px;
-}
+.track.current { box-shadow: 0 0 20px #00ff00,0 0 40px #00ff00; background: rgba(0,255,0,0.15); }
+.track-title { font-size:18px; font-weight:bold; text-align:left; padding-left:10px; flex:1; }
+.audio-controls { display:flex; align-items:center; gap:10px; }
+.play-btn { width:32px; height:32px; border-radius:50%; background:#00ff00; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 0 8px #00ff00,0 0 16px #00ff00; transition:0.3s; color:#ff0000; font-weight:bold; }
+.play-btn:hover { transform: scale(1.1); box-shadow:0 0 16px #ff0000,0 0 32px #ff0000; }
+.progress { height:6px; background:rgba(0,255,0,0.3); border-radius:3px; flex:1; position:relative; cursor:pointer; }
+.progress-bar { height:100%; width:0%; background:#00ff00; border-radius:3px; transition:width 0.1s linear; }
+.play-all-btn { margin-top:20px; padding:12px 20px; border-radius:999px; background:#00ff00; color:#ff0000; font-weight:bold; cursor:pointer; box-shadow:0 0 8px #00ff00,0 0 16px #00ff00; transition:0.3s; }
+.play-all-btn:hover { transform: scale(1.05); box-shadow:0 0 16px #ff0000,0 0 32px #ff0000; }
+.socials { margin-top:16px; }
 </style>
 </head>
 <body>
@@ -142,69 +73,45 @@ img {
 <h1>Cosmic Marciana</h1>
 <p>Et regalo la meva música, però si vols col·laborar perquè pugui seguir fent vinils i més música, pots aportar aquí:</p>
 <a class="btn" href="https://www.paypal.com/paypalme/tuusuari" target="_blank">Col·labora / Dona</a>
-
 <p>Escolta el disc:</p>
 <button class="play-all-btn" onclick="playAll()">Play All</button>
-
 <div id="playlist">
 <!-- 11 Cançons -->
-<div class="track"><div class="track-title">Canco 1</div><audio src="canco1.mp3" controls></audio></div>
-<div class="track"><div class="track-title">Canco 2</div><audio src="canco2.mp3" controls></audio></div>
-<div class="track"><div class="track-title">Canco 3</div><audio src="canco3.mp3" controls></audio></div>
-<div class="track"><div class="track-title">Canco 4</div><audio src="canco4.mp3" controls></audio></div>
-<div class="track"><div class="track-title">Canco 5</div><audio src="canco5.mp3" controls></audio></div>
-<div class="track"><div class="track-title">Canco 6</div><audio src="canco6.mp3" controls></audio></div>
-<div class="track"><div class="track-title">Canco 7</div><audio src="canco7.mp3" controls></audio></div>
-<div class="track"><div class="track-title">Canco 8</div><audio src="canco8.mp3" controls></audio></div>
-<div class="track"><div class="track-title">Canco 9</div><audio src="canco9.mp3" controls></audio></div>
-<div class="track"><div class="track-title">Canco 10</div><audio src="canco10.mp3" controls></audio></div>
-<div class="track"><div class="track-title">Canco 11</div><audio src="canco11.mp3" controls></audio></div>
+${[...Array(11)].map((_,i)=>`
+<div class="track" data-index="${i}">
+  <div class="track-title">Canco ${i+1}</div>
+  <div class="audio-controls">
+    <button class="play-btn">▶</button>
+    <div class="progress"><div class="progress-bar"></div></div>
+  </div>
+  <audio src="canco${i+1}.mp3"></audio>
 </div>
-
+`).join('')}
+</div>
 <img src="cover.png" alt="Portada del disc" />
-
 <div class="socials">
   <a href="https://open.spotify.com/intl-es/artist/0qSO1brlu9jrjrhmMldEVL?si=JqJIEZHxSL-Y2blcUIHqjw" target="_blank">Spotify</a>
   <a href="https://www.instagram.com/cosmicmarciana" target="_blank">Instagram</a>
   <a href="mailto:cosmicmarciana@gmail.com">Contacta</a>
 </div>
-
 <div class="footer">✦ Cosmic Marciana · 2026 · Fet fora dels gegants ✦</div>
 </div>
-
 <script>
-// Play All amb destacat de la pista actual
-const audios = Array.from(document.querySelectorAll('#playlist audio'));
-const tracks = Array.from(document.querySelectorAll('#playlist .track'));
-let current = 0;
-
-function playAll() {
-  if (!audios.length) return;
-  audios.forEach(a => a.pause());
-  tracks.forEach(t => t.classList.remove('current'));
-  current = 0;
-  playCurrent();
-}
-
-function playCurrent() {
-  audios[current].play();
-  tracks[current].classList.add('current');
-
-  audios[current].onended = () => {
-    tracks[current].classList.remove('current');
-    current++;
-    if(current < audios.length) playCurrent();
-  }
-}
-
-// Destacar pista si es fa play manualment
-audios.forEach((audio, index) => {
-  audio.addEventListener('play', () => {
-    tracks.forEach(t => t.classList.remove('current'));
-    current = index;
-    tracks[current].classList.add('current');
+const tracks = Array.from(document.querySelectorAll('.track'));
+let currentIndex = 0;
+tracks.forEach(track => {
+  const audio = track.querySelector('audio');
+  const btn = track.querySelector('.play-btn');
+  const progress = track.querySelector('.progress-bar');
+  btn.addEventListener('click', () => {
+    if(audio.paused){ audio.play(); btn.textContent='⏸'; tracks.forEach(t=>t.classList.remove('current')); track.classList.add('current'); } 
+    else { audio.pause(); btn.textContent='▶'; }
   });
+  audio.addEventListener('timeupdate', ()=>{ progress.style.width=(audio.currentTime/audio.duration*100)+'%'; });
+  audio.addEventListener('ended', ()=>{ btn.textContent='▶'; track.classList.remove('current'); currentIndex++; if(currentIndex<tracks.length) playTrack(currentIndex); });
 });
+function playTrack(index){ const track=tracks[index]; const audio=track.querySelector('audio'); const btn=track.querySelector('.play-btn'); tracks.forEach(t=>t.classList.remove('current')); track.classList.add('current'); audio.play(); btn.textContent='⏸'; }
+function playAll(){ currentIndex=0; playTrack(currentIndex); }
 </script>
 </body>
 </html>
