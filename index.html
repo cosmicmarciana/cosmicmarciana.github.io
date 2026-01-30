@@ -1,163 +1,64 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ca">
 <head>
-  <meta charset="UTF-8">
-  <title>Cosmic Marciana</title>
-
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #8b0000;
-      color: #00ff00;
-      text-align: center;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: 60px auto;
-      padding: 30px;
-    }
-
-    h1 {
-      font-family: "Impact", sans-serif;
-      font-size: 55px;
-      text-shadow: 0 0 10px black;
-      margin-bottom: 20px;
-    }
-
-    img {
-      width: 320px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px black;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    img:hover {
-      transform: scale(1.03);
-    }
-
-    p {
-      font-size: 18px;
-      margin-top: 20px;
-      line-height: 1.5;
-    }
-
-    .btn {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 14px 25px;
-      background: black;
-      color: #00ff00;
-      border: 2px solid #00ff00;
-      border-radius: 14px;
-      font-size: 18px;
-      text-decoration: none;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .btn:hover {
-      background: #00ff00;
-      color: black;
-    }
-
-    .links {
-      margin-top: 30px;
-      font-size: 16px;
-    }
-
-    .links a {
-      color: #00ff00;
-      text-decoration: none;
-      margin: 0 10px;
-    }
-
-    .links a:hover {
-      text-decoration: underline;
-    }
-
-    .mail {
-      margin-top: 20px;
-      font-size: 15px;
-      opacity: 0.8;
-    }
-
-    /* QR Bizum */
-    #qr-container img {
-      width: 200px;
-      border: 2px solid #00ff00;
-      border-radius: 10px;
-      margin-top: 10px;
-    }
-
-    #qr-container p {
-      font-size: 14px;
-      margin-top: 6px;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cosmic Marciana</title>
+<link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+<style>
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  color:#00ff00;
+  text-align:center;
+  padding:40px;
+  background: linear-gradient(45deg, #ff0000, #cc0000, #ff3333);
+  background-size: 600% 600%;
+  animation: gradientShift 15s ease infinite;
+}
+@keyframes gradientShift {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+h1 {
+  font-family: 'Creepster', cursive;
+  font-size:60px;
+  margin:0 0 10px;
+  color:#00ff00;
+  text-shadow: 0 0 8px #00ff00, 0 0 16px #00ff00, 0 0 24px #00ff00;
+}
+p { opacity:.85; font-size:18px; line-height:1.4; margin:16px 0 24px; }
+.btn, .socials a {
+  display:inline-block;
+  margin:10px 10px 0 10px;
+  padding:14px 22px;
+  border-radius:999px;
+  background:#00ff00;
+  color:#ff0000;
+  text-decoration:none;
+  font-weight:700;
+  box-shadow:0 0 8px #00ff00,0 0 16px #00ff00;
+  transition:0.3s;
+}
+.btn:hover, .socials a:hover { transform: scale(1.05); box-shadow:0 0 16px #ff0000,0 0 32px #ff0000; }
+img { width:100%; max-width:420px; border-radius:18px; margin:24px 0; box-shadow:0 0 30px rgba(0,255,0,.25); cursor:pointer; }
+.footer { margin-top:30px; font-size:14px; opacity:.6; }
+.socials { margin-top:16px; }
+</style>
 </head>
-
 <body>
+<h1>Cosmic Marciana</h1>
+<a href="player.html"><img src="cover.png" alt="Portada del disc"></a>
+<p>Et regalo la meva música, però si vols col·laborar perquè pugui seguir fent vinils i més música, pots aportar aquí:</p>
+<a class="btn" href="https://www.paypal.com/paypalme/tuusuari" target="_blank">Col·labora / Dona</a>
 
-  <div class="container">
+<div class="socials">
+  <a href="https://open.spotify.com/intl-es/artist/0qSO1brlu9jrjrhmMldEVL?si=JqJIEZHxSL-Y2blcUIHqjw" target="_blank">Spotify</a>
+  <a href="https://www.instagram.com/cosmicmarciana" target="_blank">Instagram</a>
+  <a href="mailto:cosmicmarciana@gmail.com">Contacta</a>
+</div>
 
-    <h1>COSMIC MARCIANA</h1>
-
-    <!-- Portada del disc -->
-    <a href="player.html">
-      <img src="cover1.png" alt="Portada Disc">
-    </a>
-
-    <p>
-      Te regalo mi música.<br>
-      Si quieres colaborar para que esto continúe,<br>
-      pueda grabar vinilos y seguir haciendo ruido cósmico,<br>
-      puedes aportar algo 💚
-    </p>
-
-    <!-- Botó escoltar -->
-    <a class="btn" href="player.html">▶ Escoltar el disc</a>
-
-    <!-- Botó col·laborar -->
-    <div style="margin-top:25px;">
-      <button id="collab-btn" class="btn">💚 Col·labora amb Bizum</button>
-    </div>
-
-    <!-- QR + link ocult inicialment -->
-    <div id="qr-container" style="margin-top:15px; display:none;">
-      <img src="bizum-qr.png" alt="Escaneja amb Bizum">
-      <p>Escaneja amb el mòbil per col·laborar 💚</p>
-      <p>o <a href="https://bizum.es/tu-codigo-bizum" target="_blank" style="color:#00ff00;">fes clic aquí per enviar directament</a></p>
-    </div>
-
-    <!-- Xarxes socials -->
-    <div class="links">
-      <a href="https://www.instagram.com/cosmicmarciana" target="_blank">Instagram</a> |
-      <a href="https://open.spotify.com/intl-es/artist/0qSO1brlu9jrjrhmMldEVL" target="_blank">Spotify</a>
-    </div>
-
-    <!-- Mail -->
-    <div class="mail">cosmicmarciana@gmail.com</div>
-
-  </div>
-
-  <!-- Script QR -->
-  <script>
-    const collabBtn = document.getElementById("collab-btn");
-    const qrContainer = document.getElementById("qr-container");
-
-    collabBtn.addEventListener("click", () => {
-      if(qrContainer.style.display === "none") {
-        qrContainer.style.display = "block";
-        collabBtn.textContent = "Tanca QR ❌";
-      } else {
-        qrContainer.style.display = "none";
-        collabBtn.textContent = "💚 Col·labora amb Bizum";
-      }
-    });
-  </script>
-
+<div class="footer">✦ Cosmic Marciana · 2026 · Fet fora dels gegants ✦</div>
 </body>
 </html>
