@@ -39,6 +39,7 @@ img {
   transition: transform 0.3s, box-shadow 0.3s;
 }
 img:hover { transform:scale(1.03); box-shadow:0 0 25px #ff4444,0 0 50px #ff1111; }
+img:active { transform: scale(1.06); box-shadow:0 0 30px #ff4444,0 0 60px #ff1111; }
 
 .controls {
   display:flex;
@@ -59,7 +60,7 @@ button {
   box-shadow:0 0 8px #00ff00,0 0 16px #00ff00;
   transition:0.3s;
 }
-button:hover { transform:scale(1.1); box-shadow:0 0 16px #ff0000,0 0 32px #ff0000; }
+button:hover { transform: scale(1.15); box-shadow:0 0 20px #00ff00,0 0 40px #ff0000; }
 
 .progress-container {
   width:80%;
@@ -74,11 +75,12 @@ button:hover { transform:scale(1.1); box-shadow:0 0 16px #ff0000,0 0 32px #ff000
   width:0%;
   height:100%;
   border-radius:4px;
-  background: linear-gradient(90deg,#00ff00,#00cc00,#00ff00);
-  transition:width 0.1s linear;
-  animation: flow 2s linear infinite;
+  background: linear-gradient(270deg,#00ff00,#00cc00,#00ff00);
+  background-size:600% 100%;
+  animation: flow 4s linear infinite;
+  transition: width 0.1s linear;
 }
-@keyframes flow { 0%{background-position:0%}100%{background-position:100%} }
+@keyframes flow { 0%{background-position:0%}100%{background-position:600%} }
 
 .playlist {
   margin-top:20px;
@@ -92,10 +94,10 @@ button:hover { transform:scale(1.1); box-shadow:0 0 16px #ff0000,0 0 32px #ff000
   transition: background 0.3s, transform 0.2s;
   cursor:pointer;
 }
-.track:hover { background: rgba(0,255,0,0.12); transform:scale(1.01); }
+.track:hover { background: rgba(0,255,0,0.15); transform:scale(1.02); }
 .track.current {
-  background: rgba(0,255,0,0.2);
-  box-shadow:0 0 15px #00ff00,0 0 30px #00ff00;
+  background: rgba(0,255,0,0.25);
+  box-shadow:0 0 20px #00ff00,0 0 40px #00ff00;
   animation: glow 1.5s infinite alternate;
 }
 @keyframes glow { from{box-shadow:0 0 10px #00ff00,0 0 20px #00ff00;} to{box-shadow:0 0 20px #00ff00,0 0 40px #00ff00;} }
@@ -110,6 +112,7 @@ button:hover { transform:scale(1.1); box-shadow:0 0 16px #ff0000,0 0 32px #ff000
 <div class="controls">
   <button onclick="prevTrack()">⏮</button>
   <button id="play-pause" onclick="togglePlay()">▶</button>
+  <button onclick="stopTrack()">⏹</button>
   <button onclick="nextTrack()">⏭</button>
 </div>
 
@@ -118,7 +121,7 @@ button:hover { transform:scale(1.1); box-shadow:0 0 16px #ff0000,0 0 32px #ff000
 </div>
 
 <div class="playlist" id="playlist">
-  <div class="track" data-index="0">Canco 1</div>
+  <div class="track" data-index="0">Los pobres más</div>
   <div class="track" data-index="1">Canco 2</div>
   <div class="track" data-index="2">Canco 3</div>
   <div class="track" data-index="3">Canco 4</div>
@@ -141,7 +144,6 @@ const progressBar = document.getElementById('progress-bar');
 const playPauseBtn = document.getElementById('play-pause');
 let currentIndex = 0;
 
-// Assign audio sources
 const sources = [
   "canco1.mp3","canco2.mp3","canco3.mp3","canco4.mp3","canco5.mp3",
   "canco6.mp3","canco7.mp3","canco8.mp3","canco9.mp3","canco10.mp3","canco11.mp3"
@@ -165,6 +167,12 @@ function togglePlay(){
   else{ audio.pause(); playPauseBtn.textContent='▶'; }
 }
 
+function stopTrack(){
+  audio.pause();
+  audio.currentTime=0;
+  playPauseBtn.textContent='▶';
+}
+
 function nextTrack(){
   currentIndex = (currentIndex+1)%tracks.length;
   playTrack(currentIndex);
@@ -177,24 +185,20 @@ function prevTrack(){
 
 function playAll(){ playTrack(0); }
 
-// Click on playlist
 tracks.forEach(track=>{
   track.addEventListener('click',()=> playTrack(parseInt(track.dataset.index)));
 });
 
-// Update progress
 audio.addEventListener('timeupdate',()=>{
   if(audio.duration) progressBar.style.width=(audio.currentTime/audio.duration*100)+'%';
 });
 
-// Click to seek
 function seek(event){
   const rect = event.currentTarget.getBoundingClientRect();
   const pct = (event.clientX - rect.left)/rect.width;
   audio.currentTime = pct * audio.duration;
 }
 
-// Auto next track
 audio.addEventListener('ended',()=> nextTrack());
 </script>
 </body>
