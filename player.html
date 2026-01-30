@@ -3,134 +3,157 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Cosmic Marciana — Reproductor</title>
+<title>Cosmic Marciana — Reproductor Pro+</title>
 <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
 <style>
 body {
   margin:0;
   font-family: Arial, sans-serif;
-  color:#00ff00;
+  background: linear-gradient(135deg,#220000,#110000);
+  color:#fff;
   text-align:center;
   padding:40px;
-  background: linear-gradient(45deg, #ff0000, #cc0000, #ff3333);
-  background-size: 600% 600%;
-  animation: gradientShift 15s ease infinite;
 }
-@keyframes gradientShift {
-  0%{background-position:0% 50%}
-  50%{background-position:100% 50%}
-  100%{background-position:0% 50%}
+h1 {
+  font-family: 'Creepster', cursive;
+  font-size:60px;
+  color:#ff4444;
+  text-shadow: 0 0 6px #ff4444,0 0 12px #ff1111;
+  margin-bottom:20px;
 }
 .card {
   max-width:720px;
   margin:auto;
   padding:32px;
-  border-radius:24px;
-  background: rgba(0,0,0,0.2);
-  box-shadow:0 0 40px rgba(0,255,0,0.3);
+  border-radius:16px;
+  background: rgba(0,0,0,0.7);
+  box-shadow:0 0 40px rgba(255,0,0,0.4);
+  transition: transform 0.3s;
 }
-h1 { font-family: 'Creepster', cursive; font-size:60px; margin:0 0 10px; color:#00ff00;
-  text-shadow: 0 0 8px #00ff00, 0 0 16px #00ff00, 0 0 24px #00ff00; }
-.track { margin:16px 0; padding:10px; border-radius:12px; background: rgba(0,255,0,0.05); box-shadow:0 0 12px rgba(0,255,0,0.2); display:flex; align-items:center; justify-content:space-between; transition: box-shadow 0.3s, background 0.3s; }
-.track.current { box-shadow:0 0 20px #00ff00,0 0 40px #00ff00; background: rgba(0,255,0,0.15); }
-.track-title { font-size:18px; font-weight:bold; text-align:left; padding-left:10px; flex:1; }
-.audio-controls { display:flex; align-items:center; gap:10px; }
-.play-btn { width:32px; height:32px; border-radius:50%; background:#00ff00; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 0 8px #00ff00,0 0 16px #00ff00; transition:0.3s; color:#ff0000; font-weight:bold; }
-.play-btn:hover { transform: scale(1.1); box-shadow:0 0 16px #ff0000,0 0 32px #ff0000; }
-.progress { height:6px; background:rgba(0,255,0,0.3); border-radius:3px; flex:1; position:relative; cursor:pointer; }
-.progress-bar { height:100%; width:0%; background:#00ff00; border-radius:3px; transition:width 0.1s linear; }
-.play-all-btn { margin-top:20px; padding:12px 20px; border-radius:999px; background:#00ff00; color:#ff0000; font-weight:bold; cursor:pointer; box-shadow:0 0 8px #00ff00,0 0 16px #00ff00; transition:0.3s; }
-.play-all-btn:hover { transform: scale(1.05); box-shadow:0 0 16px #ff0000,0 0 32px #ff0000; }
+img {
+  width:100%;
+  max-width:360px;
+  border-radius:12px;
+  margin:24px 0;
+  box-shadow:0 0 20px rgba(255,0,0,0.3);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+img:hover {
+  transform:scale(1.03);
+  box-shadow:0 0 25px #ff4444,0 0 50px #ff1111;
+}
+.track {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin:12px 0;
+  padding:10px 14px;
+  border-radius:8px;
+  background: rgba(0,255,0,0.05);
+  transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+}
+.track:hover { background: rgba(0,255,0,0.12); transform:scale(1.01); }
+.track.current {
+  background: rgba(0,255,0,0.2);
+  box-shadow:0 0 15px #00ff00,0 0 30px #00ff00;
+  animation: glow 1.5s infinite alternate;
+}
+@keyframes glow {
+  from {box-shadow:0 0 10px #00ff00,0 0 20px #00ff00;}
+  to   {box-shadow:0 0 20px #00ff00,0 0 40px #00ff00;}
+}
+.track-title { text-align:left; flex:1; font-size:18px; }
+.audio-controls { display:flex; align-items:center; gap:12px; }
+.play-btn {
+  width:40px; height:40px;
+  border-radius:50%;
+  border:none;
+  background:#00ff00;
+  color:#111;
+  font-weight:bold;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 0 8px #00ff00,0 0 16px #00ff00;
+  transition:0.3s;
+}
+.play-btn:hover { transform:scale(1.1); box-shadow:0 0 16px #ff0000,0 0 32px #ff0000; }
+.progress {
+  flex:1;
+  height:6px;
+  background:rgba(0,255,0,0.3);
+  border-radius:3px;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+}
+.progress-bar {
+  width:0%; height:100%;
+  border-radius:3px;
+  background: linear-gradient(90deg,#00ff00,#00cc00,#00ff00);
+  transition:width 0.1s linear;
+  animation: flow 2s linear infinite;
+}
+@keyframes flow { 0%{background-position:0%}100%{background-position:100%} }
+.play-all-btn {
+  margin-top:20px;
+  padding:14px 28px;
+  border-radius:999px;
+  background:#00ff00;
+  color:#111;
+  font-weight:bold;
+  cursor:pointer;
+  box-shadow:0 0 10px #00ff00,0 0 20px #00ff00;
+  transition:0.3s, transform 0.3s;
+}
+.play-all-btn:hover { transform:scale(1.05); box-shadow:0 0 20px #ff0000,0 0 40px #ff0000; }
 </style>
 </head>
 <body>
 <div class="card">
 <h1>Cosmic Marciana</h1>
+<img src="cover.png" alt="Portada del disc">
 <button class="play-all-btn" onclick="playAll()">Play All</button>
+
 <div id="playlist">
 <!-- 11 Cançons -->
-<div class="track" data-index="0">
-  <div class="track-title">Canco 1</div>
-  <div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div>
-  <audio src="canco1.mp3"></audio>
-</div>
-<div class="track" data-index="1">
-  <div class="track-title">Canco 2</div>
-  <div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div>
-  <audio src="canco2.mp3"></audio>
-</div>
-<div class="track" data-index="2">
-  <div class="track-title">Canco 3</div>
-  <div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div>
-  <audio src="canco3.mp3"></audio>
-</div>
-<div class="track" data-index="3">
-  <div class="track-title">Canco 4</div>
-  <div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div>
-  <audio src="canco4.mp3"></audio>
-</div>
-<div class="track" data-index="4">
-  <div class="track-title">Canco 5</div>
-  <div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div>
-  <audio src="canco5.mp3"></audio>
-</div>
-<div class="track" data-index="5">
-  <div class="track-title">Canco 6</div>
-  <div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div>
-  <audio src="canco6.mp3"></audio>
-</div>
-<div class="track" data-index="6">
-  <div class="track-title">Canco 7</div>
-  <div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div>
-  <audio src="canco7.mp3"></audio>
-</div>
-<div class="track" data-index="7">
-  <div class="track-title">Canco 8</div>
-  <div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div>
-  <audio src="canco8.mp3"></audio>
-</div>
-<div class="track" data-index="8">
-  <div class="track-title">Canco 9</div>
-  <div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div>
-  <audio src="canco9.mp3"></audio>
-</div>
-<div class="track" data-index="9">
-  <div class="track-title">Canco 10</div>
-  <div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div>
-  <audio src="canco10.mp3"></audio>
-</div>
-<div class="track" data-index="10">
-  <div class="track-title">Canco 11</div>
-  <div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div>
-  <audio src="canco11.mp3"></audio>
-</div>
+<div class="track" data-index="0"><div class="track-title">Canco 1</div><div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div><audio src="canco1.mp3"></audio></div>
+<div class="track" data-index="1"><div class="track-title">Canco 2</div><div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div><audio src="canco2.mp3"></audio></div>
+<div class="track" data-index="2"><div class="track-title">Canco 3</div><div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div><audio src="canco3.mp3"></audio></div>
+<div class="track" data-index="3"><div class="track-title">Canco 4</div><div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div><audio src="canco4.mp3"></audio></div>
+<div class="track" data-index="4"><div class="track-title">Canco 5</div><div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div><audio src="canco5.mp3"></audio></div>
+<div class="track" data-index="5"><div class="track-title">Canco 6</div><div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div><audio src="canco6.mp3"></audio></div>
+<div class="track" data-index="6"><div class="track-title">Canco 7</div><div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div><audio src="canco7.mp3"></audio></div>
+<div class="track" data-index="7"><div class="track-title">Canco 8</div><div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div><audio src="canco8.mp3"></audio></div>
+<div class="track" data-index="8"><div class="track-title">Canco 9</div><div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div><audio src="canco9.mp3"></audio></div>
+<div class="track" data-index="9"><div class="track-title">Canco 10</div><div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div><audio src="canco10.mp3"></audio></div>
+<div class="track" data-index="10"><div class="track-title">Canco 11</div><div class="audio-controls"><button class="play-btn">▶</button><div class="progress"><div class="progress-bar"></div></div></div><audio src="canco11.mp3"></audio></div>
 </div>
 
 <script>
 const tracks = Array.from(document.querySelectorAll('.track'));
 let currentIndex = 0;
 
-tracks.forEach(track => {
-  const audio = track.querySelector('audio');
-  const btn = track.querySelector('.play-btn');
-  const progress = track.querySelector('.progress-bar');
+tracks.forEach(track=>{
+  const audio=track.querySelector('audio');
+  const btn=track.querySelector('.play-btn');
+  const progress=track.querySelector('.progress-bar');
 
-  btn.addEventListener('click', () => {
-    if(audio.paused){ audio.play(); btn.textContent='⏸'; tracks.forEach(t=>t.classList.remove('current')); track.classList.add('current'); } 
-    else { audio.pause(); btn.textContent='▶'; }
+  btn.addEventListener('click',()=>{
+    if(audio.paused){ audio.play(); btn.textContent='⏸'; tracks.forEach(t=>t.classList.remove('current')); track.classList.add('current'); }
+    else{ audio.pause(); btn.textContent='▶'; }
   });
 
-  audio.addEventListener('timeupdate', ()=>{ progress.style.width=(audio.currentTime/audio.duration*100)+'%'; });
-  audio.addEventListener('ended', ()=>{ btn.textContent='▶'; track.classList.remove('current'); currentIndex++; if(currentIndex<tracks.length) playTrack(currentIndex); });
+  audio.addEventListener('timeupdate',()=>{ progress.style.width=(audio.currentTime/audio.duration*100)+'%'; });
+  audio.addEventListener('ended',()=>{ btn.textContent='▶'; track.classList.remove('current'); currentIndex++; if(currentIndex<tracks.length) playTrack(currentIndex); });
 });
 
 function playTrack(index){
-  const track = tracks[index]; 
-  const audio = track.querySelector('audio'); 
-  const btn = track.querySelector('.play-btn'); 
-  tracks.forEach(t=>t.classList.remove('current')); 
-  track.classList.add('current'); 
-  audio.play(); 
+  const track=tracks[index];
+  const audio=track.querySelector('audio');
+  const btn=track.querySelector('.play-btn');
+  tracks.forEach(t=>t.classList.remove('current'));
+  track.classList.add('current');
+  audio.play();
   btn.textContent='⏸';
 }
 
