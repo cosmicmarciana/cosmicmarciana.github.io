@@ -3,27 +3,119 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Cosmic Marciana — Nou Disc</title>
+  <title>Cosmic Marciana — Música gratuïta</title>
+  
+  <!-- Tipografia retro -->
+  <link href="https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap" rel="stylesheet">
+  
   <style>
-    body{margin:0;font-family:system-ui;background:#0b0014;color:#fff;text-align:center;padding:40px}
-    .card{max-width:720px;margin:auto;padding:32px;border-radius:24px;background:rgba(255,255,255,0.06);box-shadow:0 0 40px rgba(255,0,200,0.25)}
-    h1{font-size:48px;margin:0 0 10px}
-    p{opacity:.85;font-size:18px;line-height:1.4}
-    .btn{display:inline-block;margin-top:20px;padding:14px 22px;border-radius:999px;background:#ff00cc;color:#fff;text-decoration:none;font-weight:700}
-    .btn:hover{transform:scale(1.03)}
-    .footer{margin-top:30px;font-size:14px;opacity:.6}
+    body {
+      margin:0;
+      font-family: 'Rock Salt', cursive;
+      color:#fff;
+      text-align:center;
+      padding:40px;
+      background: linear-gradient(135deg, #ff00cc, #6600ff, #00ffff);
+      background-size: 600% 600%;
+      animation: gradientShift 15s ease infinite;
+    }
+    @keyframes gradientShift {
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+
+    .card {
+      max-width:720px;
+      margin:auto;
+      padding:32px;
+      border-radius:24px;
+      background:rgba(0,0,0,0.3);
+      box-shadow:0 0 40px rgba(255,0,200,0.3);
+    }
+
+    h1 {
+      font-size:48px;
+      margin:0 0 10px;
+      text-shadow: 0 0 8px #ff00cc, 0 0 16px #ff00cc, 0 0 24px #ff00cc;
+    }
+
+    p {
+      opacity:.85;
+      font-size:18px;
+      line-height:1.4;
+      text-shadow: 0 0 4px #00ffff;
+      margin:16px 0 24px;
+    }
+
+    .btn {
+      display:inline-block;
+      margin:10px 10px 0 10px;
+      padding:14px 22px;
+      border-radius:999px;
+      background:#ff00cc;
+      color:#fff;
+      text-decoration:none;
+      font-weight:700;
+      box-shadow:0 0 8px #ff00cc, 0 0 16px #ff00cc;
+      transition: 0.3s;
+    }
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow:0 0 16px #00ffff, 0 0 32px #00ffff;
+    }
+
+    img {
+      width:100%;
+      max-width:420px;
+      border-radius:18px;
+      margin:24px 0;
+      box-shadow:0 0 30px rgba(0,255,255,.25);
+      filter: hue-rotate(45deg) saturate(1.5);
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100%{transform:translateY(0px);}
+      50%{transform:translateY(-10px);}
+    }
+
+    audio {
+      margin:16px 0;
+      width:90%;
+      max-width:400px;
+    }
+
+    .footer {
+      margin-top:30px;
+      font-size:14px;
+      opacity:.6;
+    }
   </style>
 </head>
 <body>
   <div class="card">
     <h1>Cosmic Marciana</h1>
-    <p>Nou disc disponible — psicodèlia setentera, sintetitzadors i soroll còsmic.</p>
+    <p>Et regalo la meva música, però si vols col·laborar perquè pugui seguir fent vinils i més música, pots aportar aquí:</p>
 
-    <!-- Canvia aquesta imatge per la portada del disc -->
-    <img src="cover.png" alt="Portada del disc" style="width:100%;max-width:420px;border-radius:18px;margin:24px 0;box-shadow:0 0 30px rgba(0,255,255,.25)" />
+    <a class="btn" href="https://www.paypal.com/paypalme/tuusuari" target="_blank">
+      Col·labora / Dona
+    </a>
 
-    <!-- Botó principal -->
-    <a class="btn" href="#">Escolta el disc</a>
+    <p>Escolta el disc directament aquí:</p>
+
+    <!-- Reproductors per a cada cançó -->
+    <audio controls>
+      <source src="canco1.mp3" type="audio/mpeg">
+      El teu navegador no suporta aquest reproductor.
+    </audio>
+
+    <audio controls>
+      <source src="canco2.mp3" type="audio/mpeg">
+      El teu navegador no suporta aquest reproductor.
+    </audio>
+
+    <!-- Imatge portada -->
+    <img src="cover.png" alt="Portada del disc" />
 
     <div class="footer">
       ✦ Cosmic Marciana · 2026 · Fet fora dels gegants ✦
@@ -31,4 +123,3 @@
   </div>
 </body>
 </html>
-
