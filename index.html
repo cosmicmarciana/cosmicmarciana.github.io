@@ -1,64 +1,315 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ca">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Cosmic Marciana</title>
-<link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
-<style>
-body {
-  margin:0;
-  font-family: Arial, sans-serif;
-  color:#00ff00;
-  text-align:center;
-  padding:40px;
-  background: linear-gradient(45deg, #ff0000, #cc0000, #ff3333);
-  background-size: 600% 600%;
-  animation: gradientShift 15s ease infinite;
-}
-@keyframes gradientShift {
-  0%{background-position:0% 50%}
-  50%{background-position:100% 50%}
-  100%{background-position:0% 50%}
-}
-h1 {
-  font-family: 'Creepster', cursive;
-  font-size:60px;
-  margin:0 0 10px;
-  color:#00ff00;
-  text-shadow: 0 0 8px #00ff00, 0 0 16px #00ff00, 0 0 24px #00ff00;
-}
-p { opacity:.85; font-size:18px; line-height:1.4; margin:16px 0 24px; }
-.btn, .socials a {
-  display:inline-block;
-  margin:10px 10px 0 10px;
-  padding:14px 22px;
-  border-radius:999px;
-  background:#00ff00;
-  color:#ff0000;
-  text-decoration:none;
-  font-weight:700;
-  box-shadow:0 0 8px #00ff00,0 0 16px #00ff00;
-  transition:0.3s;
-}
-.btn:hover, .socials a:hover { transform: scale(1.05); box-shadow:0 0 16px #ff0000,0 0 32px #ff0000; }
-img { width:100%; max-width:420px; border-radius:18px; margin:24px 0; box-shadow:0 0 30px rgba(0,255,0,.25); cursor:pointer; }
-.footer { margin-top:30px; font-size:14px; opacity:.6; }
-.socials { margin-top:16px; }
-</style>
+  <meta charset="UTF-8">
+  <title>Cosmic Marciana Player</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #8b0000;
+      color: #00ff00;
+      text-align: center;
+    }
+
+    .player-container {
+      max-width: 420px;
+      margin: 40px auto;
+      background: rgba(0,0,0,0.6);
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px black;
+    }
+
+    img {
+      width: 100%;
+      border-radius: 15px;
+      cursor: pointer;
+      box-shadow: 0 0 15px black;
+    }
+
+    #now-playing {
+      margin-top: 12px;
+      font-size: 18px;
+      color: #00ff00;
+      text-shadow: 0 0 6px #00ff00;
+    }
+
+    /* Controls */
+    .controls {
+      margin-top: 18px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    button {
+      background: black;
+      border: 1px solid #00ff00;
+      color: #00ff00;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #00ff00;
+      color: black;
+    }
+
+    /* Progress bar */
+    .progress-wrapper {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    #progress {
+      flex: 1;
+      height: 5px;
+      cursor: pointer;
+    }
+
+    /* Volume */
+    .volume-wrapper {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .volume-icon {
+      font-size: 18px;
+      color: #00ff00;
+      text-shadow: 0 0 6px #00ff00;
+      cursor: pointer;
+    }
+
+    #volume-slider {
+      width: 120px;
+      height: 4px;
+      cursor: pointer;
+    }
+
+    /* Playlist */
+    .playlist {
+      margin-top: 20px;
+      text-align: left;
+      max-height: 240px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    .playlist button {
+      width: 100%;
+      text-align: left;
+      margin-bottom: 6px;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .playlist button.active {
+      background: #00ff00;
+      color: black;
+      font-weight: bold;
+      box-shadow: 0 0 10px #00ff00;
+    }
+  </style>
 </head>
+
 <body>
-<h1>Cosmic Marciana</h1>
-<a href="player.html"><img src="cover.png" alt="Portada del disc"></a>
-<p>Et regalo la meva música, però si vols col·laborar perquè pugui seguir fent vinils i més música, pots aportar aquí:</p>
-<a class="btn" href="https://www.paypal.com/paypalme/tuusuari" target="_blank">Col·labora / Dona</a>
 
-<div class="socials">
-  <a href="https://open.spotify.com/intl-es/artist/0qSO1brlu9jrjrhmMldEVL?si=JqJIEZHxSL-Y2blcUIHqjw" target="_blank">Spotify</a>
-  <a href="https://www.instagram.com/cosmicmarciana" target="_blank">Instagram</a>
-  <a href="mailto:cosmicmarciana@gmail.com">Contacta</a>
-</div>
+  <div class="player-container">
 
-<div class="footer">✦ Cosmic Marciana · 2026 · Fet fora dels gegants ✦</div>
+    <!-- Cover -->
+    <img id="cover" src="cover1.png" alt="Portada">
+
+    <!-- Now Playing -->
+    <h2 id="now-playing">🎵 Selecciona una cançó</h2>
+
+    <!-- Controls -->
+    <div class="controls">
+      <button onclick="prevTrack()">⏮</button>
+      <button onclick="playMusic()">▶</button>
+      <button onclick="pauseMusic()">⏸</button>
+      <button onclick="stopMusic()">⏹</button>
+      <button onclick="nextTrack()">⏭</button>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-wrapper">
+      <span id="current-time">0:00</span>
+      <input type="range" id="progress" value="0">
+      <span id="duration">0:00</span>
+    </div>
+
+    <!-- Volume -->
+    <div class="volume-wrapper">
+      <span class="volume-icon" id="volume-icon">🔊</span>
+      <input type="range" id="volume-slider" min="0" max="100" value="100">
+    </div>
+
+    <!-- Playlist -->
+    <div class="playlist" id="playlist"></div>
+
+  </div>
+
+  <audio id="audio"></audio>
+
+  <script>
+    const audio = document.getElementById("audio");
+    const coverImg = document.getElementById("cover");
+
+    const progress = document.getElementById("progress");
+    const currentTimeEl = document.getElementById("current-time");
+    const durationEl = document.getElementById("duration");
+
+    const volumeSlider = document.getElementById("volume-slider");
+    const volumeIcon = document.getElementById("volume-icon");
+
+    let currentTrack = 0;
+    let buttons = [];
+
+    /* ==== CANÇONS ==== */
+    const sources = [
+      "song1.mp3",
+      "song2.mp3",
+      "song3.mp3"
+    ];
+
+    const titles = [
+      "Intro Cosmic Marciana",
+      "La casa del terror",
+      "Synth Fantasma"
+    ];
+
+    const covers = [
+      "cover1.png",
+      "cover2.png",
+      "cover3.png"
+    ];
+
+    /* ==== LOAD TRACK ==== */
+    function loadTrack(index) {
+      currentTrack = index;
+      audio.src = sources[index];
+      coverImg.src = covers[index];
+
+      document.getElementById("now-playing").textContent =
+        "🎵 Ara sona: " + titles[index];
+
+      updateActiveTrack();
+    }
+
+    /* ==== PLAYLIST AUTO ==== */
+    const playlistDiv = document.getElementById("playlist");
+
+    titles.forEach((title, index) => {
+      const btn = document.createElement("button");
+      btn.textContent = title;
+
+      btn.onclick = () => {
+        loadTrack(index);
+        playMusic();
+      };
+
+      playlistDiv.appendChild(btn);
+      buttons.push(btn);
+    });
+
+    function updateActiveTrack() {
+      buttons.forEach((btn, i) => {
+        btn.classList.remove("active");
+        if (i === currentTrack) btn.classList.add("active");
+      });
+    }
+
+    /* ==== CONTROLS ==== */
+    function playMusic() {
+      audio.play();
+    }
+
+    function pauseMusic() {
+      audio.pause();
+    }
+
+    function stopMusic() {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+
+    function nextTrack() {
+      currentTrack++;
+      if (currentTrack >= sources.length) currentTrack = 0;
+      loadTrack(currentTrack);
+      playMusic();
+    }
+
+    function prevTrack() {
+      currentTrack--;
+      if (currentTrack < 0) currentTrack = sources.length - 1;
+      loadTrack(currentTrack);
+      playMusic();
+    }
+
+    /* ==== AUTO NEXT ==== */
+    audio.addEventListener("ended", () => {
+      nextTrack();
+    });
+
+    /* ==== PROGRESS BAR ==== */
+    audio.addEventListener("timeupdate", () => {
+      progress.value = (audio.currentTime / audio.duration) * 100;
+
+      currentTimeEl.textContent = formatTime(audio.currentTime);
+      durationEl.textContent = formatTime(audio.duration);
+    });
+
+    progress.addEventListener("input", () => {
+      audio.currentTime = (progress.value / 100) * audio.duration;
+    });
+
+    function formatTime(sec) {
+      if (isNaN(sec)) return "0:00";
+      let m = Math.floor(sec / 60);
+      let s = Math.floor(sec % 60);
+      if (s < 10) s = "0" + s;
+      return m + ":" + s;
+    }
+
+    /* ==== VOLUME ==== */
+    volumeSlider.addEventListener("input", () => {
+      audio.volume = volumeSlider.value / 100;
+
+      if (audio.volume === 0) volumeIcon.textContent = "🔇";
+      else if (audio.volume < 0.5) volumeIcon.textContent = "🔉";
+      else volumeIcon.textContent = "🔊";
+    });
+
+    /* ==== CLICK ICON = MUTE ==== */
+    let lastVolume = 1;
+
+    volumeIcon.addEventListener("click", () => {
+      if (audio.volume > 0) {
+        lastVolume = audio.volume;
+        audio.volume = 0;
+        volumeSlider.value = 0;
+        volumeIcon.textContent = "🔇";
+      } else {
+        audio.volume = lastVolume;
+        volumeSlider.value = lastVolume * 100;
+        volumeIcon.textContent = "🔊";
+      }
+    });
+
+    /* ==== INIT ==== */
+    loadTrack(0);
+  </script>
+
 </body>
 </html>
