@@ -4,7 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>La casa del terror</title>
-<link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
 
 <style>
 body {
@@ -17,12 +16,25 @@ body {
 }
 
 h1 {
-  font-family: 'Creepster', cursive;
-  font-size:60px;
-  color:#ff4444;
-  text-shadow: 0 0 6px #ff4444,0 0 12px #ff1111;
-  margin-bottom:20px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 34px;
+  letter-spacing: 3px;
+  font-weight: 900;
+  margin-bottom: 22px;
+  text-transform: uppercase;
+  text-shadow:
+    2px 2px 0 #000,
+    4px 4px 0 #000;
 }
+
+/* MÒBIL */
+@media (max-width: 480px) {
+  h1 {
+    font-size: 28px;
+    letter-spacing: 2px;
+  }
+}
+
 
 .card {
   max-width:720px;
@@ -372,5 +384,6 @@ volumeIcon.addEventListener("click", ()=>{
 
 </body>
 </html>
+
 
 
