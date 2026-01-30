@@ -1,199 +1,246 @@
 <!DOCTYPE html>
 <html lang="ca">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cosmic Marciana</title>
 
-  <!-- Descripció + compartir a xarxes -->
-  <meta name="description" content="Música electrònica pop amb soroll còsmic. Escolta el disc i dona suport al projecte.">
-  <meta property="og:title" content="Cosmic Marciana">
-  <meta property="og:description" content="Et regalo la meva música. Si vols ajudar a fer vinils i més soroll còsmic, entra aquí.">
-  <meta property="og:image" content="https://cosmicmarciana.github.io/cover1.png">
-  <meta property="og:url" content="https://cosmicmarciana.github.io/">
-  <meta name="twitter:card" content="summary_large_image">
+  <!-- SEO + compartir -->
+  <meta name="description" content="Música electrònica pop amb soroll còsmic. Escolta el disc i dona suport al projecte." />
+  <meta property="og:title" content="Cosmic Marciana" />
+  <meta property="og:description" content="Et regalo la meva música. Si vols ajudar a fer vinils i més soroll còsmic, entra aquí." />
+  <meta property="og:image" content="https://cosmicmarciana.github.io/cover1.png" />
+  <meta property="og:url" content="https://cosmicmarciana.github.io/" />
+  <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- Tipografia terror Misfits -->
+  <!-- Tipografia -->
   <link href="https://fonts.googleapis.com/css2?family=Nosifer&display=swap" rel="stylesheet">
 
   <style>
-    body {
-      margin: 0;
+    :root{
+      --acid:#00ff00;
+      --blood:#8b0000;
+      --ink:#070707;
+    }
+
+    body{
+      margin:0;
       font-family: Arial, sans-serif;
-      background: #8b0000;
-      color: #00ff00;
-      text-align: center;
+      color: var(--acid);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:
+        radial-gradient(1200px 600px at 50% 10%, rgba(255,0,0,.22), transparent 60%),
+        radial-gradient(900px 500px at 80% 80%, rgba(0,255,0,.10), transparent 55%),
+        linear-gradient(135deg, #220000, #110000);
+      overflow-x:hidden;
+      padding: 26px 14px;
     }
 
-    .container {
-      max-width: 600px;
-      margin: 36px auto;
-      padding: 24px;
+    /* Scanlines + grain (suau) */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(0,0,0,0.10) 0px,
+          rgba(0,0,0,0.10) 1px,
+          rgba(0,0,0,0.00) 3px,
+          rgba(0,0,0,0.00) 6px
+        );
+      opacity:.45;
+      mix-blend-mode:multiply;
+    }
+    body::after{
+      content:"";
+      position:fixed;
+      inset:-20%;
+      pointer-events:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+      opacity:.12;
+      transform:rotate(6deg);
     }
 
-    h1 {
+    .wrap{
+      width:100%;
+      max-width: 740px;
+    }
+
+    .card{
+      background: rgba(0,0,0,0.72);
+      border: 2px solid rgba(0,255,0,0.22);
+      border-radius: 18px;
+      box-shadow:
+        0 0 0 2px rgba(0,0,0,0.35) inset,
+        0 0 40px rgba(255,0,0,0.25),
+        0 0 24px rgba(0,255,0,0.10);
+      padding: 26px;
+      text-align:center;
+      position:relative;
+    }
+
+    h1{
       font-family: 'Nosifer', cursive;
-      font-size: 52px;
+      font-size: 54px;
       letter-spacing: 2px;
-      margin-bottom: 24px;
+      margin: 0 0 18px;
       text-shadow: 0 0 6px #000, 0 0 14px #000;
     }
 
-    img {
-      width: 100%;
-      max-width: 320px;
-      border-radius: 14px;
-      box-shadow: 0 0 20px black;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-
-    img:hover {
-      transform: scale(1.03);
-    }
-
-    p {
-      font-size: 17px;
+    .sub{
+      margin: 0 auto 18px;
+      max-width: 560px;
+      font-size: 16px;
       line-height: 1.5;
-      margin-top: 22px;
+      opacity: .95;
     }
 
-    .btn {
-      display: inline-block;
-      margin-top: 16px;
-      padding: 14px 24px;
-      background: black;
-      color: #00ff00;
-      border: 2px solid #00ff00;
+    .cover{
+      width: 100%;
+      max-width: 340px;
       border-radius: 14px;
-      font-size: 17px;
-      text-decoration: none;
+      box-shadow: 0 0 24px rgba(0,0,0,0.9);
       cursor: pointer;
-      transition: 0.2s;
+      transition: transform .2s, box-shadow .2s;
+      border: 1px solid rgba(0,255,0,0.18);
+    }
+    .cover:hover{
+      transform: scale(1.02);
+      box-shadow: 0 0 28px rgba(0,255,0,0.18), 0 0 40px rgba(255,0,0,0.18);
     }
 
-    .btn:hover {
-      background: #00ff00;
-      color: black;
-    }
-
-    /* Bizum */
-    #bizum-number {
+    .cta{
       margin-top: 18px;
-      font-size: 17px;
-      background: black;
-      display: inline-block;
-      padding: 12px 18px;
-      border: 2px solid #00ff00;
+      display:flex;
+      flex-wrap:wrap;
+      gap: 10px;
+      justify-content:center;
+    }
+
+    .btn{
+      display:inline-block;
+      padding: 14px 18px;
+      background: #000;
+      color: var(--acid);
+      border: 2px solid var(--acid);
       border-radius: 14px;
-      cursor: pointer;
-      transition: 0.2s;
-      user-select: none;
-    }
-
-    #bizum-number:hover {
-      background: #00ff00;
-      color: black;
-    }
-
-    .links {
-      margin-top: 28px;
       font-size: 15px;
+      text-decoration:none;
+      cursor:pointer;
+      transition: .18s;
+      user-select:none;
+    }
+    .btn:hover{
+      background: var(--acid);
+      color:#000;
+    }
+    .btn.ghost{
+      background: transparent;
+      border-color: rgba(0,255,0,0.55);
     }
 
-    .links a {
-      color: #00ff00;
-      text-decoration: none;
-      margin: 0 8px;
+    .mini{
+      margin-top: 14px;
+      display:flex;
+      gap: 10px;
+      justify-content:center;
+      flex-wrap:wrap;
+      align-items:center;
     }
 
-    .links a:hover {
-      text-decoration: underline;
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 2px solid rgba(0,255,0,0.45);
+      background: rgba(0,0,0,0.55);
+      cursor:pointer;
+      transition:.18s;
+      font-size: 14px;
+      user-select:none;
+    }
+    .pill:hover{
+      background: rgba(0,255,0,0.12);
     }
 
-    .mail {
+    #status{
+      min-height: 18px;
+      margin-top: 10px;
+      font-size: 13px;
+      opacity: .9;
+    }
+
+    .links{
       margin-top: 18px;
       font-size: 14px;
-      opacity: 0.85;
+      opacity:.95;
+    }
+    .links a{
+      color: var(--acid);
+      text-decoration:none;
+      margin: 0 10px;
+    }
+    .links a:hover{ text-decoration: underline; }
+
+    .mail{
+      margin-top: 12px;
+      font-size: 13px;
+      opacity: .9;
     }
 
-    /* 📱 Ajustos mòbil */
-    @media (max-width: 480px) {
-      .container { margin: 22px auto; }
+    .foot{
+      margin-top: 18px;
+      font-size: 12px;
+      opacity: .75;
+    }
 
-      h1 {
-        font-size: 40px;
-        letter-spacing: 1px;
-      }
-
-      p { font-size: 16px; }
-
-      .btn {
-        font-size: 16px;
-        padding: 13px 20px;
-      }
+    @media (max-width:480px){
+      h1{ font-size: 40px; letter-spacing:1px; }
+      .card{ padding: 20px; }
+      .btn{ width:100%; max-width: 360px; }
+      .pill{ width:100%; max-width: 360px; justify-content:center; }
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
+  <div class="wrap">
+    <div class="card">
 
-    <h1>COSMIC MARCIANA</h1>
+      <h1>COSMIC MARCIANA</h1>
 
-    <!-- Portada -->
-    <a href="player.html">
-      <img src="cover1.png" alt="Portada del disc">
-    </a>
+      <p class="sub">
+        Et regalo la meva música.<br>
+        Si vols ajudar a fer vinils i seguir fent soroll còsmic, pots aportar alguna cosa 💚
+      </p>
 
-    <p>
-      Et regalo la meva música.<br>
-      Si vols col·laborar perquè això continue,<br>
-      pugui gravar vinils i seguir fent soroll còsmic,<br>
-      pots aportar alguna cosa 💚
-    </p>
+      <a href="player.html" aria-label="Escoltar el disc">
+        <img class="cover" src="cover1.png" alt="Portada del disc">
+      </a>
 
-    <!-- Escoltar -->
-    <a class="btn" href="player.html">▶ Escoltar el disc</a>
+      <div class="cta">
+        <a class="btn" href="player.html">▶ Escoltar el disc</a>
+        <a class="btn ghost" href="mailto:cosmicmarciana@gmail.com?subject=Concierto%20Cosmic%20Marciana">📩 Contacte / Bolos</a>
+      </div>
 
-    <!-- Contacte bolos -->
-    <a class="btn" href="mailto:cosmicmarciana@gmail.com?subject=Concierto%20Cosmic%20Marciana">📩 Contacte / Bolos</a>
+      <div class="mini">
+        <div id="bizum" class="pill" title="Clica per mostrar / copiar">
+          💚 Bizum: <span id="bizum-text">Mostrar</span>
+        </div>
 
-    <!-- Bizum (clica per copiar) -->
-    <div id="bizum-number" title="Clica per copiar">
-      💚 Bizum: +34 600 000 000
-    </div>
+        <div id="share" class="pill" title="Clica per compartir o copiar link">
+          🔗 Compartir link
+        </div>
+      </div>
 
-    <!-- Xarxes -->
-    <div class="links">
-      <a href="https://www.instagram.com/cosmicmarciana" target="_blank" rel="noopener noreferrer">Instagram</a> |
-      <a href="https://open.spotify.com/intl-es/artist/0qSO1brlu9jrjrhmMldEVL" target="_blank" rel="noopener noreferrer">Spotify</a>
-    </div>
+      <div id="status"></div>
 
-    <!-- Mail visible -->
-    <div class="mail">
-      cosmicmarciana@gmail.com
-    </div>
-
-  </div>
-
-  <script>
-    // Copiar Bizum sense alert
-    const bizumDiv = document.getElementById("bizum-number");
-    const originalText = bizumDiv.textContent.trim();
-
-    bizumDiv.addEventListener("click", async () => {
-      const number = originalText.replace("💚 Bizum:", "").trim();
-
-      try {
-        await navigator.clipboard.writeText(number);
-        bizumDiv.textContent = "Copiat 💚";
-        setTimeout(() => (bizumDiv.textContent = originalText), 1200);
-      } catch {
-        bizumDiv.textContent = "Copia manual: " + number;
-        setTimeout(() => (bizumDiv.textContent = originalText), 2000);
-      }
-    });
-  </script>
-</body>
-</html>
+      <div class="links">
+        <a href="https://www.instagram.com/cosmicmarcian
