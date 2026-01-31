@@ -18,13 +18,11 @@
       --neon:#00ff00;
       --ink:#e6e6e6;
       --muted:#b8b8b8;
-      --card:rgba(0,0,0,.75);
-      --border:rgba(0,255,0,.15);
     }
 
     *{ box-sizing:border-box; }
 
-    /* ===== FONDO ESPACIO / ANALÓGICO ===== */
+    /* ===== FONDO OSCURO ORGÁNICO ===== */
     body{
       margin:0;
       font-family:Arial, sans-serif;
@@ -32,7 +30,7 @@
       min-height:100vh;
       display:flex;
       justify-content:center;
-      padding:24px 12px;
+      padding:32px 14px;
       overflow-x:hidden;
 
       background:
@@ -63,24 +61,15 @@
 
     .wrap{
       width:100%;
-      max-width:720px;
-    }
-
-    .card{
-      background:var(--card);
-      border:2px solid var(--border);
-      border-radius:18px;
-      padding:22px;
+      max-width:760px;
       text-align:center;
-      box-shadow:0 0 40px rgba(0,0,0,.6);
     }
 
     /* ===== CRT HERO ===== */
     .crt{
       position:relative;
-      display:block;
       width:fit-content;
-      margin:0 auto 18px;
+      margin:0 auto 22px;
       isolation:isolate;
     }
 
@@ -88,11 +77,10 @@
       width:100%;
       max-width:420px;
       display:block;
-      filter:drop-shadow(0 0 18px rgba(0,0,0,.9));
+      filter:drop-shadow(0 0 22px rgba(0,0,0,.95));
       animation: crt-flicker 3.5s infinite;
     }
 
-    /* Scanlines */
     .crt::before{
       content:"";
       position:absolute;
@@ -111,7 +99,6 @@
       z-index:2;
     }
 
-    /* Glitch hover */
     .crt:hover .hero{
       animation: crt-glitch .35s steps(2,end);
     }
@@ -120,46 +107,44 @@
     .text{
       font-size:15px;
       line-height:1.5;
-      margin-bottom:18px;
+      margin:0 auto 20px;
+      max-width:50ch;
       color:var(--muted);
     }
 
     /* ===== CTA ===== */
     .cta{
-      display:flex;
-      justify-content:center;
-      margin-bottom:16px;
+      margin-bottom:22px;
     }
 
     .btn{
-      padding:16px 22px;
+      display:inline-block;
+      padding:16px 26px;
       font-size:16px;
-      border-radius:16px;
+      border-radius:999px;
       text-decoration:none;
-      border:2px solid var(--neon);
       background:var(--neon);
       color:#000;
-      box-shadow:0 0 22px rgba(0,255,0,.25);
+      box-shadow:0 0 26px rgba(0,255,0,.3);
       transition:.2s ease;
     }
 
     .btn:hover{
       transform:translateY(-1px);
-      box-shadow:0 0 30px rgba(0,255,0,.35);
+      box-shadow:0 0 36px rgba(0,255,0,.45);
     }
 
     /* ===== LINKS ===== */
     .links{
       font-size:13px;
-      opacity:.85;
-      margin-top:8px;
+      opacity:.8;
     }
 
     .links a{
       color:var(--ink);
       text-decoration:none;
-      margin:0 8px;
-      border-bottom:1px dotted rgba(255,255,255,.35);
+      margin:0 10px;
+      border-bottom:1px dotted rgba(255,255,255,.3);
       padding-bottom:2px;
     }
 
@@ -170,8 +155,8 @@
 
     .mail{
       font-size:12px;
-      opacity:.6;
-      margin-top:10px;
+      opacity:.55;
+      margin-top:12px;
     }
 
     /* ===== ANIMACIONES ===== */
@@ -192,39 +177,36 @@
     }
 
     @media (max-width:480px){
-      .btn{ width:100%; }
-      .card{ padding:18px; }
       .hero{ animation-duration:5s; }
       .crt::before{ opacity:.25; }
+      .btn{ width:100%; }
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="card">
+  <main class="wrap">
 
-      <div class="crt">
-        <img src="tv.png" alt="Cosmic Marciana – La casa del terror" class="hero">
-      </div>
-
-      <div class="text">
-        Pop electrónico, ruido psicoeléctrico y señales rotas desde Marte.
-      </div>
-
-      <div class="cta">
-        <a class="btn" href="player.html">▶ Escuchar mi disco</a>
-      </div>
-
-      <div class="links">
-        <a href="https://www.instagram.com/cosmicmarciana" target="_blank" rel="noopener noreferrer">Instagram</a> |
-        <a href="https://open.spotify.com/intl-es/artist/0qSO1brlu9jrjrhmMldEVL" target="_blank" rel="noopener noreferrer">Spotify</a> |
-        <a href="mailto:cosmicmarciana@gmail.com">Contacto / Bolos</a>
-      </div>
-
-      <div class="mail">cosmicmarciana@gmail.com</div>
-
+    <div class="crt">
+      <img src="tv.png" alt="Cosmic Marciana – La casa del terror" class="hero">
     </div>
-  </div>
+
+    <p class="text">
+      Pop electrónico, ruido psicoeléctrico y señales rotas desde Marte.
+    </p>
+
+    <div class="cta">
+      <a class="btn" href="player.html">▶ Escuchar mi disco</a>
+    </div>
+
+    <div class="links">
+      <a href="https://www.instagram.com/cosmicmarciana" target="_blank" rel="noopener noreferrer">Instagram</a>
+      <a href="https://open.spotify.com/intl-es/artist/0qSO1brlu9jrjrhmMldEVL" target="_blank" rel="noopener noreferrer">Spotify</a>
+      <a href="mailto:cosmicmarciana@gmail.com">Contacto / Bolos</a>
+    </div>
+
+    <div class="mail">cosmicmarciana@gmail.com</div>
+
+  </main>
 </body>
 </html>
