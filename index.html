@@ -6,9 +6,9 @@
   <title>Cosmic Marciana</title>
 
   <!-- SEO + compartir -->
-  <meta name="description" content="Música electrònica pop amb soroll còsmic. Escolta el disc i dona suport al projecte." />
+  <meta name="description" content="Pop electrónico con ruido psicoeléctrico desde Marte. Escucha el disco y apoya el proyecto." />
   <meta property="og:title" content="Cosmic Marciana" />
-  <meta property="og:description" content="Et regalo la meva música. Si vols ajudar a fer vinils i més soroll còsmic, entra aquí." />
+  <meta property="og:description" content="Ruido psicoeléctrico desde Marte. Pop electrónico, señales rotas y errores cósmicos." />
   <meta property="og:image" content="https://cosmicmarciana.github.io/cover1.png" />
   <meta property="og:url" content="https://cosmicmarciana.github.io/" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -39,7 +39,7 @@
       padding: 26px 14px;
     }
 
-    /* Scanlines + grain (suau) */
+    /* Scanlines + grano */
     body::before{
       content:"";
       position:fixed;
@@ -56,6 +56,7 @@
       opacity:.45;
       mix-blend-mode:multiply;
     }
+
     body::after{
       content:"";
       position:fixed;
@@ -68,7 +69,7 @@
 
     .wrap{
       width:100%;
-      max-width: 740px;
+      max-width:740px;
     }
 
     .card{
@@ -81,15 +82,30 @@
         0 0 24px rgba(0,255,0,0.10);
       padding: 26px;
       text-align:center;
-      position:relative;
     }
 
     h1{
       font-family: 'Nosifer', cursive;
       font-size: 54px;
       letter-spacing: 2px;
-      margin: 0 0 18px;
+      margin: 0 0 6px;
       text-shadow: 0 0 6px #000, 0 0 14px #000;
+    }
+
+    .tagline{
+      margin: 6px 0 6px;
+      font-size: 18px;
+      letter-spacing: 2px;
+      text-transform: lowercase;
+      opacity: .95;
+      text-shadow: 0 0 10px rgba(0,255,0,.35);
+    }
+
+    .tagline-echo{
+      font-size: 13px;
+      letter-spacing: 1px;
+      opacity: .65;
+      margin-bottom: 18px;
     }
 
     .sub{
@@ -109,6 +125,7 @@
       transition: transform .2s, box-shadow .2s;
       border: 1px solid rgba(0,255,0,0.18);
     }
+
     .cover:hover{
       transform: scale(1.02);
       box-shadow: 0 0 28px rgba(0,255,0,0.18), 0 0 40px rgba(255,0,0,0.18);
@@ -135,10 +152,12 @@
       transition: .18s;
       user-select:none;
     }
+
     .btn:hover{
       background: var(--acid);
       color:#000;
     }
+
     .btn.ghost{
       background: transparent;
       border-color: rgba(0,255,0,0.55);
@@ -166,6 +185,7 @@
       font-size: 14px;
       user-select:none;
     }
+
     .pill:hover{
       background: rgba(0,255,0,0.12);
     }
@@ -182,23 +202,19 @@
       font-size: 14px;
       opacity:.95;
     }
+
     .links a{
       color: var(--acid);
       text-decoration:none;
       margin: 0 10px;
     }
+
     .links a:hover{ text-decoration: underline; }
 
     .mail{
       margin-top: 12px;
       font-size: 13px;
       opacity: .9;
-    }
-
-    .foot{
-      margin-top: 18px;
-      font-size: 12px;
-      opacity: .75;
     }
 
     @media (max-width:480px){
@@ -216,31 +232,86 @@
 
       <h1>COSMIC MARCIANA</h1>
 
+      <div class="tagline">ruido psicoeléctrico desde Marte</div>
+      <div class="tagline-echo">pop electrónico, señales rotas y errores cósmicos</div>
+
       <p class="sub">
-        Et regalo la meva música.<br>
-        Si vols ajudar a fer vinils i seguir fent soroll còsmic, pots aportar alguna cosa 💚
+        Te regalo mi música.<br>
+        Si quieres apoyar para grabar vinilos y seguir haciendo ruido cósmico, puedes aportar algo 💚
       </p>
 
-      <a href="player.html" aria-label="Escoltar el disc">
-        <img class="cover" src="cover1.png" alt="Portada del disc">
+      <a href="player.html">
+        <img class="cover" src="cover1.png" alt="Portada del disco">
       </a>
 
       <div class="cta">
-        <a class="btn" href="player.html">▶ Escoltar el disc</a>
-        <a class="btn ghost" href="mailto:cosmicmarciana@gmail.com?subject=Concierto%20Cosmic%20Marciana">📩 Contacte / Bolos</a>
+        <a class="btn" href="player.html">▶ Escuchar el disco</a>
+        <a class="btn ghost" href="mailto:cosmicmarciana@gmail.com?subject=Concierto%20Cosmic%20Marciana">📩 Contacto / Bolos</a>
       </div>
 
       <div class="mini">
-        <div id="bizum" class="pill" title="Clica per mostrar / copiar">
-          💚 Bizum: <span id="bizum-text">Mostrar</span>
-        </div>
-
-        <div id="share" class="pill" title="Clica per compartir o copiar link">
-          🔗 Compartir link
-        </div>
+        <div id="bizum" class="pill">💚 Bizum: <span id="bizum-text">mostrar</span></div>
+        <div id="share" class="pill">🔗 Compartir link</div>
       </div>
 
       <div id="status"></div>
 
       <div class="links">
-        <a href="https://www.instagram.com/cosmicmarcian
+        <a href="https://www.instagram.com/cosmicmarciana" target="_blank" rel="noopener noreferrer">Instagram</a>
+        |
+        <a href="https://open.spotify.com/intl-es/artist/0qSO1brlu9jrjrhmMldEVL" target="_blank" rel="noopener noreferrer">Spotify</a>
+      </div>
+
+      <div class="mail">cosmicmarciana@gmail.com</div>
+
+    </div>
+  </div>
+
+  <script>
+    const statusEl = document.getElementById("status");
+    const bizumEl = document.getElementById("bizum");
+    const bizumTextEl = document.getElementById("bizum-text");
+    const shareEl = document.getElementById("share");
+
+    // ⚠️ Cambia el número si quieres hacerlo público
+    const BIZUM_NUMBER = "+34 600 000 000";
+
+    function setStatus(msg){
+      statusEl.textContent = msg || "";
+      if(msg){
+        clearTimeout(setStatus._t);
+        setStatus._t = setTimeout(()=> statusEl.textContent = "", 1400);
+      }
+    }
+
+    let bizumShown = false;
+    bizumEl.addEventListener("click", async ()=>{
+      if(!bizumShown){
+        bizumShown = true;
+        bizumTextEl.textContent = BIZUM_NUMBER;
+        setStatus("Bizum visible 💚 (clic otra vez para copiar)");
+        return;
+      }
+      try{
+        await navigator.clipboard.writeText(BIZUM_NUMBER);
+        setStatus("Bizum copiado 💚");
+      } catch {
+        setStatus("No se pudo copiar 😅");
+      }
+    });
+
+    shareEl.addEventListener("click", async ()=>{
+      const url = window.location.href;
+      try{
+        if(navigator.share){
+          await navigator.share({ title: "Cosmic Marciana", url });
+          setStatus("Compartido 💚");
+        } else if(navigator.clipboard){
+          await navigator.clipboard.writeText(url);
+          setStatus("Link copiado 💚");
+        }
+      } catch {}
+    });
+  </script>
+</body>
+</html>
