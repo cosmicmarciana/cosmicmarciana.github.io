@@ -11,11 +11,11 @@
     --ink:#eaeaea;
     --muted:#cfcfcf;
 
-    /* Ajusta esto si el texto no cae en la pantalla de la TV */
-    --screen-x: 18%;
-    --screen-y: 19%;
-    --screen-w: 64%;
-    --screen-h: 46%;
+    /* zona real de la pantalla en tu tv.png */
+    --screen-x: 17.6%;
+    --screen-y: 22.8%;
+    --screen-w: 63.1%;
+    --screen-h: 47.8%;
   }
 
   *{ box-sizing:border-box; }
@@ -107,7 +107,7 @@
   }
   #track-name{ color:var(--ink); }
 
-  /* TV CRT */
+  /* ===== TV CRT ===== */
   .crt{
     position:relative;
     width:fit-content;
@@ -151,7 +151,7 @@
   .crt:active #cover{ transform: translateY(-1px); }
   .crt:hover #cover{ transform: translateY(-2px); animation: crt-glitch .35s steps(2,end); }
 
-  /* ===== TEXTO DENTRO DE LA TV ===== */
+  /* ===== PANTALLA INTEGRADA (TAPA TEXTO ORIGINAL Y MUESTRA EL TEMA) ===== */
   .screen{
     position:absolute;
     left: var(--screen-x);
@@ -159,62 +159,111 @@
     width: var(--screen-w);
     height: var(--screen-h);
     z-index:2;
+    pointer-events:none;
 
     display:flex;
     align-items:center;
     justify-content:center;
-    padding:10px;
     text-align:center;
+  }
 
-    color: rgba(234,234,234,.95);
+  .screen-inner{
+    position:relative;
+    width: 88%;
+    max-width: 320px;
+    padding: 14px 14px 12px;
+    border-radius: 14px;
+
+    /* tapa el texto original dentro de la tv.png */
+    background:
+      radial-gradient(closest-side, rgba(0,255,0,.10), transparent 70%),
+      linear-gradient(180deg, rgba(0,0,0,.70), rgba(0,0,0,.55));
+
+    box-shadow:
+      inset 0 0 28px rgba(0,0,0,.65),
+      0 0 22px rgba(0,255,0,.08);
+
+    /* leve curvatura CRT */
+    transform: perspective(900px) rotateX(2deg);
+  }
+
+  .screen-inner::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius: 14px;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.035),
+        rgba(255,255,255,.035) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+    opacity:.33;
+    mix-blend-mode:overlay;
+    pointer-events:none;
+  }
+
+  .screen-inner::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius: 14px;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.22'/%3E%3C/svg%3E");
+    opacity:.18;
+    mix-blend-mode:overlay;
+    pointer-events:none;
+  }
+
+  .screen-label{
+    position:relative;
+    z-index:1;
+    font-size:10px;
+    letter-spacing:.18em;
+    opacity:.65;
+    text-transform:uppercase;
+    margin-bottom:8px;
+    color: rgba(234,234,234,.85);
+  }
+
+  .screen-title{
+    position:relative;
+    z-index:1;
     font-size:12px;
     letter-spacing:.10em;
+    line-height:1.25;
     text-transform:uppercase;
-    line-height:1.35;
-
-    /* sensación “pantalla” */
-    background: radial-gradient(closest-side, rgba(255,255,255,.06), transparent 70%);
-    filter: blur(.0px);
+    color: rgba(234,234,234,.95);
+    text-shadow:
+      0 0 10px rgba(0,255,0,.18),
+      0 0 18px rgba(0,255,0,.10);
   }
 
-  .screen .label{
-    font-size:10px;
-    opacity:.7;
-    margin-bottom:6px;
-  }
-
-  .screen .title{
-    font-size:12px;
-    opacity:.95;
-    word-break: break-word;
-    text-shadow: 0 0 10px rgba(0,255,0,.12);
-  }
-
-  /* glitch sutil del texto de la TV */
-  .screen .stack{
-    position:relative;
+  .screen-title.stack{
     display:inline-block;
   }
-  .screen .stack::before,
-  .screen .stack::after{
+  .screen-title.stack::before,
+  .screen-title.stack::after{
     content: attr(data-text);
     position:absolute;
     inset:0;
     pointer-events:none;
-    opacity:.6;
+    opacity:.55;
   }
-  .screen .stack::before{
+  .screen-title.stack::before{
     color: rgba(0,255,0,.35);
     transform: translate(1px,0);
-    animation: tv-glitch-1 4.8s infinite;
+    animation: tv-glitch-1 5.2s infinite;
   }
-  .screen .stack::after{
+  .screen-title.stack::after{
     color: rgba(255,0,0,.25);
     transform: translate(-1px,0);
-    animation: tv-glitch-2 6.2s infinite;
+    animation: tv-glitch-2 6.4s infinite;
   }
 
-  /* Controls */
+  /* ===== CONTROLS ===== */
   .controls{
     display:flex;
     justify-content:center;
@@ -224,7 +273,6 @@
     flex-wrap:wrap;
   }
 
-  /* Botón circular base */
   button{
     border:none;
     width:52px;
@@ -248,7 +296,6 @@
     color: var(--neon);
   }
 
-  /* Play: círculo + núcleo neón */
   #play-pause{
     background: var(--neon);
     color:#000;
@@ -260,7 +307,7 @@
     box-shadow:0 0 34px rgba(0,255,0,.45);
   }
 
-  /* ===== LATIDO CUANDO ESTÁ EN PAUSA ===== */
+  /* Latido cuando está en pausa */
   #play-pause.pulse{
     animation: pulse 1.35s ease-in-out infinite;
   }
@@ -269,7 +316,6 @@
     50%{ transform: translateY(-1px) scale(1.04); box-shadow:0 0 38px rgba(0,255,0,.45); }
   }
 
-  /* Botones acciones: más pequeños */
   .actions{
     display:flex;
     justify-content:center;
@@ -296,7 +342,6 @@
     box-shadow:0 0 18px rgba(0,255,0,.18);
   }
 
-  /* SVG icons use currentColor */
   .ico{
     width:22px;
     height:22px;
@@ -437,14 +482,14 @@
 
   @keyframes tv-glitch-1{
     0%,88%{ clip-path: inset(0); }
-    89%{ clip-path: inset(42% 0 34% 0); }
-    90%{ clip-path: inset(0); }
+    89%{ clip-path: inset(40% 0 35% 0); transform: translate(2px,-1px); }
+    90%{ clip-path: inset(0); transform: translate(1px,0); }
     100%{ clip-path: inset(0); }
   }
   @keyframes tv-glitch-2{
     0%,84%{ clip-path: inset(0); }
-    85%{ clip-path: inset(60% 0 12% 0); }
-    86%{ clip-path: inset(0); }
+    85%{ clip-path: inset(62% 0 12% 0); transform: translate(-2px,1px); }
+    86%{ clip-path: inset(0); transform: translate(-1px,0); }
     100%{ clip-path: inset(0); }
   }
 
@@ -453,7 +498,7 @@
     h1{ font-size:18px; }
     .progress-wrapper{ gap:8px; }
     #volume-slider{ width: 140px; }
-    .screen{ font-size:11px; }
+    .screen-title{ font-size:11px; }
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -461,7 +506,7 @@
     .crt:hover #cover{ animation:none !important; }
     .progress-bar{ animation:none !important; }
     #play-pause.pulse{ animation:none !important; }
-    .screen .stack::before, .screen .stack::after{ animation:none !important; }
+    .screen-title.stack::before, .screen-title.stack::after{ animation:none !important; }
   }
 </style>
 </head>
@@ -475,11 +520,11 @@
 
     <div class="crt" onclick="togglePlay()" role="button" aria-label="Play/Pause" tabindex="0">
       <img id="cover" src="tv.png" alt="Televisión / portada" />
-      <!-- Overlay dentro de la “pantalla” -->
+
       <div class="screen" aria-hidden="true">
-        <div>
-          <div class="label">SONANDO:</div>
-          <div id="tv-title" class="title stack" data-text="—">—</div>
+        <div class="screen-inner">
+          <div class="screen-label">SONANDO:</div>
+          <div id="tv-title" class="screen-title stack" data-text="—">—</div>
         </div>
       </div>
     </div>
@@ -611,17 +656,18 @@ function renderIcons(){
   shuffleBtn.innerHTML = ICONS.shuffle;
   loopBtn.innerHTML = ICONS.loop;
   volumeIcon.innerHTML = ICONS.vol3;
-}
-
-function setPlayIcon(){
-  playPauseBtn.innerHTML = audio.paused ? ICONS.play : ICONS.pause;
-  playPauseBtn.classList.toggle("pulse", audio.paused);
+  playPauseBtn.innerHTML = ICONS.play;
 }
 
 function setTvTitle(text){
   const t = text || "—";
   tvTitleEl.textContent = t;
   tvTitleEl.setAttribute("data-text", t);
+}
+
+function setPlayIcon(){
+  playPauseBtn.innerHTML = audio.paused ? ICONS.play : ICONS.pause;
+  playPauseBtn.classList.toggle("pulse", audio.paused);
 }
 
 function syncButtons(){
@@ -642,6 +688,7 @@ function syncButtons(){
 
 function loadTrack(index){
   audio.src = sources[index];
+
   tracks.forEach(t=>t.classList.remove("current"));
   tracks[index].classList.add("current");
 
@@ -779,6 +826,7 @@ document.addEventListener("keydown", (e)=>{
   if(e.code === "ArrowLeft") prevTrack();
 });
 
+/* INIT: siempre empieza en 0 */
 (function init(){
   renderIcons();
   currentIndex = 0;
