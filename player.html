@@ -219,13 +219,13 @@ button:hover{
 <body>
 <div class="card">
 
-  <a href="index.html" class="back">← Tornar</a>
+  <a href="index.html" class="back">← Volver</a>
 
   <h1>Cosmic Marciana</h1>
 
-  <div id="now-playing">Ara sona: <span id="track-name">—</span></div>
+  <div id="now-playing">Sonando: <span id="track-name">—</span></div>
 
-  <img id="cover" src="cover1.png" alt="Portada" onclick="togglePlay()">
+  <img id="cover" src="cover.png" alt="Portada" onclick="togglePlay()">
 
   <div class="controls">
     <button onclick="prevTrack()" aria-label="Anterior">⏮</button>
@@ -259,14 +259,14 @@ button:hover{
     <div class="track" data-index="0">Los pobres més</div>
     <div class="track" data-index="1">Volveremos a empezar</div>
     <div class="track" data-index="2">Quién llena los shows</div>
-    <div class="track" data-index="3">Cançó 4</div>
+    <div class="track" data-index="3">STOP!</div>
     <div class="track" data-index="4">Cançó 5</div>
     <div class="track" data-index="5">Cançó 6</div>
     <div class="track" data-index="6">Cançó 7</div>
     <div class="track" data-index="7">Cançó 8</div>
     <div class="track" data-index="8">Cançó 9</div>
-    <div class="track" data-index="9">Cançó 10</div>
-    <div class="track" data-index="10">Cançó 11</div>
+    <div class="track" data-index="9">La casa del terror</div>
+    <div class="track" data-index="10">Tenemos que hablar</div>
   </div>
 
   <audio id="audio" preload="metadata"></audio>
@@ -582,5 +582,6 @@ document.addEventListener("keydown", (e)=>{
 
 </body>
 </html>
+
 
 
