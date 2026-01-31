@@ -92,17 +92,6 @@
     opacity: .95;
   }
 
-  /* Solo título (sin "SONANDO:") */
-  #track-line{
-    margin: 0 0 12px 0;
-    color:var(--muted);
-    opacity:.9;
-    font-size:13px;
-    letter-spacing:.08em;
-    min-height: 18px;
-  }
-  #track-name{ color:var(--ink); }
-
   /* TV CRT */
   .crt{
     position:relative;
@@ -329,7 +318,7 @@
     transition: background 0.2s, transform 0.15s, border-color .2s;
     cursor:pointer;
     border:1px solid rgba(255,255,255,.08);
-    color: var(--ink);
+    color: var (--ink);
   }
   .track:hover{
     background: rgba(255,255,255,0.09);
@@ -385,7 +374,6 @@
     <a href="index.html" class="back">← Salir del canal</a>
 
     <h1>Cosmic Marciana</h1>
-    <div id="track-line"><span id="track-name">—</span></div>
 
     <div class="crt" onclick="togglePlay()" role="button" aria-label="Play/Pause" tabindex="0">
       <img id="cover" src="tv.png" alt="Televisión / portada" />
@@ -473,8 +461,6 @@ const totalTimeEl = document.getElementById("total-time");
 const volumeSlider = document.getElementById("volume-slider");
 const volumeIcon = document.getElementById("volume-icon");
 
-const trackNameEl = document.getElementById("track-name");
-
 const statusLineEl = document.getElementById("status-line");
 const shuffleBtn = document.getElementById("shuffle-btn");
 const loopBtn = document.getElementById("loop-btn");
@@ -488,20 +474,6 @@ let shuffleOn = false;
 const sources = [
   "lospobres.mp3","vae.mp3","shows.mp3","canco4.mp3","canco5.mp3",
   "canco6.mp3","canco7.mp3","canco8.mp3","canco9.mp3","canco10.mp3","canco11.mp3"
-];
-
-const titles = [
-  "Los pobres més",
-  "Volveremos a empezar",
-  "Quién llena los shows",
-  "STOP!",
-  "Reza",
-  "De pie",
-  "Quemarlo todo",
-  "Nadie sabe nada",
-  "Lo que no quiero",
-  "La casa del terror",
-  "Tenemos que hablar"
 ];
 
 function formatTime(t){
@@ -561,9 +533,6 @@ function loadTrack(index){
   tracks.forEach(t=>t.classList.remove("current"));
   tracks[index].classList.add("current");
 
-  const title = titles[index] || tracks[index]?.textContent || "—";
-  trackNameEl.textContent = title;
-
   // al cargar/seleccionar una pista, muestra su TV
   coverImg.src = tvForIndex(index);
 }
@@ -582,7 +551,6 @@ function togglePlay(){
   }
 
   if(audio.paused){
-    // si está en reposo por cualquier razón, asegúrate de mostrar tvN al reproducir
     coverImg.src = tvForIndex(currentIndex);
     audio.play().then(setPlayIcon).catch(()=>{});
   } else {
@@ -595,12 +563,18 @@ function stopTrack(){
   audio.pause();
   audio.currentTime = 0;
 
-  // Apaga “emisión”: vuelve a tv base y quita el src para forzar reload en PLAY
+  // apaga: vacía src para forzar reload al play
   audio.removeAttribute("src");
   audio.load();
 
-  setPlayIcon();
+  // UI apagada
   coverImg.src = tvBase;
+  tracks.forEach(t => t.classList.remove("current"));
+
+  // reset a tema 1 para próximo play
+  currentIndex = 0;
+
+  setPlayIcon();
 }
 
 /* Navigation */
@@ -730,9 +704,8 @@ document.addEventListener("keydown", (e)=>{
   updateVolumeIcon();
   syncButtons();
 
-  // Reposo total
+  // reposo total
   coverImg.src = tvBase;
-  trackNameEl.textContent = "—";
 
   setPlayIcon();
 })();
@@ -749,6 +722,3 @@ crtBtn?.addEventListener("keydown", (e)=>{
 
 </body>
 </html>
-
-
-
