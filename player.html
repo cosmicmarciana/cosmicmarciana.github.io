@@ -92,12 +92,14 @@
     opacity: .95;
   }
 
-  #now-playing{
+  /* Solo título (sin "SONANDO:") */
+  #track-line{
     margin: 0 0 12px 0;
     color:var(--muted);
     opacity:.9;
     font-size:13px;
     letter-spacing:.08em;
+    min-height: 18px;
   }
   #track-name{ color:var(--ink); }
 
@@ -383,7 +385,7 @@
     <a href="index.html" class="back">← Salir del canal</a>
 
     <h1>La casa del terror</h1>
-    <div id="now-playing">SONANDO: <span id="track-name">—</span></div>
+    <div id="track-line"><span id="track-name">—</span></div>
 
     <div class="crt" onclick="togglePlay()" role="button" aria-label="Play/Pause" tabindex="0">
       <img id="cover" src="tv.png" alt="Televisión / portada" />
@@ -548,16 +550,11 @@ function syncButtons(){
   }
 }
 
-/* Cambia imagen TV: base cuando no suena, tvN cuando hay pista */
-function setTvForIndex(index, isPlayingOrLoaded){
-  if(!isPlayingOrLoaded){
-    coverImg.src = tvBase;
-    return;
-  }
-  coverImg.src = tvByTrack[index] || tvBase;
+function tvForIndex(index){
+  return tvByTrack[index] || tvBase;
 }
 
-/* Load */
+/* Load track (no reproduce) */
 function loadTrack(index){
   audio.src = sources[index];
 
@@ -567,8 +564,8 @@ function loadTrack(index){
   const title = titles[index] || tracks[index]?.textContent || "—";
   trackNameEl.textContent = title;
 
-  // al cargar una pista (aunque esté en pausa), mostramos tvN
-  setTvForIndex(index, true);
+  // al cargar/seleccionar una pista, muestra su TV
+  coverImg.src = tvForIndex(index);
 }
 
 /* Play */
@@ -579,9 +576,14 @@ function playTrack(index){
 }
 
 function togglePlay(){
-  if(!audio.src) loadTrack(currentIndex);
+  // Si venimos de STOP (sin src), cargamos la pista actual y ponemos tvN
+  if(!audio.getAttribute("src")){
+    loadTrack(currentIndex);
+  }
 
   if(audio.paused){
+    // si está en reposo por cualquier razón, asegúrate de mostrar tvN al reproducir
+    coverImg.src = tvForIndex(currentIndex);
     audio.play().then(setPlayIcon).catch(()=>{});
   } else {
     audio.pause();
@@ -592,11 +594,16 @@ function togglePlay(){
 function stopTrack(){
   audio.pause();
   audio.currentTime = 0;
+
+  // Apaga “emisión”: vuelve a tv base y quita el src para forzar reload en PLAY
+  audio.removeAttribute("src");
+  audio.load();
+
   setPlayIcon();
-  // al parar: volvemos a la tv “reposo”
-  setTvForIndex(currentIndex, false);
+  coverImg.src = tvBase;
 }
 
+/* Navigation */
 function getRandomNextIndex(){
   if(tracks.length <= 1) return currentIndex;
   let n = currentIndex;
@@ -616,7 +623,9 @@ function prevTrack(){
 
 /* Playlist click */
 tracks.forEach(track=>{
-  track.addEventListener("click", ()=> playTrack(parseInt(track.dataset.index, 10)));
+  track.addEventListener("click", ()=>{
+    playTrack(parseInt(track.dataset.index, 10));
+  });
 });
 
 /* Progress */
@@ -713,18 +722,19 @@ document.addEventListener("keydown", (e)=>{
   if(e.code === "ArrowLeft") prevTrack();
 });
 
-/* INIT: siempre empieza en 0 y muestra tv reposo */
+/* INIT */
 (function init(){
   renderIcons();
   currentIndex = 0;
   audio.volume = 1;
   updateVolumeIcon();
   syncButtons();
-  setPlayIcon();
 
-  // estado reposo
+  // Reposo total
   coverImg.src = tvBase;
   trackNameEl.textContent = "—";
+
+  setPlayIcon();
 })();
 
 /* Enter/Espacio en la TV */
