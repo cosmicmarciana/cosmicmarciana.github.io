@@ -1,37 +1,39 @@
 <!DOCTYPE html>
 <html lang="ca">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cosmic Marciana</title>
 
-  <!-- SEO / compartir -->
-  <meta name="description" content="Ruido psicoeléctrico desde Marte. Pop electrónico, señales rotas y errores cósmicos." />
-  <meta property="og:title" content="Cosmic Marciana" />
-  <meta property="og:description" content="Ruido psicoeléctrico desde Marte. Pop electrónico, señales rotas y errores cósmicos." />
-  <meta property="og:image" content="https://cosmicmarciana.github.io/cover1.png" />
-  <meta property="og:url" content="https://cosmicmarciana.github.io/" />
-  <meta name="twitter:card" content="summary_large_image" />
+  <!-- Compartir -->
+  <meta name="description" content="Ruido psicoeléctrico desde Marte. Pop electrónico, señales rotas y errores cósmicos.">
+  <meta property="og:title" content="Cosmic Marciana">
+  <meta property="og:description" content="Ruido psicoeléctrico desde Marte">
+  <meta property="og:image" content="https://cosmicmarciana.github.io/logo.png">
+  <meta property="og:url" content="https://cosmicmarciana.github.io/">
+  <meta name="twitter:card" content="summary_large_image">
 
   <style>
-    :root { --acid:#00ff00; }
-    * { box-sizing:border-box; }
+    *{ box-sizing:border-box; }
 
     body{
       margin:0;
       font-family: Arial, sans-serif;
-      color:var(--acid);
-      min-height:100vh;
+      background:
+        radial-gradient(1000px 500px at 50% 0%, rgba(255,0,0,.25), transparent 60%),
+        linear-gradient(135deg, #220000, #110000);
+      color:#00ff00;
       display:flex;
       justify-content:center;
-      background:
-        radial-gradient(1200px 600px at 50% 10%, rgba(255,0,0,.22), transparent 60%),
-        linear-gradient(135deg, #220000, #110000);
-      padding:22px 12px;
+      padding:24px 12px;
       overflow-x:hidden;
     }
 
-    .wrap{ width:100%; max-width:760px; }
+    .wrap{
+      width:100%;
+      max-width:720px;
+    }
+
     .card{
       background:rgba(0,0,0,.75);
       border:2px solid rgba(0,255,0,.25);
@@ -41,79 +43,86 @@
       box-shadow:0 0 40px rgba(255,0,0,.35);
     }
 
-    /* “Cartel” negro detrás del logo (ayuda a que se vea bestia) */
-    .logo-wrap{
-      display:inline-block;
-      background:#000;
-      padding:18px 18px 14px;
-      border-radius:8px;
-      margin:0 auto 14px;
-      border:1px solid rgba(0,255,0,.18);
-    }
-
-    /* SVG responsive y GRANDE */
-    .logo-svg{
-      display:block;
-      width:min(720px, 92vw);
+    /* LOGO COMO IMAGEN, SIN EFECTOS */
+    .logo{
+      width:100%;
+      max-width:560px;
       height:auto;
+      display:block;
+      margin:0 auto 18px;
     }
 
     .tagline{
-      margin:6px 0 6px;
       font-size:16px;
       letter-spacing:1.5px;
-      text-transform:lowercase;
-      opacity:.95;
+      margin-bottom:6px;
     }
+
     .tagline-echo{
       font-size:13px;
-      letter-spacing:1px;
-      opacity:.65;
+      opacity:.7;
       margin-bottom:18px;
     }
 
-    .sub{
-      margin:0 auto 18px;
-      max-width:560px;
+    .text{
       font-size:15px;
       line-height:1.5;
+      margin-bottom:18px;
     }
 
     .cover{
       width:100%;
-      max-width:340px;
+      max-width:320px;
       border-radius:14px;
       box-shadow:0 0 24px rgba(0,0,0,.9);
-      cursor:pointer;
+      margin-bottom:18px;
     }
 
     .cta{
-      margin-top:18px;
       display:flex;
       gap:10px;
       justify-content:center;
       flex-wrap:wrap;
+      margin-bottom:14px;
     }
 
     .btn{
       padding:14px 18px;
       background:#000;
-      color:var(--acid);
-      border:2px solid var(--acid);
+      color:#00ff00;
+      border:2px solid #00ff00;
       border-radius:14px;
       font-size:15px;
       text-decoration:none;
       transition:.2s;
     }
-    .btn:hover{ background:var(--acid); color:#000; }
 
-    .links{ margin-top:16px; font-size:14px; }
-    .links a{ color:var(--acid); text-decoration:none; margin:0 8px; }
-    .mail{ margin-top:10px; font-size:13px; opacity:.9; }
+    .btn:hover{
+      background:#00ff00;
+      color:#000;
+    }
 
+    .links{
+      font-size:14px;
+      margin-top:14px;
+    }
+
+    .links a{
+      color:#00ff00;
+      text-decoration:none;
+      margin:0 8px;
+    }
+
+    .mail{
+      font-size:13px;
+      opacity:.85;
+      margin-top:10px;
+    }
+
+    /* MÓVIL */
     @media (max-width:480px){
+      .logo{ max-width:92vw; }
       .btn{ width:100%; max-width:360px; }
-      .logo-wrap{ padding:16px 14px 12px; }
     }
   </style>
 </head>
@@ -122,85 +131,20 @@
   <div class="wrap">
     <div class="card">
 
-      <!-- LOGO SVG INLINE (sin halos, escala perfecto) -->
-      <div class="logo-wrap" aria-label="Cosmic Marciana">
-        <svg class="logo-svg" viewBox="0 0 1200 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cosmic Marciana">
-          <defs>
-            <!-- Rugosidad "sucia" controlada -->
-            <filter id="roughen" x="-5%" y="-5%" width="110%" height="110%">
-              <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="2" seed="7" result="noise"/>
-              <feDisplacementMap in="SourceGraphic" in2="noise" scale="18" xChannelSelector="R" yChannelSelector="G"/>
-            </filter>
-
-            <!-- Glow verde (suave, sin blanquear) -->
-            <filter id="greenGlow" x="-15%" y="-20%" width="130%" height="140%">
-              <feGaussianBlur stdDeviation="4" result="blur"/>
-              <feColorMatrix in="blur" type="matrix"
-                values="
-                  0 0 0 0 0
-                  0 0 0 0 1
-                  0 0 0 0 0
-                  0 0 0 .55 0" result="glow"/>
-              <feMerge>
-                <feMergeNode in="glow"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-          </defs>
-
-          <!-- Texto con borde negro real + relleno verde ácido -->
-          <!-- (font-family genérica pero el filtro lo lleva a póster sucio) -->
-          <g filter="url(#greenGlow)">
-            <text x="50%" y="220"
-                  text-anchor="middle"
-                  font-family="Impact, Haettenschweiler, 'Arial Black', sans-serif"
-                  font-size="210"
-                  letter-spacing="8"
-                  fill="#00ff00"
-                  stroke="#000"
-                  stroke-width="28"
-                  paint-order="stroke fill"
-                  filter="url(#roughen)">
-              COSMIC
-            </text>
-
-            <text x="50%" y="440"
-                  text-anchor="middle"
-                  font-family="Impact, Haettenschweiler, 'Arial Black', sans-serif"
-                  font-size="210"
-                  letter-spacing="8"
-                  fill="#00ff00"
-                  stroke="#000"
-                  stroke-width="28"
-                  paint-order="stroke fill"
-                  filter="url(#roughen)">
-              MARCIANA
-            </text>
-          </g>
-
-          <!-- Manchitas/grano en SVG (póster sucio) -->
-          <g opacity="0.35">
-            <circle cx="90" cy="70" r="3" fill="#00ff00"/>
-            <circle cx="160" cy="120" r="2" fill="#00ff00"/>
-            <circle cx="1080" cy="90" r="2.5" fill="#00ff00"/>
-            <circle cx="1040" cy="150" r="1.8" fill="#00ff00"/>
-            <circle cx="1120" cy="210" r="2.2" fill="#00ff00"/>
-            <circle cx="100" cy="410" r="2.4" fill="#00ff00"/>
-            <circle cx="1120" cy="420" r="2.8" fill="#00ff00"/>
-          </g>
-        </svg>
-      </div>
+      <!-- LOGO -->
+      <img src="logo.png" alt="Cosmic Marciana" class="logo">
 
       <div class="tagline">ruido psicoeléctrico desde Marte</div>
       <div class="tagline-echo">pop electrónico, señales rotas y errores cósmicos</div>
 
-      <p class="sub">
+      <div class="text">
         Te regalo mi música.<br>
-        Si quieres apoyar para grabar vinilos y seguir haciendo ruido cósmico, puedes aportar algo 💚
-      </p>
+        Si quieres apoyar para grabar vinilos y seguir haciendo ruido cósmico,<br>
+        puedes aportar algo 💚
+      </div>
 
       <a href="player.html">
-        <img class="cover" src="cover1.png" alt="Portada del disco">
+        <img src="cover1.png" alt="Portada del disco" class="cover">
       </a>
 
       <div class="cta">
@@ -209,8 +153,8 @@
       </div>
 
       <div class="links">
-        <a href="https://www.instagram.com/cosmicmarciana" target="_blank" rel="noopener noreferrer">Instagram</a> |
-        <a href="https://open.spotify.com/intl-es/artist/0qSO1brlu9jrjrhmMldEVL" target="_blank" rel="noopener noreferrer">Spotify</a>
+        <a href="https://www.instagram.com/cosmicmarciana" target="_blank">Instagram</a> |
+        <a href="https://open.spotify.com/intl-es/artist/0qSO1brlu9jrjrhmMldEVL" target="_blank">Spotify</a>
       </div>
 
       <div class="mail">cosmicmarciana@gmail.com</div>
