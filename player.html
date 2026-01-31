@@ -10,6 +10,12 @@
     --neon:#00ff00;
     --ink:#eaeaea;
     --muted:#cfcfcf;
+
+    /* Ajusta esto si el texto no cae en la pantalla de la TV */
+    --screen-x: 18%;
+    --screen-y: 19%;
+    --screen-w: 64%;
+    --screen-h: 46%;
   }
 
   *{ box-sizing:border-box; }
@@ -138,12 +144,75 @@
     pointer-events:none;
     mix-blend-mode:overlay;
     opacity:.25;
-    z-index:2;
+    z-index:3;
     border-radius:12px;
   }
 
   .crt:active #cover{ transform: translateY(-1px); }
   .crt:hover #cover{ transform: translateY(-2px); animation: crt-glitch .35s steps(2,end); }
+
+  /* ===== TEXTO DENTRO DE LA TV ===== */
+  .screen{
+    position:absolute;
+    left: var(--screen-x);
+    top: var(--screen-y);
+    width: var(--screen-w);
+    height: var(--screen-h);
+    z-index:2;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:10px;
+    text-align:center;
+
+    color: rgba(234,234,234,.95);
+    font-size:12px;
+    letter-spacing:.10em;
+    text-transform:uppercase;
+    line-height:1.35;
+
+    /* sensación “pantalla” */
+    background: radial-gradient(closest-side, rgba(255,255,255,.06), transparent 70%);
+    filter: blur(.0px);
+  }
+
+  .screen .label{
+    font-size:10px;
+    opacity:.7;
+    margin-bottom:6px;
+  }
+
+  .screen .title{
+    font-size:12px;
+    opacity:.95;
+    word-break: break-word;
+    text-shadow: 0 0 10px rgba(0,255,0,.12);
+  }
+
+  /* glitch sutil del texto de la TV */
+  .screen .stack{
+    position:relative;
+    display:inline-block;
+  }
+  .screen .stack::before,
+  .screen .stack::after{
+    content: attr(data-text);
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    opacity:.6;
+  }
+  .screen .stack::before{
+    color: rgba(0,255,0,.35);
+    transform: translate(1px,0);
+    animation: tv-glitch-1 4.8s infinite;
+  }
+  .screen .stack::after{
+    color: rgba(255,0,0,.25);
+    transform: translate(-1px,0);
+    animation: tv-glitch-2 6.2s infinite;
+  }
 
   /* Controls */
   .controls{
@@ -179,7 +248,7 @@
     color: var(--neon);
   }
 
-  /* Play: círculo + “núcleo” neón */
+  /* Play: círculo + núcleo neón */
   #play-pause{
     background: var(--neon);
     color:#000;
@@ -189,6 +258,15 @@
   #play-pause:hover{
     color:#000;
     box-shadow:0 0 34px rgba(0,255,0,.45);
+  }
+
+  /* ===== LATIDO CUANDO ESTÁ EN PAUSA ===== */
+  #play-pause.pulse{
+    animation: pulse 1.35s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ transform: translateY(0) scale(1); box-shadow:0 0 22px rgba(0,255,0,.28); }
+    50%{ transform: translateY(-1px) scale(1.04); box-shadow:0 0 38px rgba(0,255,0,.45); }
   }
 
   /* Botones acciones: más pequeños */
@@ -357,17 +435,33 @@
     100%{transform:translate(0); filter:none}
   }
 
+  @keyframes tv-glitch-1{
+    0%,88%{ clip-path: inset(0); }
+    89%{ clip-path: inset(42% 0 34% 0); }
+    90%{ clip-path: inset(0); }
+    100%{ clip-path: inset(0); }
+  }
+  @keyframes tv-glitch-2{
+    0%,84%{ clip-path: inset(0); }
+    85%{ clip-path: inset(60% 0 12% 0); }
+    86%{ clip-path: inset(0); }
+    100%{ clip-path: inset(0); }
+  }
+
   @media (max-width:480px){
     body{ padding:22px 14px; }
     h1{ font-size:18px; }
     .progress-wrapper{ gap:8px; }
     #volume-slider{ width: 140px; }
+    .screen{ font-size:11px; }
   }
 
   @media (prefers-reduced-motion: reduce){
     #cover{ animation:none !important; }
     .crt:hover #cover{ animation:none !important; }
     .progress-bar{ animation:none !important; }
+    #play-pause.pulse{ animation:none !important; }
+    .screen .stack::before, .screen .stack::after{ animation:none !important; }
   }
 </style>
 </head>
@@ -381,6 +475,13 @@
 
     <div class="crt" onclick="togglePlay()" role="button" aria-label="Play/Pause" tabindex="0">
       <img id="cover" src="tv.png" alt="Televisión / portada" />
+      <!-- Overlay dentro de la “pantalla” -->
+      <div class="screen" aria-hidden="true">
+        <div>
+          <div class="label">SONANDO:</div>
+          <div id="tv-title" class="title stack" data-text="—">—</div>
+        </div>
+      </div>
     </div>
 
     <div class="controls">
@@ -431,23 +532,21 @@
   </main>
 
 <script>
-/* --- SVG icon helper (monocromo, no emojis) --- */
 const ICONS = {
   prev: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6v12"/><path d="M18 6l-8 6 8 6z"/></svg>`,
   next: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6v12"/><path d="M6 6l8 6-8 6z"/></svg>`,
   stop: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="1"/></svg>`,
   play: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7l10 5-10 5z"/></svg>`,
-  pause: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6v12"/><path d="M16 6v12"/></svg>`,
-  shuffle: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5"/><path d="M4 20l7-7"/><path d="M4 4l7 7"/><path d="M21 16v5h-5"/><path d="M14 14l7 7"/><path d="M14 10l7-7"/></svg>`,
-  loop: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>`,
-  loop1: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/><path d="M12 8v8"/><path d="M11 9h2"/></svg>`,
-  share: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4"/><path d="M8 8l4-4 4 4"/><path d="M6 12v7a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-7"/></svg>`,
-  vol3: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 8a4 4 0 0 1 0 8"/><path d="M18.5 5.5a7 7 0 0 1 0 13"/></svg>`,
-  vol2: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 8a4 4 0 0 1 0 8"/></svg>`,
-  mute: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 9l5 6"/><path d="M21 9l-5 6"/></svg>`
+  pause:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6v12"/><path d="M16 6v12"/></svg>`,
+  shuffle:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5"/><path d="M4 20l7-7"/><path d="M4 4l7 7"/><path d="M21 16v5h-5"/><path d="M14 14l7 7"/><path d="M14 10l7-7"/></svg>`,
+  loop:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>`,
+  loop1:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/><path d="M12 8v8"/><path d="M11 9h2"/></svg>`,
+  share:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4"/><path d="M8 8l4-4 4 4"/><path d="M6 12v7a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-7"/></svg>`,
+  vol3:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 8a4 4 0 0 1 0 8"/><path d="M18.5 5.5a7 7 0 0 1 0 13"/></svg>`,
+  vol2:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 8a4 4 0 0 1 0 8"/></svg>`,
+  mute:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 9l5 6"/><path d="M21 9l-5 6"/></svg>`
 };
 
-/* --- Player logic --- */
 const tracks = Array.from(document.querySelectorAll(".track"));
 const audio = document.getElementById("audio");
 const progressBar = document.getElementById("progress-bar");
@@ -459,6 +558,8 @@ const volumeSlider = document.getElementById("volume-slider");
 const volumeIcon = document.getElementById("volume-icon");
 
 const trackNameEl = document.getElementById("track-name");
+const tvTitleEl = document.getElementById("tv-title");
+
 const statusLineEl = document.getElementById("status-line");
 const shuffleBtn = document.getElementById("shuffle-btn");
 const loopBtn = document.getElementById("loop-btn");
@@ -506,11 +607,21 @@ function renderIcons(){
   document.getElementById("prev-btn").innerHTML = ICONS.prev;
   document.getElementById("next-btn").innerHTML = ICONS.next;
   document.getElementById("stop-btn").innerHTML = ICONS.stop;
-  playPauseBtn.innerHTML = ICONS.play;
+  document.getElementById("share-btn").innerHTML = ICONS.share;
   shuffleBtn.innerHTML = ICONS.shuffle;
   loopBtn.innerHTML = ICONS.loop;
-  document.getElementById("share-btn").innerHTML = ICONS.share;
   volumeIcon.innerHTML = ICONS.vol3;
+}
+
+function setPlayIcon(){
+  playPauseBtn.innerHTML = audio.paused ? ICONS.play : ICONS.pause;
+  playPauseBtn.classList.toggle("pulse", audio.paused);
+}
+
+function setTvTitle(text){
+  const t = text || "—";
+  tvTitleEl.textContent = t;
+  tvTitleEl.setAttribute("data-text", t);
 }
 
 function syncButtons(){
@@ -533,11 +644,10 @@ function loadTrack(index){
   audio.src = sources[index];
   tracks.forEach(t=>t.classList.remove("current"));
   tracks[index].classList.add("current");
-  trackNameEl.textContent = titles[index] || tracks[index]?.textContent || "—";
-}
 
-function setPlayIcon(){
-  playPauseBtn.innerHTML = audio.paused ? ICONS.play : ICONS.pause;
+  const title = titles[index] || tracks[index]?.textContent || "—";
+  trackNameEl.textContent = title;
+  setTvTitle(title);
 }
 
 function playTrack(index){
@@ -669,7 +779,6 @@ document.addEventListener("keydown", (e)=>{
   if(e.code === "ArrowLeft") prevTrack();
 });
 
-/* INIT: siempre empieza en 0 */
 (function init(){
   renderIcons();
   currentIndex = 0;
@@ -679,15 +788,6 @@ document.addEventListener("keydown", (e)=>{
   syncButtons();
   setPlayIcon();
 })();
-
-/* Enter/Espacio en la TV */
-const crtBtn = document.querySelector(".crt");
-crtBtn?.addEventListener("keydown", (e)=>{
-  if(e.key === "Enter" || e.key === " "){
-    e.preventDefault();
-    togglePlay();
-  }
-});
 </script>
 
 </body>
