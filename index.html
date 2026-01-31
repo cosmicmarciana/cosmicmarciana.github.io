@@ -16,7 +16,7 @@
 
     :root{
       --neon:#00ff00;
-      --ink:#e6e6e6;              /* texto casi blanco */
+      --ink:#e6e6e6;
       --muted:#b8b8b8;
       --card:rgba(0,0,0,.75);
       --border:rgba(0,255,0,.15);
@@ -37,7 +37,10 @@
       overflow-x:hidden;
     }
 
-    .wrap{ width:100%; max-width:720px; }
+    .wrap{
+      width:100%;
+      max-width:720px;
+    }
 
     .card{
       background:var(--card);
@@ -48,13 +51,45 @@
       box-shadow:0 0 40px rgba(255,0,0,.35);
     }
 
-    /* IMAGEN PRINCIPAL */
+    /* HERO CRT */
+    .crt{
+      position:relative;
+      display:block;
+      width:fit-content;
+      margin:0 auto 18px;
+      isolation:isolate;
+    }
+
     .hero{
       width:100%;
       max-width:420px;
-      margin:0 auto 18px;
       display:block;
-      filter: drop-shadow(0 0 18px rgba(0,0,0,.9));
+      filter:drop-shadow(0 0 18px rgba(0,0,0,.9));
+      animation: crt-flicker 3.5s infinite;
+    }
+
+    /* SCANLINES */
+    .crt::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255,255,255,.03),
+          rgba(255,255,255,.03) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+      pointer-events:none;
+      mix-blend-mode:overlay;
+      opacity:.35;
+      z-index:2;
+    }
+
+    /* GLITCH HOVER */
+    .crt:hover .hero{
+      animation: crt-glitch .35s steps(2,end);
     }
 
     /* TEXTO */
@@ -89,6 +124,7 @@
       box-shadow:0 0 30px rgba(0,255,0,.35);
     }
 
+    /* LINKS */
     .links{
       font-size:13px;
       opacity:.85;
@@ -114,9 +150,28 @@
       margin-top:10px;
     }
 
+    /* ANIMACIONES */
+    @keyframes crt-flicker{
+      0%   { filter:brightness(1) contrast(1); }
+      45%  { filter:brightness(1.03) contrast(1.02); }
+      50%  { filter:brightness(.97) contrast(1); }
+      55%  { filter:brightness(1.02) contrast(1.01); }
+      100% { filter:brightness(1) contrast(1); }
+    }
+
+    @keyframes crt-glitch{
+      0%   { transform:translate(0); filter:none; }
+      20%  { transform:translate(-1px,0); filter:hue-rotate(-5deg); }
+      40%  { transform:translate(1px,0); filter:hue-rotate(5deg); }
+      60%  { transform:translate(-1px,0); filter:contrast(1.1); }
+      100% { transform:translate(0); filter:none; }
+    }
+
     @media (max-width:480px){
       .btn{ width:100%; }
       .card{ padding:18px; }
+      .hero{ animation-duration:5s; }
+      .crt::before{ opacity:.25; }
     }
   </style>
 </head>
@@ -125,11 +180,9 @@
   <div class="wrap">
     <div class="card">
 
-      <img
-        src="tv.png"
-        alt="Cosmic Marciana – La casa del terror"
-        class="hero"
-      >
+      <div class="crt">
+        <img src="tv.png" alt="Cosmic Marciana – La casa del terror" class="hero">
+      </div>
 
       <div class="text">
         Pop electrónico, ruido psicoeléctrico y señales rotas desde Marte.
