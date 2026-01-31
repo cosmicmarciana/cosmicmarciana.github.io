@@ -3,18 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cosmikc Marciana</title>
+  <title>Cosmic Marciana</title>
+
+  <meta name="description" content="Cosmic Marciana: ruido psicoeléctrico desde Marte. Pop electrónico, señales rotas y errores cósmicos. Escucha el disco y contacta para bolos.">
+
+  <!-- (Opcional) Favicon -->
+  <!-- <link rel="icon" href="favicon.ico"> -->
 
   <style>
     /* CARGA DE LA TIPOGRAFÍA */
     @font-face {
-  font-family: "Horror";
-  src: url("./fonts/horror.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
+      font-family: "Horror";
+      src: url("./fonts/horror.ttf") format("truetype");
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
 
     *{
       box-sizing: border-box;
@@ -58,10 +62,7 @@
       text-shadow:
         3px 3px 0 #000,
         6px 6px 0 #000;
-       
     }
-    
-
 
     /* TEXTO */
     .tagline{
@@ -83,6 +84,11 @@
     }
 
     /* IMAGEN */
+    .cover-link{
+      display: inline-block;
+      line-height: 0;
+    }
+
     .cover{
       width: 100%;
       max-width: 320px;
@@ -139,6 +145,9 @@
         font-size: 42px;
         letter-spacing: 1px;
       }
+      .card{
+        padding: 18px;
+      }
       .btn{
         width: 100%;
         max-width: 360px;
@@ -162,7 +171,7 @@
         puedes aportar algo 💚
       </div>
 
-      <a href="player.html">
+      <a class="cover-link" href="player.html" aria-label="Ir al reproductor">
         <img src="cover.png" alt="Portada del disco" class="cover">
       </a>
 
@@ -172,8 +181,8 @@
       </div>
 
       <div class="links">
-        <a href="https://www.instagram.com/cosmicmarciana" target="_blank">Instagram</a> |
-        <a href="https://open.spotify.com/intl-es/artist/0qSO1brlu9jrjrhmMldEVL" target="_blank">Spotify</a>
+        <a href="https://www.instagram.com/cosmicmarciana" target="_blank" rel="noopener noreferrer">Instagram</a> |
+        <a href="https://open.spotify.com/intl-es/artist/0qSO1brlu9jrjrhmMldEVL" target="_blank" rel="noopener noreferrer">Spotify</a>
       </div>
 
       <div class="mail">cosmicmarciana@gmail.com</div>
@@ -182,13 +191,3 @@
   </div>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
