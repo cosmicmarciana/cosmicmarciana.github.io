@@ -22,7 +22,7 @@
 
     *{ box-sizing:border-box; }
 
-    /* ===== FONDO SUPER 8 ===== */
+    /* ===== FONDO SUPER 8 / TWILIGHT ===== */
     body{
       margin:0;
       font-family:Arial, sans-serif;
@@ -34,7 +34,6 @@
       overflow-x:hidden;
 
       background:
-        /* grano grueso */
         repeating-radial-gradient(
           circle at 30% 40%,
           rgba(255,255,255,.04) 0,
@@ -42,7 +41,6 @@
           transparent 2px,
           transparent 7px
         ),
-        /* grano fino */
         repeating-radial-gradient(
           circle at 70% 60%,
           rgba(255,255,255,.025) 0,
@@ -50,13 +48,11 @@
           transparent 1px,
           transparent 4px
         ),
-        /* velo gris */
         linear-gradient(
           180deg,
           rgba(255,255,255,.06),
           rgba(0,0,0,.08)
         ),
-        /* base cálida */
         linear-gradient(
           180deg,
           #1a1412,
@@ -118,7 +114,7 @@
       color:var(--muted);
     }
 
-    /* ===== TEXTO FANTASMA + GLITCH ===== */
+    /* ===== WHISPER GLITCH ===== */
     .whisper{
       position:relative;
       display:inline-block;
@@ -126,19 +122,16 @@
       opacity:.62;
       letter-spacing:.18em;
       text-transform:lowercase;
-      margin: -6px auto 22px;
+      margin:-6px auto 22px;
       color:var(--muted);
       user-select:none;
-      will-change: transform;
     }
 
-    /* Capas glitch */
     .whisper::before,
     .whisper::after{
       content: attr(data-text);
       position:absolute;
       inset:0;
-      opacity:.85;
       pointer-events:none;
     }
 
@@ -155,9 +148,7 @@
     }
 
     /* ===== CTA ===== */
-    .cta{
-      margin-bottom:18px;
-    }
+    .cta{ margin-bottom:18px; }
 
     .btn{
       display:inline-block;
@@ -169,11 +160,8 @@
       color:#000;
       box-shadow:0 0 22px rgba(0,255,0,.3);
       transition:.2s ease;
-      text-align:center;
-
-      /* clave para que pueda partir en 2 líneas sin “romperse” */
-      white-space:normal;
       line-height:1.25;
+      white-space:normal;
     }
 
     .btn:hover{
@@ -181,23 +169,35 @@
       box-shadow:0 0 34px rgba(0,255,0,.45);
     }
 
-    /* ===== LINKS ===== */
-    .links{
-      font-size:13px;
-      opacity:.85;
+    /* ===== ICONOS REDES ===== */
+    .links.icons{
+      display:flex;
+      justify-content:center;
+      gap:22px;
+      margin-top:6px;
     }
 
-    .links a{
-      color:var(--ink);
-      text-decoration:none;
-      margin:0 10px;
-      border-bottom:1px dotted rgba(255,255,255,.4);
-      padding-bottom:2px;
+    .links.icons a{
+      padding:6px;
+      opacity:.75;
+      transition:.2s ease;
     }
 
-    .links a:hover{
-      color:var(--neon);
-      border-bottom-color:rgba(0,255,0,.6);
+    .links.icons a:hover{
+      opacity:1;
+      transform:translateY(-1px);
+    }
+
+    .links.icons svg{
+      width:22px;
+      height:22px;
+      fill:none;
+      stroke:var(--ink);
+      stroke-width:1.6;
+    }
+
+    .links.icons a:hover svg{
+      stroke:var(--neon);
     }
 
     .mail{
@@ -206,7 +206,7 @@
       margin-top:12px;
     }
 
-    /* ===== ANIMACIONES CRT ===== */
+    /* ===== ANIMACIONES ===== */
     @keyframes crt-flicker{
       0%   { filter:brightness(1) contrast(1); }
       40%  { filter:brightness(1.04) contrast(1.03); }
@@ -223,48 +223,37 @@
       100% { transform:translate(0); filter:none; }
     }
 
-    /* ===== ANIMACIONES GLITCH TEXTO ===== */
     @keyframes whisper-glitch-1{
-      0%, 12% { clip-path: inset(0 0 0 0); transform: translate(1px, 0); }
-      13% { clip-path: inset(10% 0 65% 0); transform: translate(2px, -1px); }
-      14% { clip-path: inset(55% 0 20% 0); transform: translate(-1px, 1px); }
-      15% { clip-path: inset(0 0 0 0); transform: translate(1px, 0); }
-      42% { clip-path: inset(0 0 0 0); transform: translate(1px, 0); }
-      43% { clip-path: inset(35% 0 40% 0); transform: translate(3px, 0); }
-      44% { clip-path: inset(0 0 0 0); transform: translate(1px, 0); }
-      100% { clip-path: inset(0 0 0 0); transform: translate(1px, 0); }
+      0%,12%{ clip-path:inset(0); }
+      13%{ clip-path:inset(10% 0 65% 0); }
+      14%{ clip-path:inset(55% 0 20% 0); }
+      15%{ clip-path:inset(0); }
+      100%{ clip-path:inset(0); }
     }
 
     @keyframes whisper-glitch-2{
-      0%, 9% { clip-path: inset(0 0 0 0); transform: translate(-1px, 0); }
-      10% { clip-path: inset(60% 0 15% 0); transform: translate(-3px, 1px); }
-      11% { clip-path: inset(18% 0 70% 0); transform: translate(1px, -1px); }
-      12% { clip-path: inset(0 0 0 0); transform: translate(-1px, 0); }
-      58% { clip-path: inset(0 0 0 0); transform: translate(-1px, 0); }
-      59% { clip-path: inset(28% 0 48% 0); transform: translate(-4px, 0); }
-      60% { clip-path: inset(0 0 0 0); transform: translate(-1px, 0); }
-      100% { clip-path: inset(0 0 0 0); transform: translate(-1px, 0); }
+      0%,9%{ clip-path:inset(0); }
+      10%{ clip-path:inset(60% 0 15% 0); }
+      11%{ clip-path:inset(18% 0 70% 0); }
+      12%{ clip-path:inset(0); }
+      100%{ clip-path:inset(0); }
     }
 
-    /* ===== MÓVIL ===== */
     @media (max-width:480px){
       .hero{ animation-duration:6s; }
       .crt::before{ opacity:.2; }
-
-      /* Botón: forzar 2 líneas bonitas */
       .btn{
         width:100%;
-        max-width: 26ch;
+        max-width:26ch;
         padding:16px 18px;
         font-size:15px;
       }
-
-      .whisper{
-        letter-spacing:.14em;
+      .links.icons svg{
+        width:24px;
+        height:24px;
       }
     }
 
-    /* Accesibilidad: si el usuario prefiere menos movimiento */
     @media (prefers-reduced-motion: reduce){
       .hero,
       .crt:hover .hero,
@@ -294,10 +283,16 @@
       <a class="btn" href="player.html">¿Te atreves a entrar en la casa del terror?</a>
     </div>
 
-    <div class="links">
-      <a href="https://www.instagram.com/cosmicmarciana" target="_blank" rel="noopener noreferrer">Instagram</a>
-      <a href="https://open.spotify.com/intl-es/artist/0qSO1brlu9jrjrhmMldEVL" target="_blank" rel="noopener noreferrer">Spotify</a>
-      <a href="mailto:cosmicmarciana@gmail.com">Contacto / Bolos</a>
+    <div class="links icons">
+      <a href="https://www.instagram.com/cosmicmarciana" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2"/></svg>
+      </a>
+      <a href="https://open.spotify.com/intl-es/artist/0qSO1brlu9jrjrhmMldEVL" target="_blank" rel="noopener noreferrer" aria-label="Spotify">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M7 10.5c3-1 7-.8 10 .6"/><path d="M7.5 13c2.5-.7 6-.5 8.5 .5"/><path d="M8 15.5c2-.5 4.5-.4 6.5 .4"/></svg>
+      </a>
+      <a href="mailto:cosmicmarciana@gmail.com" aria-label="Contacto">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+      </a>
     </div>
 
     <div class="mail">cosmicmarciana@gmail.com</div>
