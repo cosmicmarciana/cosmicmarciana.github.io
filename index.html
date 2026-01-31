@@ -5,124 +5,139 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cosmic Marciana</title>
 
-  <!-- Compartir -->
-  <meta name="description" content="Ruido psicoeléctrico desde Marte. Pop electrónico, señales rotas y errores cósmicos.">
-  <meta property="og:title" content="Cosmic Marciana">
-  <meta property="og:description" content="Ruido psicoeléctrico desde Marte">
-  <meta property="og:image" content="https://cosmicmarciana.github.io/logo.png">
-  <meta property="og:url" content="https://cosmicmarciana.github.io/">
-  <meta name="twitter:card" content="summary_large_image">
-
   <style>
-    *{ box-sizing:border-box; }
+    /* CARGA DE LA TIPOGRAFÍA */
+    @font-face {
+      font-family: "Horror";
+      src: url("font/horror.ttf") format("truetype");
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    *{
+      box-sizing: border-box;
+    }
 
     body{
-      margin:0;
+      margin: 0;
       font-family: Arial, sans-serif;
       background:
-        radial-gradient(1000px 500px at 50% 0%, rgba(255,0,0,.25), transparent 60%),
+        radial-gradient(900px 500px at 50% 0%, rgba(255,0,0,.25), transparent 60%),
         linear-gradient(135deg, #220000, #110000);
-      color:#00ff00;
-      display:flex;
-      justify-content:center;
-      padding:24px 12px;
-      overflow-x:hidden;
+      color: #00ff00;
+      display: flex;
+      justify-content: center;
+      padding: 24px 12px;
+      overflow-x: hidden;
     }
 
     .wrap{
-      width:100%;
-      max-width:720px;
+      width: 100%;
+      max-width: 720px;
     }
 
     .card{
-      background:rgba(0,0,0,.75);
-      border:2px solid rgba(0,255,0,.25);
-      border-radius:18px;
-      padding:22px;
-      text-align:center;
-      box-shadow:0 0 40px rgba(255,0,0,.35);
+      background: rgba(0,0,0,.75);
+      border: 2px solid rgba(0,255,0,.25);
+      border-radius: 18px;
+      padding: 22px;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(255,0,0,.35);
     }
 
-    /* LOGO COMO IMAGEN, SIN EFECTOS */
-    .logo{
-      width:100%;
-      max-width:720px;
-      height:auto;
-      display:block;
-      margin:0 auto 22px;
+    /* TITULO */
+    h1{
+      font-family: "Horror", sans-serif;
+      font-size: 64px;
+      letter-spacing: 2px;
+      margin: 0 0 12px;
+      line-height: 1;
+      text-transform: uppercase;
+      text-shadow:
+        3px 3px 0 #000,
+        6px 6px 0 #000;
     }
 
+    /* TEXTO */
     .tagline{
-      font-size:16px;
-      letter-spacing:1.5px;
-      margin-bottom:6px;
+      font-size: 16px;
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
     }
 
     .tagline-echo{
-      font-size:13px;
-      opacity:.7;
-      margin-bottom:18px;
+      font-size: 13px;
+      opacity: .7;
+      margin-bottom: 18px;
     }
 
     .text{
-      font-size:15px;
-      line-height:1.5;
-      margin-bottom:18px;
+      font-size: 15px;
+      line-height: 1.5;
+      margin-bottom: 18px;
     }
 
+    /* IMAGEN */
     .cover{
-      width:100%;
-      max-width:320px;
-      border-radius:14px;
-      box-shadow:0 0 24px rgba(0,0,0,.9);
-      margin-bottom:18px;
+      width: 100%;
+      max-width: 320px;
+      border-radius: 14px;
+      box-shadow: 0 0 24px rgba(0,0,0,.9);
+      margin-bottom: 18px;
     }
 
+    /* BOTONES */
     .cta{
-      display:flex;
-      gap:10px;
-      justify-content:center;
-      flex-wrap:wrap;
-      margin-bottom:14px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
     }
 
     .btn{
-      padding:14px 18px;
-      background:#000;
-      color:#00ff00;
-      border:2px solid #00ff00;
-      border-radius:14px;
-      font-size:15px;
-      text-decoration:none;
-      transition:.2s;
+      padding: 14px 18px;
+      background: #000;
+      color: #00ff00;
+      border: 2px solid #00ff00;
+      border-radius: 14px;
+      font-size: 15px;
+      text-decoration: none;
+      transition: .2s;
     }
 
     .btn:hover{
-      background:#00ff00;
-      color:#000;
+      background: #00ff00;
+      color: #000;
     }
 
     .links{
-      font-size:14px;
-      margin-top:14px;
+      font-size: 14px;
+      margin-top: 14px;
     }
 
     .links a{
-      color:#00ff00;
-      text-decoration:none;
-      margin:0 8px;
+      color: #00ff00;
+      text-decoration: none;
+      margin: 0 8px;
     }
 
     .mail{
-      font-size:13px;
-      opacity:.85;
-      margin-top:10px;
+      font-size: 13px;
+      opacity: .85;
+      margin-top: 10px;
     }
 
     /* MÓVIL */
     @media (max-width:480px){
-      .logo{ max-width:92vw; }
-      .btn{ width:100%; max-width:360px; }
+      h1{
+        font-size: 42px;
+        letter-spacing: 1px;
+      }
+      .btn{
+        width: 100%;
+        max-width: 360px;
+      }
     }
   </style>
 </head>
@@ -131,8 +146,7 @@
   <div class="wrap">
     <div class="card">
 
-      <!-- LOGO -->
-      <img src="logo.png" alt="Cosmic Marciana" class="logo">
+      <h1>COSMIC MARCIANA</h1>
 
       <div class="tagline">ruido psicoeléctrico desde Marte</div>
       <div class="tagline-echo">pop electrónico, señales rotas y errores cósmicos</div>
@@ -163,4 +177,3 @@
   </div>
 </body>
 </html>
-
