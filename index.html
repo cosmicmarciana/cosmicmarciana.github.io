@@ -1,193 +1,200 @@
 <!DOCTYPE html>
 <html lang="ca">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cosmic Marciana</title>
 
-  <meta name="description" content="Cosmic Marciana: ruido psicoeléctrico desde Marte. Pop electrónico, señales rotas y errores cósmicos. Escucha el disco y contacta para bolos.">
-
-  <!-- (Opcional) Favicon -->
-  <!-- <link rel="icon" href="favicon.ico"> -->
-
   <style>
-    /* CARGA DE LA TIPOGRAFÍA */
-    @font-face {
-      font-family: "Horror";
-      src: url("./fonts/horror.ttf") format("truetype");
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
+    @font-face{
+      font-family:"Horror";
+      src:url("./fonts/horror.ttf") format("truetype");
+      font-weight:normal;
+      font-style:normal;
+      font-display:swap;
     }
 
-    *{
-      box-sizing: border-box;
+    :root{
+      --bg1:#110000;
+      --bg2:#220000;
+      --ink:#b8ffb8;        /* verde más suave */
+      --neon:#00ff00;
+      --card:rgba(0,0,0,.74);
+      --border:rgba(0,255,0,.22);
+      --shadow:rgba(255,0,0,.35);
     }
+
+    *{ box-sizing:border-box; }
 
     body{
-      margin: 0;
-      font-family: Arial, sans-serif;
+      margin:0;
+      font-family:Arial, sans-serif;
+      color:var(--ink);
       background:
         radial-gradient(900px 500px at 50% 0%, rgba(255,0,0,.25), transparent 60%),
-        linear-gradient(135deg, #220000, #110000);
-      color: #00ff00;
-      display: flex;
-      justify-content: center;
-      padding: 24px 12px;
-      overflow-x: hidden;
+        radial-gradient(700px 400px at 20% 30%, rgba(0,255,0,.08), transparent 60%),
+        linear-gradient(135deg, var(--bg2), var(--bg1));
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      padding:24px 12px;
+      overflow-x:hidden;
     }
 
-    .wrap{
-      width: 100%;
-      max-width: 720px;
-    }
+    .wrap{ width:100%; max-width:760px; }
 
     .card{
-      background: rgba(0,0,0,.75);
-      border: 2px solid rgba(0,255,0,.25);
-      border-radius: 18px;
-      padding: 22px;
-      text-align: center;
-      box-shadow: 0 0 40px rgba(255,0,0,.35);
+      background:var(--card);
+      border:2px solid var(--border);
+      border-radius:18px;
+      padding:22px;
+      text-align:center;
+      box-shadow:0 0 40px var(--shadow);
     }
 
-    /* TITULO */
     h1{
-      font-family: "Horror", sans-serif;
-      font-size: 64px;
-      letter-spacing: 2px;
-      margin: 0 0 12px;
-      line-height: 1;
-      text-transform: uppercase;
-      text-shadow:
-        3px 3px 0 #000,
-        6px 6px 0 #000;
+      font-family:"Horror", sans-serif;
+      font-size:64px;
+      margin:0 0 8px;
+      line-height:1;
+      letter-spacing:2px;
+      text-transform:uppercase;
+      color:var(--neon);
+      text-shadow: 3px 3px 0 #000, 6px 6px 0 #000;
     }
 
-    /* TEXTO */
     .tagline{
-      font-size: 16px;
-      letter-spacing: 1.5px;
-      margin-bottom: 6px;
+      margin:0 0 18px;
+      letter-spacing:1.4px;
+      opacity:.95;
+      font-size:15px;
     }
 
-    .tagline-echo{
-      font-size: 13px;
-      opacity: .7;
-      margin-bottom: 18px;
-    }
-
-    .text{
-      font-size: 15px;
-      line-height: 1.5;
-      margin-bottom: 18px;
-    }
-
-    /* IMAGEN */
     .cover-link{
-      display: inline-block;
-      line-height: 0;
+      display:block;
+      width:min(420px, 100%);
+      margin:0 auto 16px;
+      text-decoration:none;
     }
 
     .cover{
-      width: 100%;
-      max-width: 320px;
-      border-radius: 14px;
-      box-shadow: 0 0 24px rgba(0,0,0,.9);
-      margin-bottom: 18px;
+      width:100%;
+      border-radius:14px;
+      box-shadow:0 0 26px rgba(0,0,0,.9);
+      border:1px solid rgba(0,255,0,.12);
+      transition: transform .18s ease, box-shadow .18s ease;
     }
 
-    /* BOTONES */
+    .cover-link:hover .cover{
+      transform: translateY(-2px);
+      box-shadow:0 0 34px rgba(255,0,0,.25), 0 0 26px rgba(0,0,0,.9);
+    }
+
+    .text{
+      font-size:15px;
+      line-height:1.55;
+      margin:0 auto 18px;
+      max-width:56ch;
+      opacity:.92;
+    }
+
     .cta{
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:4px;
     }
 
     .btn{
-      padding: 14px 18px;
-      background: #000;
-      color: #00ff00;
-      border: 2px solid #00ff00;
-      border-radius: 14px;
-      font-size: 15px;
-      text-decoration: none;
-      transition: .2s;
+      padding:14px 18px;
+      border-radius:14px;
+      font-size:15px;
+      text-decoration:none;
+      border:2px solid var(--neon);
+      transition:.18s ease;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width: 220px;
     }
 
-    .btn:hover{
-      background: #00ff00;
-      color: #000;
+    .btn.primary{
+      background:var(--neon);
+      color:#000;
+      box-shadow:0 0 18px rgba(0,255,0,.18);
+    }
+
+    .btn.primary:hover{
+      transform: translateY(-1px);
+      box-shadow:0 0 26px rgba(0,255,0,.26);
+    }
+
+    .btn.ghost{
+      background:transparent;
+      color:var(--neon);
+    }
+
+    .btn.ghost:hover{
+      background:rgba(0,255,0,.10);
+      transform: translateY(-1px);
     }
 
     .links{
-      font-size: 14px;
-      margin-top: 14px;
+      margin-top:16px;
+      font-size:13px;
+      opacity:.85;
     }
 
     .links a{
-      color: #00ff00;
-      text-decoration: none;
-      margin: 0 8px;
+      color:var(--ink);
+      text-decoration:none;
+      border-bottom:1px dotted rgba(184,255,184,.4);
+      margin:0 8px;
+      padding-bottom:2px;
     }
+    .links a:hover{ color:var(--neon); border-bottom-color: rgba(0,255,0,.6); }
 
     .mail{
-      font-size: 13px;
-      opacity: .85;
-      margin-top: 10px;
+      margin-top:10px;
+      font-size:12px;
+      opacity:.7;
     }
 
-    /* MÓVIL */
     @media (max-width:480px){
-      h1{
-        font-size: 42px;
-        letter-spacing: 1px;
-      }
-      .card{
-        padding: 18px;
-      }
-      .btn{
-        width: 100%;
-        max-width: 360px;
-      }
+      h1{ font-size:42px; letter-spacing:1px; }
+      .card{ padding:18px; }
+      .btn{ min-width: 100%; }
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="card">
-
+  <main class="wrap">
+    <section class="card">
       <h1>COSMIC MARCIANA</h1>
+      <p class="tagline">ruido psicoeléctrico desde Marte · pop electrónico · señales rotas</p>
 
-      <div class="tagline">ruido psicoeléctrico desde Marte</div>
-      <div class="tagline-echo">pop electrónico, señales rotas y errores cósmicos</div>
-
-      <div class="text">
-        Te regalo mi música.<br>
-        Si quieres apoyar para grabar vinilos y seguir haciendo ruido cósmico,<br>
-        puedes aportar algo 💚
-      </div>
-
-      <a class="cover-link" href="player.html" aria-label="Ir al reproductor">
-        <img src="cover.png" alt="Portada del disco" class="cover">
+      <a class="cover-link" href="player.html" aria-label="Abrir reproductor">
+        <img src="cover.png" alt="Portada del disco" class="cover" />
       </a>
 
+      <p class="text">
+        Te regalo mi música. Si te apetece apoyar para grabar vinilos y seguir haciendo ruido cósmico, puedes escribirme 💚
+      </p>
+
       <div class="cta">
-        <a class="btn" href="player.html">▶ Escuchar el disco</a>
-        <a class="btn" href="mailto:cosmicmarciana@gmail.com">📩 Contacto / Bolos</a>
+        <a class="btn primary" href="player.html">▶ Escuchar el disco</a>
+        <a class="btn ghost" href="mailto:cosmicmarciana@gmail.com">📩 Contacto / Bolos</a>
       </div>
 
       <div class="links">
-        <a href="https://www.instagram.com/cosmicmarciana" target="_blank" rel="noopener noreferrer">Instagram</a> |
+        <a href="https://www.instagram.com/cosmicmarciana" target="_blank" rel="noopener noreferrer">Instagram</a>
         <a href="https://open.spotify.com/intl-es/artist/0qSO1brlu9jrjrhmMldEVL" target="_blank" rel="noopener noreferrer">Spotify</a>
       </div>
 
       <div class="mail">cosmicmarciana@gmail.com</div>
-
-    </div>
-  </div>
+    </section>
+  </main>
 </body>
 </html>
