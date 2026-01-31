@@ -24,17 +24,41 @@
 
     *{ box-sizing:border-box; }
 
+    /* ===== FONDO ESPACIO / ANALÓGICO ===== */
     body{
       margin:0;
       font-family:Arial, sans-serif;
-      background:
-        radial-gradient(900px 500px at 50% 0%, rgba(255,0,0,.25), transparent 60%),
-        linear-gradient(135deg, #220000, #110000);
       color:var(--ink);
+      min-height:100vh;
       display:flex;
       justify-content:center;
       padding:24px 12px;
       overflow-x:hidden;
+
+      background:
+        repeating-radial-gradient(
+          circle at 20% 30%,
+          rgba(255,255,255,.015) 0,
+          rgba(255,255,255,.015) 1px,
+          transparent 2px,
+          transparent 6px
+        ),
+        radial-gradient(
+          1200px 600px at 50% -10%,
+          rgba(140,0,0,.25),
+          transparent 60%
+        ),
+        radial-gradient(
+          800px 500px at 80% 60%,
+          rgba(0,255,0,.04),
+          transparent 65%
+        ),
+        linear-gradient(
+          180deg,
+          #060404,
+          #0b0707 40%,
+          #040202
+        );
     }
 
     .wrap{
@@ -48,10 +72,10 @@
       border-radius:18px;
       padding:22px;
       text-align:center;
-      box-shadow:0 0 40px rgba(255,0,0,.35);
+      box-shadow:0 0 40px rgba(0,0,0,.6);
     }
 
-    /* HERO CRT */
+    /* ===== CRT HERO ===== */
     .crt{
       position:relative;
       display:block;
@@ -68,7 +92,7 @@
       animation: crt-flicker 3.5s infinite;
     }
 
-    /* SCANLINES */
+    /* Scanlines */
     .crt::before{
       content:"";
       position:absolute;
@@ -87,12 +111,12 @@
       z-index:2;
     }
 
-    /* GLITCH HOVER */
+    /* Glitch hover */
     .crt:hover .hero{
       animation: crt-glitch .35s steps(2,end);
     }
 
-    /* TEXTO */
+    /* ===== TEXTO ===== */
     .text{
       font-size:15px;
       line-height:1.5;
@@ -100,7 +124,7 @@
       color:var(--muted);
     }
 
-    /* CTA */
+    /* ===== CTA ===== */
     .cta{
       display:flex;
       justify-content:center;
@@ -124,7 +148,7 @@
       box-shadow:0 0 30px rgba(0,255,0,.35);
     }
 
-    /* LINKS */
+    /* ===== LINKS ===== */
     .links{
       font-size:13px;
       opacity:.85;
@@ -150,7 +174,7 @@
       margin-top:10px;
     }
 
-    /* ANIMACIONES */
+    /* ===== ANIMACIONES ===== */
     @keyframes crt-flicker{
       0%   { filter:brightness(1) contrast(1); }
       45%  { filter:brightness(1.03) contrast(1.02); }
