@@ -42,7 +42,6 @@
     display:flex;
     justify-content:center;
 
-    /* safe-area para móviles con notch */
     padding:
       calc(32px + env(safe-area-inset-top))
       calc(14px + env(safe-area-inset-right))
@@ -269,7 +268,7 @@
     border:1px solid rgba(255,255,255,.10);
     position:relative;
 
-    touch-action: none; /* clave para móviles */
+    touch-action: none;
     user-select: none;
   }
 
@@ -397,6 +396,7 @@
     height:auto;
     width:auto;
 
+    /* ✅ SOLO parpadeo de neón (sin movimiento) */
     animation: neon-only 4.8s ease-in-out infinite;
     box-shadow: 0 0 14px rgba(0,255,0,.16);
   }
@@ -416,12 +416,14 @@
     }
   }
 
+  /* ✅ NO movimiento en hover/active (anula button:hover global) */
   .support-btn:hover{
+    transform:none !important;
     border-color: rgba(0,255,0,.70);
     color: var(--neon);
     box-shadow: 0 0 28px rgba(0,255,0,.30);
-    transform: translateY(-1px);
   }
+  .support-btn:active{ transform:none !important; }
 
   .support-note{
     margin-top:10px;
@@ -455,18 +457,19 @@
     position: relative;
   }
 
+  /* ✅ FIX X: clickable en toda el área */
   .modal-close{
     position:absolute;
     top:10px;
     right:10px;
 
-    width:42px !important;
-    height:42px !important;
+    width:48px !important;
+    height:48px !important;
     padding:0 !important;
 
     border-radius:999px;
-    background: rgba(255,255,255,.06) !important;
-    border:1px solid rgba(255,255,255,.14) !important;
+    background: rgba(255,255,255,.08) !important;
+    border:1px solid rgba(255,255,255,.16) !important;
 
     display:flex;
     align-items:center;
@@ -477,6 +480,10 @@
 
     box-shadow:none !important;
     transform:none !important;
+
+    z-index:5;
+    pointer-events:auto;
+    touch-action: manipulation;
   }
   .modal-close:hover{
     transform:none !important;
@@ -491,7 +498,7 @@
     stroke:currentColor;
     stroke-width:2.2;
     stroke-linecap:round;
-    pointer-events:none;
+    pointer-events:none !important; /* ✅ refuerzo */
   }
 
   .modal-title{
@@ -706,7 +713,6 @@
       <div class="track" data-index="10">11. Tenemos que hablar</div>
     </div>
 
-    <!-- playsinline = iOS no fuerza fullscreen -->
     <audio id="audio" preload="metadata" playsinline></audio>
 
     <div class="sig">EMISIÓN NO AUTORIZADA · NO AJUSTAR EL DIAL</div>
@@ -912,10 +918,10 @@
     if(usingTouchFallback) return;
     isScrubbing = false;
     try { progressContainer.releasePointerCapture(e.pointerId); } catch {}
-    hidePreview(); // evita tooltip pegado
+    hidePreview();
   }
 
-  // ===== TOUCH FALLBACK (iOS viejo / edge cases) =====
+  // ===== TOUCH FALLBACK =====
   function touchClientX(ev){
     const t = ev.touches && ev.touches[0] ? ev.touches[0] : (ev.changedTouches ? ev.changedTouches[0] : null);
     return t ? t.clientX : null;
@@ -969,10 +975,7 @@
 
     const p = audio.play();
     if(p && typeof p.then === "function"){
-      p.then(()=> {
-        setPlayIcon();
-      }).catch(()=> {
-        // iOS puede rechazar play si no fue gesto del usuario
+      p.then(()=> setPlayIcon()).catch(()=> {
         setPlayIcon();
         setStatus("Pulsa Play para iniciar.");
       });
@@ -987,15 +990,13 @@
   }
 
   function togglePlay(){
-    if(audio.paused){
-      playCurrent();
-    } else {
+    if(audio.paused) playCurrent();
+    else{
       audio.pause();
       setPlayIcon();
     }
   }
 
-  // Stop resetea index en localStorage
   function stopTrack(){
     audio.pause();
     audio.currentTime = 0;
@@ -1048,7 +1049,6 @@
   async function sharePage(){
     const url = window.location.href;
 
-    // 1) Native share (móvil)
     try{
       if(navigator.share){
         await navigator.share({ title: "Cosmic Marciana", url });
@@ -1057,7 +1057,6 @@
       }
     } catch {}
 
-    // 2) Clipboard (solo si contexto seguro https)
     try{
       if(navigator.clipboard && window.isSecureContext){
         await navigator.clipboard.writeText(url);
@@ -1066,7 +1065,6 @@
       }
     } catch {}
 
-    // 3) Fallback final
     window.prompt("Copia este link:", url);
   }
 
@@ -1126,23 +1124,19 @@
       if(Number.isInteger(idx)) playTrack(idx);
     });
 
-    // Pointer events (no-passive para que preventDefault funcione en Safari)
     progressContainer.addEventListener("pointerdown", onPointerDown, { passive:false });
     progressContainer.addEventListener("pointermove", onPointerMove, { passive:false });
     progressContainer.addEventListener("pointerup", onPointerUp);
     progressContainer.addEventListener("pointercancel", onPointerUp);
 
-    // Touch fallback (no-passive sí o sí)
     progressContainer.addEventListener("touchstart", onTouchStart, { passive:false });
     progressContainer.addEventListener("touchmove", onTouchMove, { passive:false });
     progressContainer.addEventListener("touchend", onTouchEnd, { passive:false });
     progressContainer.addEventListener("touchcancel", onTouchEnd, { passive:false });
 
-    // Preview hover (desktop)
     progressContainer.addEventListener("pointerenter", ()=> { if(audio.duration) showPreview(); });
     progressContainer.addEventListener("pointerleave", ()=> { if(!isScrubbing) hidePreview(); });
 
-    // Cinturón extra: si suelta fuera, ocultamos preview
     document.addEventListener("pointerup", ()=> { if(!isScrubbing) hidePreview(); }, { passive:true });
     document.addEventListener("touchend", ()=> { if(!isScrubbing) hidePreview(); }, { passive:true });
 
@@ -1203,7 +1197,6 @@
       }
     });
 
-    // Teclado (desktop)
     document.addEventListener("keydown", (e)=>{
       if(e.code === "Space"){
         if(document.activeElement && document.activeElement.tagName === "INPUT") return;
@@ -1214,7 +1207,6 @@
       if(e.code === "ArrowLeft") prevTrack();
     });
 
-    // Si la pestaña se oculta (móvil cambia de app), pausamos
     document.addEventListener("visibilitychange", ()=>{
       if(document.hidden && !audio.paused){
         audio.pause();
