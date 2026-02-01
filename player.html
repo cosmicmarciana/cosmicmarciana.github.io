@@ -5,13 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>La casa del terror</title>
 
-<!-- Favicon (con cache-busting) -->
+<!-- Favicons -->
 <link rel="icon" href="favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
-
 
 <style>
   :root{
@@ -400,7 +399,7 @@
     height:auto;
     width:auto;
 
-    /* ✅ SOLO parpadeo de neón (sin movimiento) */
+    /* SOLO brillo, sin movimiento */
     animation: neon-only 4.8s ease-in-out infinite;
     box-shadow: 0 0 14px rgba(0,255,0,.16);
   }
@@ -420,7 +419,6 @@
     }
   }
 
-  /* ✅ NO movimiento en hover/active (anula button:hover global) */
   .support-btn:hover{
     transform:none !important;
     border-color: rgba(0,255,0,.70);
@@ -435,6 +433,33 @@
     color: var(--muted);
     opacity:.9;
     letter-spacing:.03em;
+  }
+
+  /* ✅ Descarga ZIP */
+  .download-link{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    margin-top:10px;
+    padding:10px 14px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.14);
+    background: rgba(0,0,0,.25);
+    color: var(--muted);
+    text-decoration:none;
+    transition:.18s ease;
+  }
+  .download-link:hover{
+    color: var(--neon);
+    border-color: rgba(0,255,0,.35);
+    box-shadow: 0 0 18px rgba(0,255,0,.16);
+  }
+  .download-note{
+    margin-top:8px;
+    font-size:12px;
+    color: var(--muted);
+    opacity:.9;
   }
 
   /* ===== MODAL ===== */
@@ -461,7 +486,7 @@
     position: relative;
   }
 
-  /* ✅ FIX X: clickable en toda el área */
+  /* ✅ X clicable total */
   .modal-close{
     position:absolute;
     top:10px;
@@ -502,7 +527,7 @@
     stroke:currentColor;
     stroke-width:2.2;
     stroke-linecap:round;
-    pointer-events:none !important; /* ✅ refuerzo */
+    pointer-events:none !important;
   }
 
   .modal-title{
@@ -674,8 +699,17 @@
       <button class="support-btn" id="support-open" type="button">
         Invítame a un café <span class="coffee" aria-hidden="true">☕</span>
       </button>
+
       <div class="support-note">
         Si te ha gustado la transmisión, puedes colaborar para mantener la emisión viva.
+      </div>
+
+      <!-- ✅ ZIP descarga libre -->
+      <a class="download-link" href="la-casa-del-terror.zip" download>
+        ⬇ Descargar el disco (ZIP)
+      </a>
+      <div class="download-note">
+        Descarga libre. Si te nace, apoya la emisión con un café 💚
       </div>
     </div>
 
@@ -700,6 +734,16 @@
           <div class="support-value" id="bizum-number">+34 600 000 000</div>
           <button class="copy-btn" id="copy-bizum" type="button">Copiar</button>
         </div>
+
+        <!-- ✅ También aquí el ZIP -->
+        <div style="margin-top:12px;">
+          <a class="download-link" href="la-casa-del-terror.zip" download>
+            ⬇ Descargar el disco (ZIP)
+          </a>
+          <div class="download-note" style="margin-top:8px;">
+            Descarga libre. Si te nace, apoya la emisión con un café 💚
+          </div>
+        </div>
       </div>
     </div>
 
@@ -717,6 +761,7 @@
       <div class="track" data-index="10">11. Tenemos que hablar</div>
     </div>
 
+    <!-- playsinline: iOS no fuerza fullscreen -->
     <audio id="audio" preload="metadata" playsinline></audio>
 
     <div class="sig">EMISIÓN NO AUTORIZADA · NO AJUSTAR EL DIAL</div>
@@ -789,12 +834,51 @@
   let isScrubbing = false;
   let usingTouchFallback = false;
 
+  // ✅ Continuar automático por canción
+  let lastSavedSec = -1;
+
   const LS = {
     vol: "cm_vol",
     idx: "cm_idx",
+    time: "cm_time",     // ✅ NUEVO (base key)
     shuffle: "cm_shuffle",
     loop: "cm_loop"
   };
+
+  function timeKey(index){
+    return `${LS.time}_${index}`;
+  }
+
+  function savePlaybackTime(){
+    if(!hasLoaded) return;
+    if(!audio.duration) return;
+    if(audio.paused) return;
+
+    const sec = Math.floor(audio.currentTime || 0);
+    if(sec === lastSavedSec) return;
+
+    // guardamos cada 4s aprox, evitando machacar
+    if(sec % 4 !== 0) return;
+
+    lastSavedSec = sec;
+    localStorage.setItem(timeKey(currentIndex), String(audio.currentTime || 0));
+  }
+
+  function applySavedTimeIfAny(){
+    const t = Number(localStorage.getItem(timeKey(currentIndex)));
+    if(!Number.isFinite(t) || t <= 0) return;
+    if(!audio.duration) return;
+
+    const safeT = Math.min(t, Math.max(0, audio.duration - 0.25));
+    if(safeT > 0) audio.currentTime = safeT;
+  }
+
+  function clearAllPlaybackTimes(){
+    for(let i=0; i<sources.length; i++){
+      localStorage.removeItem(timeKey(i));
+    }
+    lastSavedSec = -1;
+  }
 
   function formatTime(t){
     const m = Math.floor(t / 60);
@@ -896,7 +980,7 @@
   function showPreview(){ progressContainer.classList.add("preview"); }
   function hidePreview(){ progressContainer.classList.remove("preview"); }
 
-  // ===== POINTER EVENTS (principal) =====
+  // ===== POINTER EVENTS =====
   function onPointerDown(e){
     e.preventDefault();
     if(!audio.duration) return;
@@ -922,7 +1006,7 @@
     if(usingTouchFallback) return;
     isScrubbing = false;
     try { progressContainer.releasePointerCapture(e.pointerId); } catch {}
-    hidePreview(); 
+    hidePreview();
   }
 
   // ===== TOUCH FALLBACK =====
@@ -972,6 +1056,7 @@
     markCurrent();
 
     localStorage.setItem(LS.idx, String(currentIndex));
+    lastSavedSec = -1; // reset throttle for new track
   }
 
   function playCurrent(){
@@ -1001,6 +1086,7 @@
     }
   }
 
+  // ✅ STOP: reset + borrar tiempos guardados
   function stopTrack(){
     audio.pause();
     audio.currentTime = 0;
@@ -1014,6 +1100,7 @@
     currentIndex = 0;
 
     localStorage.setItem(LS.idx, "0");
+    clearAllPlaybackTimes(); // ✅ borra el punto guardado
 
     resetProgressUI();
     setPlayIcon();
@@ -1128,19 +1215,23 @@
       if(Number.isInteger(idx)) playTrack(idx);
     });
 
+    // Pointer events (no-passive para Safari)
     progressContainer.addEventListener("pointerdown", onPointerDown, { passive:false });
     progressContainer.addEventListener("pointermove", onPointerMove, { passive:false });
     progressContainer.addEventListener("pointerup", onPointerUp);
     progressContainer.addEventListener("pointercancel", onPointerUp);
 
+    // Touch fallback
     progressContainer.addEventListener("touchstart", onTouchStart, { passive:false });
     progressContainer.addEventListener("touchmove", onTouchMove, { passive:false });
     progressContainer.addEventListener("touchend", onTouchEnd, { passive:false });
     progressContainer.addEventListener("touchcancel", onTouchEnd, { passive:false });
 
+    // Preview hover (desktop)
     progressContainer.addEventListener("pointerenter", ()=> { if(audio.duration) showPreview(); });
     progressContainer.addEventListener("pointerleave", ()=> { if(!isScrubbing) hidePreview(); });
 
+    // Cinturón extra: si suelta fuera
     document.addEventListener("pointerup", ()=> { if(!isScrubbing) hidePreview(); }, { passive:true });
     document.addEventListener("touchend", ()=> { if(!isScrubbing) hidePreview(); }, { passive:true });
 
@@ -1149,10 +1240,16 @@
       currentTimeEl.textContent = formatTime(audio.currentTime);
       totalTimeEl.textContent = formatTime(audio.duration);
       setProgressUI(audio.currentTime / audio.duration);
+
+      // ✅ Guardado automático ligero
+      savePlaybackTime();
     });
 
     audio.addEventListener("loadedmetadata", ()=>{
       if(audio.duration) totalTimeEl.textContent = formatTime(audio.duration);
+
+      // ✅ Continuar donde lo dejaste (por canción)
+      applySavedTimeIfAny();
     });
 
     audio.addEventListener("ended", ()=>{
@@ -1201,6 +1298,7 @@
       }
     });
 
+    // Teclado
     document.addEventListener("keydown", (e)=>{
       if(e.code === "Space"){
         if(document.activeElement && document.activeElement.tagName === "INPUT") return;
@@ -1211,6 +1309,7 @@
       if(e.code === "ArrowLeft") prevTrack();
     });
 
+    // Si la pestaña se oculta
     document.addEventListener("visibilitychange", ()=>{
       if(document.hidden && !audio.paused){
         audio.pause();
@@ -1277,6 +1376,3 @@
 
 </body>
 </html>
-
-
-
