@@ -2,1279 +2,280 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>La casa del terror</title>
 
-<!-- Favicon (con cache-busting) -->
+<!-- Favicons -->
 <link rel="icon" href="favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
 
-
 <style>
-  :root{
-    --neon:#00ff00;
-    --ink:#eaeaea;
-    --muted:#cfcfcf;
-  }
+/* ================== VARIABLES ================== */
+:root{
+  --neon:#00ff00;
+  --ink:#eaeaea;
+  --muted:#cfcfcf;
+}
 
-  *{ box-sizing:border-box; }
+/* ================== RESET ================== */
+*{ box-sizing:border-box; }
+html,body{ -webkit-tap-highlight-color:transparent; }
+button,a{ outline:none; }
 
-  html, body{ -webkit-tap-highlight-color: transparent; }
+/* ================== BODY ================== */
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  color:var(--ink);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  padding:32px 14px;
+  background:#050303;
+}
 
-  button, a, .crt{
-    -webkit-tap-highlight-color: transparent;
-    -webkit-appearance: none;
-    appearance: none;
-    outline: none;
-    touch-action: manipulation;
-  }
+/* ================== WRAP ================== */
+.wrap{
+  width:100%;
+  max-width:820px;
+  text-align:center;
+}
 
-  :focus{ outline:none; }
-  button:focus-visible, a:focus-visible, .crt:focus-visible{
-    outline: 2px solid rgba(0,255,0,.75);
-    outline-offset: 3px;
-  }
+/* ================== TITLE ================== */
+h1{
+  font-size:22px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  margin-bottom:12px;
+}
 
-  body{
-    margin:0;
-    font-family: Arial, sans-serif;
-    color:var(--ink);
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
+/* ================== CRT ================== */
+.crt{
+  margin:14px auto;
+  cursor:pointer;
+}
+#cover{
+  max-width:420px;
+  width:100%;
+  border-radius:12px;
+}
 
-    padding:
-      calc(32px + env(safe-area-inset-top))
-      calc(14px + env(safe-area-inset-right))
-      calc(32px + env(safe-area-inset-bottom))
-      calc(14px + env(safe-area-inset-left));
+/* ================== CONTROLS ================== */
+.controls{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  margin:10px 0;
+}
+button{
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  border:1px solid rgba(0,255,0,.25);
+  background:rgba(0,255,0,.12);
+  cursor:pointer;
+}
+#play-pause{
+  background:var(--neon);
+}
 
-    overflow-x:hidden;
+/* ================== PROGRESS ================== */
+.progress-wrapper{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.progress-container{
+  flex:1;
+  height:10px;
+  background:rgba(255,255,255,.15);
+  border-radius:999px;
+  cursor:pointer;
+}
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:var(--neon);
+  border-radius:999px;
+}
 
-    background:
-      repeating-radial-gradient(
-        circle at 30% 40%,
-        rgba(255,255,255,.04) 0,
-        rgba(255,255,255,.04) 1px,
-        transparent 2px,
-        transparent 7px
-      ),
-      repeating-radial-gradient(
-        circle at 70% 60%,
-        rgba(255,255,255,.025) 0,
-        rgba(255,255,255,.025) 1px,
-        transparent 1px,
-        transparent 4px
-      ),
-      linear-gradient(
-        180deg,
-        rgba(255,255,255,.06),
-        rgba(0,0,0,.08)
-      ),
-      linear-gradient(
-        180deg,
-        #1a1412,
-        #0e0a09 50%,
-        #050303
-      );
-  }
+/* ================== SUPPORT ================== */
+.support{
+  margin:22px auto;
+}
+.support-btn{
+  padding:12px 18px;
+  border-radius:999px;
+  border:1px solid rgba(0,255,0,.35);
+  background:rgba(0,255,0,.1);
+  color:var(--ink);
+  cursor:pointer;
+  animation:neon 4s ease-in-out infinite;
+}
+@keyframes neon{
+  0%,100%{ box-shadow:0 0 14px rgba(0,255,0,.2); }
+  50%{ box-shadow:0 0 32px rgba(0,255,0,.45); }
+}
 
-  .wrap{
-    width:100%;
-    max-width:820px;
-    text-align:center;
-  }
+/* ===== DESCARGA ===== */
+.download-link{
+  display:inline-block;
+  margin-top:12px;
+  padding:10px 14px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.15);
+  color:var(--muted);
+  text-decoration:none;
+}
+.download-link:hover{
+  color:var(--neon);
+  border-color:rgba(0,255,0,.35);
+}
 
-  .back{
-    display:inline-block;
-    color:var(--ink);
-    text-decoration:none;
-    opacity:.75;
-    margin-bottom:14px;
-    border-bottom:1px dotted rgba(255,255,255,.35);
-    padding-bottom:2px;
-  }
-  .back:hover{ opacity:1; color:var(--neon); border-bottom-color:rgba(0,255,0,.65); }
+/* ================== MODAL ================== */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+.modal.open{ display:flex; }
+.modal-card{
+  background:#0b0808;
+  padding:18px;
+  border-radius:16px;
+  width:100%;
+  max-width:520px;
+  position:relative;
+}
+.modal-close{
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  cursor:pointer;
+}
 
-  h1{
-    margin: 0 0 6px 0;
-    font-size: 22px;
-    letter-spacing: .22em;
-    font-weight: 800;
-    text-transform: uppercase;
-    color: var(--ink);
-    opacity: .95;
-  }
-
-  /* TV CRT */
-  .crt{
-    position:relative;
-    width:fit-content;
-    margin:12px auto 18px;
-    isolation:isolate;
-    cursor:pointer;
-    border-radius:12px;
-  }
-
-  #cover{
-    width:100%;
-    max-width:420px;
-    border-radius:12px;
-    display:block;
-    filter:drop-shadow(0 0 22px rgba(0,0,0,.85));
-    animation: crt-flicker 4.5s infinite;
-    transition: transform .2s ease;
-    user-select:none;
-    -webkit-user-drag:none;
-    will-change: transform, filter;
-  }
-
-  .crt::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:
-      repeating-linear-gradient(
-        to bottom,
-        rgba(255,255,255,.025),
-        rgba(255,255,255,.025) 1px,
-        transparent 1px,
-        transparent 3px
-      );
-    pointer-events:none;
-    mix-blend-mode:overlay;
-    opacity:.25;
-    z-index:2;
-    border-radius:12px;
-  }
-
-  .crt:active #cover{ transform: translateY(-1px); }
-  .crt:hover #cover{ transform: translateY(-2px); animation: crt-glitch .35s steps(2,end); }
-
-  /* Controls */
-  .controls{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    gap:12px;
-    margin: 10px 0 10px;
-    flex-wrap:wrap;
-  }
-
-  button{
-    border:none;
-    width:52px;
-    height:52px;
-    padding:0;
-    border-radius:999px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    background: rgba(0,255,0,.12);
-    color: var(--ink);
-    cursor:pointer;
-    border:1px solid rgba(0,255,0,.25);
-    transition:.18s ease;
-    line-height:1;
-  }
-
-  button:hover{
-    transform: translateY(-1px);
-    border-color: rgba(0,255,0,.45);
-    color: var(--neon);
-  }
-
-  #play-pause{
-    background: var(--neon);
-    color:#000;
-    border-color: rgba(0,255,0,0);
-    box-shadow:0 0 22px rgba(0,255,0,.28);
-  }
-  #play-pause:hover{
-    color:#000;
-    box-shadow:0 0 34px rgba(0,255,0,.45);
-  }
-
-  #play-pause.pulse{
-    animation: pulse 1.35s ease-in-out infinite;
-  }
-  @keyframes pulse{
-    0%,100%{ transform: translateY(0) scale(1); box-shadow:0 0 22px rgba(0,255,0,.28); }
-    50%{ transform: translateY(-1px) scale(1.04); box-shadow:0 0 38px rgba(0,255,0,.45); }
-  }
-
-  .actions{
-    display:flex;
-    justify-content:center;
-    gap:12px;
-    flex-wrap:wrap;
-    margin: 6px 0 6px;
-  }
-  .icon-btn{
-    width:44px;
-    height:44px;
-    background: rgba(0,0,0,.25);
-    color: var(--muted);
-    border:1px solid rgba(255,255,255,.14);
-    box-shadow:none;
-  }
-  .icon-btn:hover{
-    color: var(--neon);
-    border-color: rgba(0,255,0,.35);
-  }
-  .icon-btn.on{
-    background: rgba(0,255,0,.14);
-    color: var(--neon);
-    border-color: rgba(0,255,0,.45);
-    box-shadow:0 0 18px rgba(0,255,0,.18);
-  }
-
-  .ico{
-    width:22px;
-    height:22px;
-    fill:none;
-    stroke:currentColor;
-    stroke-width:2;
-    stroke-linecap:round;
-    stroke-linejoin:round;
-  }
-  #play-pause .ico{ width:24px; height:24px; stroke:#000; }
-
-  #status-line{
-    min-height:18px;
-    font-size:12px;
-    color:var(--muted);
-    opacity:.9;
-    margin: 8px 0 10px;
-    letter-spacing:.06em;
-  }
-
-  /* Progress */
-  .progress-wrapper{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    width:min(680px, 100%);
-    margin: 0 auto;
-    gap:10px;
-  }
-
-  .progress-container{
-    flex:1;
-    height:10px;
-    background: rgba(255,255,255,0.10);
-    border-radius:999px;
-    cursor:pointer;
-    overflow:visible;
-    border:1px solid rgba(255,255,255,.10);
-    position:relative;
-
-    touch-action: none;
-    user-select: none;
-  }
-
-  .progress-bar{
-    width:0%;
-    height:100%;
-    border-radius:999px;
-    background: linear-gradient(90deg, rgba(0,255,0,.35), rgba(0,255,0,.8), rgba(0,255,0,.35));
-    background-size:400% 100%;
-    animation: flow 4s linear infinite;
-    transition: width 0.08s linear;
-  }
-  @keyframes flow{ 0%{background-position:0%} 100%{background-position:400%} }
-
-  .progress-thumb{
-    position:absolute;
-    top:50%;
-    left:0%;
-    transform: translate(-50%, -50%);
-    width:14px;
-    height:14px;
-    border-radius:999px;
-    background: rgba(0,255,0,.95);
-    box-shadow: 0 0 14px rgba(0,255,0,.35);
-    border: 1px solid rgba(0,0,0,.35);
-    pointer-events:none;
-  }
-
-  .seek-dot{
-    position:absolute;
-    top:50%;
-    left:0%;
-    transform: translate(-50%, -50%);
-    width:10px;
-    height:10px;
-    border-radius:999px;
-    background: rgba(255,255,255,.85);
-    box-shadow: 0 0 10px rgba(0,0,0,.35);
-    border: 1px solid rgba(0,0,0,.35);
-    opacity:0;
-    pointer-events:none;
-  }
-
-  .seek-tip{
-    position:absolute;
-    top:-30px;
-    left:0%;
-    transform: translate(-50%, 0);
-    padding:6px 8px;
-    font-size:12px;
-    color: var(--ink);
-    background: rgba(0,0,0,.55);
-    border:1px solid rgba(255,255,255,.14);
-    border-radius: 10px;
-    letter-spacing:.04em;
-    opacity:0;
-    pointer-events:none;
-    white-space:nowrap;
-    backdrop-filter: blur(4px);
-  }
-
-  .progress-container.preview .seek-dot,
-  .progress-container.preview .seek-tip{
-    opacity:1;
-  }
-
-  #current-time,#total-time{
-    font-size:12px;
-    color:var(--muted);
-    min-width:46px;
-    text-align:center;
-  }
-
-  /* Volume */
-  .volume-wrapper{
-    margin-top:16px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-  }
-  .volume-icon{
-    width:44px;
-    height:44px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    border-radius:999px;
-    background: rgba(0,0,0,.25);
-    color: var(--muted);
-    border:1px solid rgba(255,255,255,.14);
-    cursor:pointer;
-    transition:.18s ease;
-  }
-  .volume-icon:hover{
-    color: var(--neon);
-    border-color: rgba(0,255,0,.35);
-    transform: translateY(-1px);
-  }
-  #volume-slider{
-    width:160px;
-    height:4px;
-    cursor:pointer;
-    accent-color: var(--neon);
-  }
-
-  /* ===== SUPPORT (CAFÉ) ===== */
-  .support{
-    margin: 18px auto 10px;
-    width: min(720px, 100%);
-    text-align:center;
-  }
-
-  .support-btn{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    padding: 12px 18px;
-    border-radius: 999px;
-    border:1px solid rgba(0,255,0,.35);
-    background: rgba(0,255,0,.10);
-    color: var(--ink);
-    cursor:pointer;
-    transition:.18s ease;
-    height:auto;
-    width:auto;
-
-    /* ✅ SOLO parpadeo de neón (sin movimiento) */
-    animation: neon-only 4.8s ease-in-out infinite;
-    box-shadow: 0 0 14px rgba(0,255,0,.16);
-  }
-
-  @keyframes neon-only{
-    0%, 70%, 100%{
-      box-shadow: 0 0 14px rgba(0,255,0,.16);
-      border-color: rgba(0,255,0,.40);
-    }
-    80%{
-      box-shadow: 0 0 32px rgba(0,255,0,.34);
-      border-color: rgba(0,255,0,.75);
-    }
-    90%{
-      box-shadow: 0 0 18px rgba(0,255,0,.22);
-      border-color: rgba(0,255,0,.50);
-    }
-  }
-
-  /* ✅ NO movimiento en hover/active (anula button:hover global) */
-  .support-btn:hover{
-    transform:none !important;
-    border-color: rgba(0,255,0,.70);
-    color: var(--neon);
-    box-shadow: 0 0 28px rgba(0,255,0,.30);
-  }
-  .support-btn:active{ transform:none !important; }
-
-  .support-note{
-    margin-top:10px;
-    font-size:12px;
-    color: var(--muted);
-    opacity:.9;
-    letter-spacing:.03em;
-  }
-
-  /* ===== MODAL ===== */
-  .modal{
-    position: fixed;
-    inset: 0;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding: 18px;
-    background: rgba(0,0,0,.55);
-    z-index: 999;
-  }
-  .modal.open{ display:flex; }
-
-  .modal-card{
-    width: min(560px, 100%);
-    border-radius: 16px;
-    background: rgba(10,8,8,.95);
-    border: 1px solid rgba(255,255,255,.12);
-    box-shadow: 0 0 34px rgba(0,0,0,.55);
-    padding: 16px 16px 14px;
-    text-align:left;
-    position: relative;
-  }
-
-  /* ✅ FIX X: clickable en toda el área */
-  .modal-close{
-    position:absolute;
-    top:10px;
-    right:10px;
-
-    width:48px !important;
-    height:48px !important;
-    padding:0 !important;
-
-    border-radius:999px;
-    background: rgba(255,255,255,.08) !important;
-    border:1px solid rgba(255,255,255,.16) !important;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    cursor:pointer;
-    color: var(--muted) !important;
-
-    box-shadow:none !important;
-    transform:none !important;
-
-    z-index:5;
-    pointer-events:auto;
-    touch-action: manipulation;
-  }
-  .modal-close:hover{
-    transform:none !important;
-    border-color: rgba(0,255,0,.45) !important;
-    color: var(--neon) !important;
-  }
-  .modal-close svg{
-    width:18px;
-    height:18px;
-    display:block;
-    fill:none;
-    stroke:currentColor;
-    stroke-width:2.2;
-    stroke-linecap:round;
-    pointer-events:none !important; /* ✅ refuerzo */
-  }
-
-  .modal-title{
-    font-size:14px;
-    letter-spacing:.16em;
-    text-transform:uppercase;
-    color: var(--ink);
-    opacity:.95;
-    margin: 4px 0 8px;
-  }
-
-  .modal-text{
-    font-size:13px;
-    color: var(--muted);
-    line-height:1.45;
-    margin-bottom:12px;
-  }
-
-  .support-row{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    padding:10px 12px;
-    border-radius:12px;
-    background: rgba(255,255,255,.05);
-    border:1px solid rgba(255,255,255,.08);
-  }
-
-  .support-label{
-    font-size:12px;
-    color: var(--muted);
-    letter-spacing:.10em;
-    text-transform:uppercase;
-  }
-
-  .support-value{
-    font-size:13px;
-    color: var(--ink);
-    flex:1;
-    text-align:center;
-  }
-
-  .copy-btn{
-    padding: 10px 12px;
-    border-radius: 999px;
-    border:1px solid rgba(0,255,0,.28);
-    background: rgba(0,255,0,.10);
-    color: var(--ink);
-    cursor:pointer;
-    transition:.18s ease;
-    white-space:nowrap;
-    width:auto;
-    height:auto;
-  }
-  .copy-btn:hover{
-    color: var(--neon);
-    border-color: rgba(0,255,0,.5);
-  }
-
-  /* Playlist */
-  .playlist{
-    margin:18px auto 0;
-    text-align:left;
-    width:min(720px, 100%);
-  }
-  .track{
-    padding:10px 14px;
-    border-radius:10px;
-    background: rgba(255,255,255,0.05);
-    margin:8px 0;
-    transition: background 0.2s, transform 0.15s, border-color .2s;
-    cursor:pointer;
-    border:1px solid rgba(255,255,255,.08);
-    color: var(--ink);
-  }
-  .track:hover{
-    background: rgba(255,255,255,0.09);
-    transform: translateY(-1px);
-    border-color: rgba(0,255,0,.25);
-  }
-  .track.current{
-    background: rgba(0,255,0,0.10);
-    border-color: rgba(0,255,0,.45);
-    color: var(--neon);
-  }
-
-  .sig{
-    margin-top:16px;
-    font-size:12px;
-    opacity:.6;
-    letter-spacing:.14em;
-    text-transform:uppercase;
-    color:var(--muted);
-  }
-
-  @keyframes crt-flicker{
-    0%{filter:brightness(1) contrast(1)}
-    50%{filter:brightness(.97) contrast(1)}
-    100%{filter:brightness(1) contrast(1)}
-  }
-  @keyframes crt-glitch{
-    0%{transform:translate(0); filter:none}
-    25%{transform:translate(-1px,0); filter:hue-rotate(-6deg)}
-    50%{transform:translate(1px,0); filter:hue-rotate(6deg)}
-    75%{transform:translate(-1px,0); filter:contrast(1.1)}
-    100%{transform:translate(0); filter:none}
-  }
-
-  @media (max-width:480px){
-    h1{ font-size:18px; }
-    .progress-wrapper{ gap:8px; }
-    #volume-slider{ width: 140px; }
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    #cover{ animation:none !important; }
-    .crt:hover #cover{ animation:none !important; }
-    .progress-bar{ animation:none !important; }
-    #play-pause.pulse{ animation:none !important; }
-    .support-btn{ animation:none !important; }
-  }
+/* ================== PLAYLIST ================== */
+.playlist{
+  margin-top:20px;
+  text-align:left;
+}
+.track{
+  padding:10px;
+  border-radius:10px;
+  margin-bottom:6px;
+  cursor:pointer;
+  background:rgba(255,255,255,.05);
+}
+.track.current{
+  background:rgba(0,255,0,.12);
+  color:var(--neon);
+}
 </style>
 </head>
 
 <body>
-  <main class="wrap">
-    <a href="index.html" class="back">← Salir del canal</a>
+<main class="wrap">
 
-    <h1>Cosmic Marciana</h1>
+<h1>Cosmic Marciana</h1>
 
-    <div class="crt" role="button" aria-label="Play/Pause" tabindex="0">
-      <img id="cover" src="tv.png" alt="Televisor CRT / portada" />
-    </div>
+<div class="crt" id="crt">
+  <img id="cover" src="tv.png" alt="CRT">
+</div>
 
-    <div class="controls">
-      <button id="prev-btn" aria-label="Anterior" title="Anterior"></button>
-      <button id="play-pause" aria-label="Play/Pause" title="Play/Pause"></button>
-      <button id="stop-btn" aria-label="Stop" title="Stop"></button>
-      <button id="next-btn" aria-label="Siguiente" title="Siguiente"></button>
-    </div>
+<div class="controls">
+  <button id="prev">⏮</button>
+  <button id="play-pause">▶</button>
+  <button id="stop">⏹</button>
+  <button id="next">⏭</button>
+</div>
 
-    <div class="actions" aria-label="Acciones">
-      <button id="shuffle-btn" class="icon-btn" aria-label="Shuffle" title="Shuffle"></button>
-      <button id="loop-btn" class="icon-btn" aria-label="Loop" title="Loop"></button>
-      <button id="share-btn" class="icon-btn" aria-label="Compartir" title="Compartir"></button>
-    </div>
+<div class="progress-wrapper">
+  <span id="current">0:00</span>
+  <div class="progress-container" id="progress">
+    <div class="progress-bar" id="bar"></div>
+  </div>
+  <span id="total">0:00</span>
+</div>
 
-    <div id="status-line"></div>
+<div class="support">
+  <button class="support-btn" id="open-support">Invítame a un café ☕</button>
+  <div style="margin-top:10px;font-size:12px;opacity:.85">
+    Descarga libre. Si te nace, apoya la emisión con un café 💚
+  </div>
+  <a href="la-casa-del-terror.zip" download class="download-link">
+    ⬇ Descargar el disco (ZIP)
+  </a>
+</div>
 
-    <div class="progress-wrapper">
-      <span id="current-time">0:00</span>
-      <div class="progress-container" id="progress-container" aria-label="Barra de reproducción">
-        <div class="progress-bar" id="progress-bar"></div>
-        <div class="progress-thumb" id="progress-thumb"></div>
-        <div class="seek-dot" id="seek-dot"></div>
-        <div class="seek-tip" id="seek-tip">0:00</div>
-      </div>
-      <span id="total-time">0:00</span>
-    </div>
+<div class="playlist" id="playlist">
+  <div class="track" data-i="0">1. Los pobres más</div>
+  <div class="track" data-i="1">2. Volveremos a empezar</div>
+  <div class="track" data-i="2">3. Quién llena los shows</div>
+</div>
 
-    <div class="volume-wrapper">
-      <span class="volume-icon" id="volume-icon" title="Mute" role="button" tabindex="0"></span>
-      <input type="range" id="volume-slider" min="0" max="100" value="100" />
-    </div>
+<audio id="audio" preload="metadata" playsinline></audio>
 
-    <!-- CAFÉ -->
-    <div class="support">
-      <button class="support-btn" id="support-open" type="button">
-        Invítame a un café <span class="coffee" aria-hidden="true">☕</span>
-      </button>
-      <div class="support-note">
-        Si te ha gustado la transmisión, puedes colaborar para mantener la emisión viva.
-      </div>
-    </div>
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-card">
+    <button class="modal-close" id="close">✕</button>
+    <p>Gracias por sostener el ruido 💚</p>
+    <p>Bizum: +34 600 000 000</p>
+    <a href="la-casa-del-terror.zip" download class="download-link">
+      ⬇ Descargar el disco (ZIP)
+    </a>
+  </div>
+</div>
 
-    <!-- MODAL BIZUM -->
-    <div class="modal" id="support-modal" aria-hidden="true">
-      <div class="modal-card" role="dialog" aria-modal="true" aria-label="Colabora con Cosmic Marciana">
-        <button class="modal-close" id="support-close" type="button" aria-label="Cerrar">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M6 6l12 12M18 6L6 18"></path>
-          </svg>
-        </button>
-
-        <div class="modal-title">Apoya la transmisión</div>
-        <div class="modal-text">
-          Si este disco te ha acompañado un rato, puedes invitarme a un café vía Bizum.
-          <br><br>
-          <strong>Gracias por sostener el ruido 💚</strong>
-        </div>
-
-        <div class="support-row">
-          <div class="support-label">Bizum</div>
-          <div class="support-value" id="bizum-number">+34 600 000 000</div>
-          <button class="copy-btn" id="copy-bizum" type="button">Copiar</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="playlist" id="playlist">
-      <div class="track" data-index="0">1. Los pobres más</div>
-      <div class="track" data-index="1">2. Volveremos a empezar</div>
-      <div class="track" data-index="2">3. Quién llena los shows</div>
-      <div class="track" data-index="3">4. STOP!</div>
-      <div class="track" data-index="4">5. Reza</div>
-      <div class="track" data-index="5">6. De pie</div>
-      <div class="track" data-index="6">7. Quemarlo todo</div>
-      <div class="track" data-index="7">8. Nadie sabe nada</div>
-      <div class="track" data-index="8">9. Lo que no quiero</div>
-      <div class="track" data-index="9">10. La casa del terror</div>
-      <div class="track" data-index="10">11. Tenemos que hablar</div>
-    </div>
-
-    <audio id="audio" preload="metadata" playsinline></audio>
-
-    <div class="sig">EMISIÓN NO AUTORIZADA · NO AJUSTAR EL DIAL</div>
-  </main>
+</main>
 
 <script>
-  const ICONS = {
-    prev: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6v12"/><path d="M18 6l-8 6 8 6z"/></svg>`,
-    next: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6v12"/><path d="M6 6l8 6-8 6z"/></svg>`,
-    stop: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="1"/></svg>`,
-    play: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7l10 5-10 5z"/></svg>`,
-    pause:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6v12"/><path d="M16 6v12"/></svg>`,
-    shuffle:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5"/><path d="M4 20l7-7"/><path d="M4 4l7 7"/><path d="M21 16v5h-5"/><path d="M14 14l7 7"/><path d="M14 10l7-7"/></svg>`,
-    loop:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>`,
-    loop1:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/><path d="M12 8v8"/><path d="M11 9h2"/></svg>`,
-    share:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4"/><path d="M8 8l4-4 4 4"/><path d="M6 12v7a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-7"/></svg>`,
-    vol3:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 8a4 4 0 0 1 0 8"/><path d="M18.5 5.5a7 7 0 0 1 0 13"/></svg>`,
-    vol2:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 8a4 4 0 0 1 0 8"/></svg>`,
-    mute:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 9l5 6"/><path d="M21 9l-5 6"/></svg>`
-  };
+const audio=document.getElementById("audio");
+const tracks=["lospobres.mp3","vae.mp3","shows.mp3"];
+let i=Number(localStorage.getItem("cm_idx"))||0;
+let saved=Number(localStorage.getItem("cm_time"))||0;
 
-  const tvBase = "tv.png";
-  const tvByTrack = [
-    "tv1.png","tv2.png","tv3.png","tv4.png","tv5.png","tv6.png",
-    "tv7.png","tv8.png","tv9.png","tv10.png","tv11.png"
-  ];
+audio.src=tracks[i];
 
-  const sources = [
-    "lospobres.mp3","vae.mp3","shows.mp3","canco4.mp3","canco5.mp3",
-    "canco6.mp3","canco7.mp3","canco8.mp3","canco9.mp3","canco10.mp3","canco11.mp3"
-  ];
-
-  const $ = (id) => document.getElementById(id);
-
-  const coverImg = $("cover");
-  const audio = $("audio");
-
-  const progressContainer = $("progress-container");
-  const progressBar = $("progress-bar");
-  const progressThumb = $("progress-thumb");
-  const seekDot = $("seek-dot");
-  const seekTip = $("seek-tip");
-
-  const currentTimeEl = $("current-time");
-  const totalTimeEl = $("total-time");
-
-  const volumeSlider = $("volume-slider");
-  const volumeIcon = $("volume-icon");
-
-  const statusLineEl = $("status-line");
-  const shuffleBtn = $("shuffle-btn");
-  const loopBtn = $("loop-btn");
-  const playPauseBtn = $("play-pause");
-
-  const prevBtn = $("prev-btn");
-  const nextBtn = $("next-btn");
-  const stopBtn = $("stop-btn");
-  const shareBtn = $("share-btn");
-  const playlistEl = $("playlist");
-  const crtBtn = document.querySelector(".crt");
-
-  const tracks = Array.from(document.querySelectorAll(".track"));
-
-  let currentIndex = 0;
-  let lastVolume = 1;
-  let loopMode = 0; // 0=OFF,1=SONG,2=ALBUM
-  let shuffleOn = false;
-  let hasLoaded = false;
-
-  let isScrubbing = false;
-  let usingTouchFallback = false;
-
-  const LS = {
-    vol: "cm_vol",
-    idx: "cm_idx",
-    shuffle: "cm_shuffle",
-    loop: "cm_loop"
-  };
-
-  function formatTime(t){
-    const m = Math.floor(t / 60);
-    const s = Math.floor(t % 60);
-    return m + ":" + ("0" + s).slice(-2);
+audio.addEventListener("loadedmetadata",()=>{
+  if(saved>0 && saved<audio.duration){
+    audio.currentTime=saved;
+    audio.play();
   }
+});
 
-  function clamp01(n){ return Math.max(0, Math.min(1, n)); }
-
-  function setStatus(msg){
-    statusLineEl.textContent = msg || "";
-    if(msg){
-      clearTimeout(setStatus._t);
-      setStatus._t = setTimeout(()=>{ statusLineEl.textContent = ""; }, 1600);
-    }
+audio.addEventListener("timeupdate",()=>{
+  if(!audio.paused){
+    localStorage.setItem("cm_time",audio.currentTime);
   }
-
-  function tvForIndex(index){
-    return tvByTrack[index] || tvBase;
-  }
-
-  function renderIcons(){
-    prevBtn.innerHTML = ICONS.prev;
-    nextBtn.innerHTML = ICONS.next;
-    stopBtn.innerHTML = ICONS.stop;
-    shareBtn.innerHTML = ICONS.share;
-    shuffleBtn.innerHTML = ICONS.shuffle;
-    loopBtn.innerHTML = ICONS.loop;
-    volumeIcon.innerHTML = ICONS.vol3;
-    playPauseBtn.innerHTML = ICONS.play;
-  }
-
-  function setPlayIcon(){
-    playPauseBtn.innerHTML = audio.paused ? ICONS.play : ICONS.pause;
-    playPauseBtn.classList.toggle("pulse", audio.paused);
-  }
-
-  function syncButtons(){
-    shuffleBtn.classList.toggle("on", shuffleOn);
-    loopBtn.classList.toggle("on", loopMode !== 0);
-
-    if(loopMode === 0){
-      loopBtn.innerHTML = ICONS.loop;
-      loopBtn.title = "Loop OFF";
-    } else if(loopMode === 1){
-      loopBtn.innerHTML = ICONS.loop1;
-      loopBtn.title = "Loop CANCIÓN";
-    } else {
-      loopBtn.innerHTML = ICONS.loop;
-      loopBtn.title = "Loop ÁLBUM";
-    }
-  }
-
-  function updateVolumeIcon(){
-    if(audio.volume === 0) volumeIcon.innerHTML = ICONS.mute;
-    else if(audio.volume < 0.5) volumeIcon.innerHTML = ICONS.vol2;
-    else volumeIcon.innerHTML = ICONS.vol3;
-  }
-
-  function markCurrent(){
-    tracks.forEach(t=>t.classList.remove("current"));
-    const el = tracks[currentIndex];
-    if(el) el.classList.add("current");
-  }
-
-  function resetProgressUI(){
-    progressBar.style.width = "0%";
-    progressThumb.style.left = "0%";
-    currentTimeEl.textContent = "0:00";
-    totalTimeEl.textContent = "0:00";
-  }
-
-  function setProgressUI(pct){
-    const p = clamp01(pct);
-    const perc = (p * 100);
-    progressBar.style.width = perc + "%";
-    progressThumb.style.left = perc + "%";
-  }
-
-  function getPctFromClientX(clientX){
-    const rect = progressContainer.getBoundingClientRect();
-    return clamp01((clientX - rect.left) / rect.width);
-  }
-
-  function seekToPct(pct){
-    if(!audio.duration) return;
-    audio.currentTime = clamp01(pct) * audio.duration;
-  }
-
-  function updatePreview(clientX){
-    if(!audio.duration) return;
-    const pct = getPctFromClientX(clientX);
-    const perc = pct * 100;
-    seekDot.style.left = perc + "%";
-    seekTip.style.left = perc + "%";
-    seekTip.textContent = formatTime(pct * audio.duration);
-  }
-
-  function showPreview(){ progressContainer.classList.add("preview"); }
-  function hidePreview(){ progressContainer.classList.remove("preview"); }
-
-  // ===== POINTER EVENTS (principal) =====
-  function onPointerDown(e){
-    e.preventDefault();
-    if(!audio.duration) return;
-    isScrubbing = true;
-    usingTouchFallback = false;
-    try { progressContainer.setPointerCapture(e.pointerId); } catch {}
-    showPreview();
-    updatePreview(e.clientX);
-    seekToPct(getPctFromClientX(e.clientX));
-  }
-
-  function onPointerMove(e){
-    e.preventDefault();
-    if(!audio.duration) return;
-    if(usingTouchFallback) return;
-    showPreview();
-    updatePreview(e.clientX);
-    if(isScrubbing) seekToPct(getPctFromClientX(e.clientX));
-  }
-
-  function onPointerUp(e){
-    if(!audio.duration) return;
-    if(usingTouchFallback) return;
-    isScrubbing = false;
-    try { progressContainer.releasePointerCapture(e.pointerId); } catch {}
-    hidePreview();
-  }
-
-  // ===== TOUCH FALLBACK =====
-  function touchClientX(ev){
-    const t = ev.touches && ev.touches[0] ? ev.touches[0] : (ev.changedTouches ? ev.changedTouches[0] : null);
-    return t ? t.clientX : null;
-  }
-
-  function onTouchStart(ev){
-    if(!audio.duration) return;
-    usingTouchFallback = true;
-    isScrubbing = true;
-    ev.preventDefault();
-
-    const cx = touchClientX(ev);
-    if(cx == null) return;
-    showPreview();
-    updatePreview(cx);
-    seekToPct(getPctFromClientX(cx));
-  }
-
-  function onTouchMove(ev){
-    if(!audio.duration) return;
-    if(!isScrubbing) return;
-    ev.preventDefault();
-
-    const cx = touchClientX(ev);
-    if(cx == null) return;
-    showPreview();
-    updatePreview(cx);
-    seekToPct(getPctFromClientX(cx));
-  }
-
-  function onTouchEnd(ev){
-    if(!audio.duration) return;
-    ev.preventDefault();
-    isScrubbing = false;
-    hidePreview();
-  }
-
-  function loadTrack(index){
-    currentIndex = index;
-    audio.src = sources[index];
-    hasLoaded = true;
-
-    coverImg.src = tvForIndex(index);
-    markCurrent();
-
-    localStorage.setItem(LS.idx, String(currentIndex));
-  }
-
-  function playCurrent(){
-    if(!hasLoaded) loadTrack(currentIndex);
-
-    const p = audio.play();
-    if(p && typeof p.then === "function"){
-      p.then(()=> setPlayIcon()).catch(()=> {
-        setPlayIcon();
-        setStatus("Pulsa Play para iniciar.");
-      });
-    } else {
-      setPlayIcon();
-    }
-  }
-
-  function playTrack(index){
-    loadTrack(index);
-    playCurrent();
-  }
-
-  function togglePlay(){
-    if(audio.paused) playCurrent();
-    else{
-      audio.pause();
-      setPlayIcon();
-    }
-  }
-
-  function stopTrack(){
-    audio.pause();
-    audio.currentTime = 0;
-    audio.removeAttribute("src");
-    audio.load();
-
-    hasLoaded = false;
-
-    coverImg.src = tvBase;
-    tracks.forEach(t => t.classList.remove("current"));
-    currentIndex = 0;
-
-    localStorage.setItem(LS.idx, "0");
-
-    resetProgressUI();
-    setPlayIcon();
-  }
-
-  function getRandomNextIndex(){
-    if(tracks.length <= 1) return currentIndex;
-    let n = currentIndex;
-    while(n === currentIndex) n = Math.floor(Math.random() * tracks.length);
-    return n;
-  }
-
-  function nextTrack(){
-    if(shuffleOn) return playTrack(getRandomNextIndex());
-    playTrack((currentIndex + 1) % tracks.length);
-  }
-
-  function prevTrack(){
-    if(shuffleOn) return playTrack(getRandomNextIndex());
-    playTrack((currentIndex - 1 + tracks.length) % tracks.length);
-  }
-
-  function toggleShuffle(){
-    shuffleOn = !shuffleOn;
-    localStorage.setItem(LS.shuffle, shuffleOn ? "1" : "0");
-    syncButtons();
-    setStatus(shuffleOn ? "Shuffle ON" : "Shuffle OFF");
-  }
-
-  function cycleLoop(){
-    loopMode = (loopMode + 1) % 3;
-    localStorage.setItem(LS.loop, String(loopMode));
-    syncButtons();
-    setStatus(loopMode === 0 ? "Loop OFF" : (loopMode === 1 ? "Loop CANCIÓN" : "Loop ÁLBUM"));
-  }
-
-  async function sharePage(){
-    const url = window.location.href;
-
-    try{
-      if(navigator.share){
-        await navigator.share({ title: "Cosmic Marciana", url });
-        setStatus("Compartido 💚");
-        return;
-      }
-    } catch {}
-
-    try{
-      if(navigator.clipboard && window.isSecureContext){
-        await navigator.clipboard.writeText(url);
-        setStatus("Link copiado 💚");
-        return;
-      }
-    } catch {}
-
-    window.prompt("Copia este link:", url);
-  }
-
-  function applyStoredSettings(){
-    const v = Number(localStorage.getItem(LS.vol));
-    if(Number.isFinite(v) && v >= 0 && v <= 1){
-      audio.volume = v;
-      volumeSlider.value = String(Math.round(v * 100));
-      lastVolume = v || 1;
-    } else {
-      audio.volume = 1;
-      volumeSlider.value = "100";
-      lastVolume = 1;
-    }
-
-    const idx = Number(localStorage.getItem(LS.idx));
-    if(Number.isInteger(idx) && idx >= 0 && idx < sources.length){
-      currentIndex = idx;
-    } else {
-      currentIndex = 0;
-    }
-
-    shuffleOn = localStorage.getItem(LS.shuffle) === "1";
-    const lm = Number(localStorage.getItem(LS.loop));
-    loopMode = (lm === 0 || lm === 1 || lm === 2) ? lm : 0;
-
-    updateVolumeIcon();
-    syncButtons();
-
-    coverImg.src = tvBase;
-    setPlayIcon();
-    resetProgressUI();
-    markCurrent();
-  }
-
-  function wireEvents(){
-    prevBtn.addEventListener("click", prevTrack);
-    nextBtn.addEventListener("click", nextTrack);
-    playPauseBtn.addEventListener("click", togglePlay);
-    stopBtn.addEventListener("click", stopTrack);
-    shuffleBtn.addEventListener("click", toggleShuffle);
-    loopBtn.addEventListener("click", cycleLoop);
-    shareBtn.addEventListener("click", sharePage);
-
-    crtBtn.addEventListener("click", togglePlay);
-    crtBtn.addEventListener("keydown", (e)=>{
-      if(e.key === "Enter" || e.key === " "){
-        e.preventDefault();
-        togglePlay();
-      }
-    });
-
-    playlistEl.addEventListener("click", (e)=>{
-      const item = e.target.closest(".track");
-      if(!item) return;
-      const idx = Number(item.dataset.index);
-      if(Number.isInteger(idx)) playTrack(idx);
-    });
-
-    progressContainer.addEventListener("pointerdown", onPointerDown, { passive:false });
-    progressContainer.addEventListener("pointermove", onPointerMove, { passive:false });
-    progressContainer.addEventListener("pointerup", onPointerUp);
-    progressContainer.addEventListener("pointercancel", onPointerUp);
-
-    progressContainer.addEventListener("touchstart", onTouchStart, { passive:false });
-    progressContainer.addEventListener("touchmove", onTouchMove, { passive:false });
-    progressContainer.addEventListener("touchend", onTouchEnd, { passive:false });
-    progressContainer.addEventListener("touchcancel", onTouchEnd, { passive:false });
-
-    progressContainer.addEventListener("pointerenter", ()=> { if(audio.duration) showPreview(); });
-    progressContainer.addEventListener("pointerleave", ()=> { if(!isScrubbing) hidePreview(); });
-
-    document.addEventListener("pointerup", ()=> { if(!isScrubbing) hidePreview(); }, { passive:true });
-    document.addEventListener("touchend", ()=> { if(!isScrubbing) hidePreview(); }, { passive:true });
-
-    audio.addEventListener("timeupdate", ()=>{
-      if(!audio.duration) return;
-      currentTimeEl.textContent = formatTime(audio.currentTime);
-      totalTimeEl.textContent = formatTime(audio.duration);
-      setProgressUI(audio.currentTime / audio.duration);
-    });
-
-    audio.addEventListener("loadedmetadata", ()=>{
-      if(audio.duration) totalTimeEl.textContent = formatTime(audio.duration);
-    });
-
-    audio.addEventListener("ended", ()=>{
-      if(loopMode === 1) return playTrack(currentIndex);
-      if(loopMode === 2) return nextTrack();
-      if(shuffleOn) return nextTrack();
-
-      if(currentIndex === tracks.length - 1){
-        stopTrack();
-        setStatus("Final del disco.");
-      } else {
-        nextTrack();
-      }
-    });
-
-    audio.addEventListener("error", ()=>{
-      setStatus("Error cargando audio.");
-      setPlayIcon();
-    });
-
-    volumeSlider.addEventListener("input", ()=>{
-      const v = Number(volumeSlider.value) / 100;
-      audio.volume = v;
-      lastVolume = v || lastVolume;
-      localStorage.setItem(LS.vol, String(v));
-      updateVolumeIcon();
-    });
-
-    volumeIcon.addEventListener("click", ()=>{
-      if(audio.volume > 0){
-        lastVolume = audio.volume;
-        audio.volume = 0;
-        volumeSlider.value = "0";
-      } else {
-        audio.volume = lastVolume || 1;
-        volumeSlider.value = String(Math.round(audio.volume * 100));
-      }
-      localStorage.setItem(LS.vol, String(audio.volume));
-      updateVolumeIcon();
-    });
-
-    volumeIcon.addEventListener("keydown", (e)=>{
-      if(e.key === "Enter" || e.key === " "){
-        e.preventDefault();
-        volumeIcon.click();
-      }
-    });
-
-    document.addEventListener("keydown", (e)=>{
-      if(e.code === "Space"){
-        if(document.activeElement && document.activeElement.tagName === "INPUT") return;
-        e.preventDefault();
-        togglePlay();
-      }
-      if(e.code === "ArrowRight") nextTrack();
-      if(e.code === "ArrowLeft") prevTrack();
-    });
-
-    document.addEventListener("visibilitychange", ()=>{
-      if(document.hidden && !audio.paused){
-        audio.pause();
-        setPlayIcon();
-      }
-    });
-  }
-
-  function supportInit(){
-    const openBtn = document.getElementById("support-open");
-    const modal = document.getElementById("support-modal");
-    const closeBtn = document.getElementById("support-close");
-    const copyBtn = document.getElementById("copy-bizum");
-    const bizumEl = document.getElementById("bizum-number");
-
-    if(!openBtn || !modal || !closeBtn) return;
-
-    function open(){
-      modal.classList.add("open");
-      modal.setAttribute("aria-hidden","false");
-      closeBtn.focus();
-    }
-    function close(){
-      modal.classList.remove("open");
-      modal.setAttribute("aria-hidden","true");
-      openBtn.focus();
-    }
-
-    openBtn.addEventListener("click", open);
-    closeBtn.addEventListener("click", close);
-
-    modal.addEventListener("click", (e)=>{
-      if(e.target === modal) close();
-    });
-
-    document.addEventListener("keydown", (e)=>{
-      if(e.key === "Escape" && modal.classList.contains("open")) close();
-    });
-
-    copyBtn?.addEventListener("click", async ()=>{
-      const txt = (bizumEl?.textContent || "").trim();
-      if(!txt) return;
-
-      try{
-        if(navigator.clipboard && window.isSecureContext){
-          await navigator.clipboard.writeText(txt);
-          copyBtn.textContent = "Copiado";
-          setTimeout(()=> copyBtn.textContent = "Copiar", 900);
-          return;
-        }
-      } catch {}
-
-      window.prompt("Copia este Bizum:", txt);
-    });
-  }
-
-  (function init(){
-    renderIcons();
-    applyStoredSettings();
-    wireEvents();
-    supportInit();
-  })();
+});
+
+document.getElementById("stop").onclick=()=>{
+  audio.pause();
+  audio.currentTime=0;
+  localStorage.removeItem("cm_time");
+};
+
+document.getElementById("play-pause").onclick=()=>{
+  audio.paused?audio.play():audio.pause();
+};
+
+document.getElementById("open-support").onclick=()=>{
+  document.getElementById("modal").classList.add("open");
+};
+document.getElementById("close").onclick=()=>{
+  document.getElementById("modal").classList.remove("open");
+};
 </script>
 
 </body>
 </html>
-
