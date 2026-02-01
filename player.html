@@ -23,7 +23,7 @@
     touch-action: manipulation;
   }
 
-  /* Focus accesible (no lo quitamos del todo) */
+  /* Focus accesible */
   :focus{ outline:none; }
   :focus-visible{
     outline: 2px solid rgba(0,255,0,.75);
@@ -256,6 +256,8 @@
     cursor:pointer;
     overflow:hidden;
     border:1px solid rgba(255,255,255,.10);
+    touch-action: none;   /* importante para drag en móvil */
+    user-select: none;
   }
   .progress-bar{
     width:0%;
@@ -491,6 +493,8 @@
   let shuffleOn = false;
   let hasLoaded = false;
 
+  let isScrubbing = false;
+
   const LS = {
     vol: "cm_vol",
     idx: "cm_idx",
@@ -566,6 +570,32 @@
     totalTimeEl.textContent = "0:00";
   }
 
+  function seekFromClientX(clientX){
+    if(!audio.duration) return;
+    const rect = progressContainer.getBoundingClientRect();
+    const pct = (clientX - rect.left) / rect.width;
+    const clamped = Math.max(0, Math.min(1, pct));
+    audio.currentTime = clamped * audio.duration;
+  }
+
+  function onPointerDown(e){
+    if(!audio.duration) return;
+    isScrubbing = true;
+    progressContainer.setPointerCapture(e.pointerId);
+    seekFromClientX(e.clientX);
+  }
+
+  function onPointerMove(e){
+    if(!isScrubbing) return;
+    seekFromClientX(e.clientX);
+  }
+
+  function onPointerUp(e){
+    if(!isScrubbing) return;
+    isScrubbing = false;
+    try { progressContainer.releasePointerCapture(e.pointerId); } catch {}
+  }
+
   /* Load track (no reproduce) */
   function loadTrack(index){
     currentIndex = index;
@@ -630,14 +660,6 @@
     playTrack((currentIndex - 1 + tracks.length) % tracks.length);
   }
 
-  function seek(clientX){
-    if(!audio.duration) return;
-    const rect = progressContainer.getBoundingClientRect();
-    const pct = (clientX - rect.left) / rect.width;
-    const clamped = Math.max(0, Math.min(1, pct));
-    audio.currentTime = clamped * audio.duration;
-  }
-
   function toggleShuffle(){
     shuffleOn = !shuffleOn;
     localStorage.setItem(LS.shuffle, shuffleOn ? "1" : "0");
@@ -696,6 +718,9 @@
     coverImg.src = tvBase;
     setPlayIcon();
     resetProgressUI();
+
+    /* Marca la última pista escuchada en la lista (pero TV apagada) */
+    markCurrent();
   }
 
   /* EVENTS */
@@ -726,12 +751,12 @@
       if(Number.isInteger(idx)) playTrack(idx);
     });
 
-    // Progress click + soporte touch
-    progressContainer.addEventListener("click", (e)=> seek(e.clientX));
-    progressContainer.addEventListener("touchstart", (e)=>{
-      const t = e.touches && e.touches[0];
-      if(t) seek(t.clientX);
-    }, { passive: true });
+    // Progress: click + drag (mouse/touch)
+    progressContainer.addEventListener("pointerdown", onPointerDown);
+    progressContainer.addEventListener("pointermove", onPointerMove);
+    progressContainer.addEventListener("pointerup", onPointerUp);
+    progressContainer.addEventListener("pointercancel", onPointerUp);
+    progressContainer.addEventListener("pointerleave", onPointerUp);
 
     // Audio UI
     audio.addEventListener("timeupdate", ()=>{
@@ -790,7 +815,6 @@
     // Teclado global
     document.addEventListener("keydown", (e)=>{
       if(e.code === "Space"){
-        // evita scroll cuando no estás escribiendo en un input
         if(document.activeElement && document.activeElement.tagName === "INPUT") return;
         e.preventDefault();
         togglePlay();
