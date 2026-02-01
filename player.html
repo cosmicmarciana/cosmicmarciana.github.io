@@ -248,17 +248,20 @@
     margin: 0 auto;
     gap:10px;
   }
+
   .progress-container{
     flex:1;
-    height:8px;
+    height:10px;
     background: rgba(255,255,255,0.10);
     border-radius:999px;
     cursor:pointer;
-    overflow:hidden;
+    overflow:visible; /* para que se vea la bolita */
     border:1px solid rgba(255,255,255,.10);
-    touch-action: none;   /* importante para drag en móvil */
+    position:relative;
+    touch-action: none; /* para arrastrar en móvil */
     user-select: none;
   }
+
   .progress-bar{
     width:0%;
     height:100%;
@@ -266,9 +269,63 @@
     background: linear-gradient(90deg, rgba(0,255,0,.35), rgba(0,255,0,.8), rgba(0,255,0,.35));
     background-size:400% 100%;
     animation: flow 4s linear infinite;
-    transition: width 0.1s linear;
+    transition: width 0.08s linear;
   }
   @keyframes flow{ 0%{background-position:0%} 100%{background-position:400%} }
+
+  /* Bolita actual (donde va la reproducción) */
+  .progress-thumb{
+    position:absolute;
+    top:50%;
+    left:0%;
+    transform: translate(-50%, -50%);
+    width:14px;
+    height:14px;
+    border-radius:999px;
+    background: rgba(0,255,0,.95);
+    box-shadow: 0 0 14px rgba(0,255,0,.35);
+    border: 1px solid rgba(0,0,0,.35);
+    pointer-events:none;
+  }
+
+  /* Bolita + tooltip preview (donde está el cursor) */
+  .seek-dot{
+    position:absolute;
+    top:50%;
+    left:0%;
+    transform: translate(-50%, -50%);
+    width:10px;
+    height:10px;
+    border-radius:999px;
+    background: rgba(255,255,255,.85);
+    box-shadow: 0 0 10px rgba(0,0,0,.35);
+    border: 1px solid rgba(0,0,0,.35);
+    opacity:0;
+    pointer-events:none;
+  }
+
+  .seek-tip{
+    position:absolute;
+    top:-30px;
+    left:0%;
+    transform: translate(-50%, 0);
+    padding:6px 8px;
+    font-size:12px;
+    color: var(--ink);
+    background: rgba(0,0,0,.55);
+    border:1px solid rgba(255,255,255,.14);
+    border-radius: 10px;
+    letter-spacing:.04em;
+    opacity:0;
+    pointer-events:none;
+    white-space:nowrap;
+    backdrop-filter: blur(4px);
+  }
+
+  .progress-container.preview .seek-dot,
+  .progress-container.preview .seek-tip{
+    opacity:1;
+  }
 
   #current-time,#total-time{
     font-size:12px;
@@ -310,9 +367,167 @@
     accent-color: var(--neon);
   }
 
+  /* ===== SUPPORT (CAFÉ) ===== */
+  .support{
+    margin: 18px auto 10px;
+    width: min(720px, 100%);
+    text-align:center;
+  }
+
+  .support-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding: 12px 18px;
+    border-radius: 999px;
+    border:1px solid rgba(0,255,0,.35);
+    background: rgba(0,255,0,.10);
+    color: var(--ink);
+    cursor:pointer;
+    transition:.18s ease;
+    height:auto;
+    width:auto;
+  }
+
+  .support-btn:hover{
+    transform: translateY(-1px);
+    border-color: rgba(0,255,0,.55);
+    color: var(--neon);
+    box-shadow: 0 0 18px rgba(0,255,0,.18);
+  }
+
+  /* Parpadeo MUY ocasional del café */
+  .support-btn .coffee{
+    display:inline-block;
+    animation: coffeeBlink 18s infinite;
+    transform-origin: 50% 70%;
+  }
+  @keyframes coffeeBlink{
+    0%, 86%, 100% { opacity: .95; transform: none; }
+    88% { opacity: .15; transform: scale(1.03); }
+    90% { opacity: 1; transform: scale(1.06); }
+    92% { opacity: .35; transform: scale(1.02); }
+    94% { opacity: 1; transform: none; }
+  }
+
+  .support-note{
+    margin-top:10px;
+    font-size:12px;
+    color: var(--muted);
+    opacity:.9;
+    letter-spacing:.03em;
+  }
+
+  /* Modal */
+  .modal{
+    position: fixed;
+    inset: 0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding: 18px;
+    background: rgba(0,0,0,.55);
+    z-index: 999;
+  }
+  .modal.open{ display:flex; }
+
+  .modal-card{
+    width: min(560px, 100%);
+    border-radius: 16px;
+    background: rgba(10,8,8,.95);
+    border: 1px solid rgba(255,255,255,.12);
+    box-shadow: 0 0 34px rgba(0,0,0,.55);
+    padding: 16px 16px 14px;
+    text-align:left;
+    position: relative;
+  }
+
+  .modal-close{
+    position:absolute;
+    top:10px;
+    right:10px;
+    width:36px;
+    height:36px;
+    border-radius:999px;
+    background: rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.12);
+    color: var(--muted);
+    cursor:pointer;
+  }
+  .modal-close:hover{
+    border-color: rgba(0,255,0,.35);
+    color: var(--neon);
+  }
+
+  .modal-title{
+    font-size:14px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color: var(--ink);
+    opacity:.95;
+    margin: 4px 0 8px;
+  }
+
+  .modal-text{
+    font-size:13px;
+    color: var(--muted);
+    line-height:1.45;
+    margin-bottom:12px;
+  }
+
+  .support-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:12px;
+    background: rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.08);
+  }
+
+  .support-label{
+    font-size:12px;
+    color: var(--muted);
+    letter-spacing:.10em;
+    text-transform:uppercase;
+  }
+
+  .support-value{
+    font-size:13px;
+    color: var(--ink);
+    flex:1;
+    text-align:center;
+  }
+
+  .copy-btn{
+    padding: 10px 12px;
+    border-radius: 999px;
+    border:1px solid rgba(0,255,0,.28);
+    background: rgba(0,255,0,.10);
+    color: var(--ink);
+    cursor:pointer;
+    transition:.18s ease;
+    white-space:nowrap;
+    width:auto;
+    height:auto;
+  }
+  .copy-btn:hover{
+    color: var(--neon);
+    border-color: rgba(0,255,0,.5);
+  }
+
+  .modal-foot{
+    margin-top:12px;
+    font-size:12px;
+    color: var(--muted);
+    opacity:.9;
+    letter-spacing:.04em;
+  }
+
   /* Playlist */
   .playlist{
-    margin:22px auto 0;
+    margin:18px auto 0;
     text-align:left;
     width:min(720px, 100%);
   }
@@ -371,6 +586,7 @@
     .crt:hover #cover{ animation:none !important; }
     .progress-bar{ animation:none !important; }
     #play-pause.pulse{ animation:none !important; }
+    .support-btn .coffee{ animation:none !important; }
   }
 </style>
 </head>
@@ -402,8 +618,15 @@
 
     <div class="progress-wrapper">
       <span id="current-time">0:00</span>
-      <div class="progress-container" id="progress-container">
+      <div class="progress-container" id="progress-container" aria-label="Barra de reproducción">
         <div class="progress-bar" id="progress-bar"></div>
+
+        <!-- Bolita actual -->
+        <div class="progress-thumb" id="progress-thumb"></div>
+
+        <!-- Preview (cursor) -->
+        <div class="seek-dot" id="seek-dot"></div>
+        <div class="seek-tip" id="seek-tip">0:00</div>
       </div>
       <span id="total-time">0:00</span>
     </div>
@@ -411,6 +634,38 @@
     <div class="volume-wrapper">
       <span class="volume-icon" id="volume-icon" title="Mute" role="button" tabindex="0"></span>
       <input type="range" id="volume-slider" min="0" max="100" value="100" />
+    </div>
+
+    <!-- CAFÉ -->
+    <div class="support">
+      <button class="support-btn" id="support-open" type="button">
+        Invítame a un café <span class="coffee" aria-hidden="true">☕</span>
+      </button>
+      <div class="support-note">
+        Si te ha gustado la transmisión, puedes colaborar para mantener la emisión viva.
+      </div>
+    </div>
+
+    <!-- MODAL BIZUM -->
+    <div class="modal" id="support-modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-label="Colabora con Cosmic Marciana">
+        <button class="modal-close" id="support-close" type="button" aria-label="Cerrar">✕</button>
+
+        <div class="modal-title">Apoya la transmisión</div>
+        <div class="modal-text">
+          El transmisor necesita energía. Si este disco te ha acompañado un rato, puedes invitarme a un café vía Bizum.
+          <br><br>
+          <strong>Gracias por sostener el ruido 💚</strong>
+        </div>
+
+        <div class="support-row">
+          <div class="support-label">Bizum</div>
+          <div class="support-value" id="bizum-number">+34 600 000 000</div>
+          <button class="copy-btn" id="copy-bizum" type="button">Copiar</button>
+        </div>
+
+        <div class="modal-foot">EMISIÓN NO AUTORIZADA · NO AJUSTAR EL DIAL</div>
+      </div>
     </div>
 
     <div class="playlist" id="playlist">
@@ -463,7 +718,12 @@
 
   const coverImg = $("cover");
   const audio = $("audio");
+
+  const progressContainer = $("progress-container");
   const progressBar = $("progress-bar");
+  const progressThumb = $("progress-thumb");
+  const seekDot = $("seek-dot");
+  const seekTip = $("seek-tip");
 
   const currentTimeEl = $("current-time");
   const totalTimeEl = $("total-time");
@@ -480,7 +740,6 @@
   const nextBtn = $("next-btn");
   const stopBtn = $("stop-btn");
   const shareBtn = $("share-btn");
-  const progressContainer = $("progress-container");
   const playlistEl = $("playlist");
   const crtBtn = document.querySelector(".crt");
 
@@ -506,6 +765,8 @@
     const s = Math.floor(t % 60);
     return m + ":" + ("0" + s).slice(-2);
   }
+
+  function clamp01(n){ return Math.max(0, Math.min(1, n)); }
 
   function setStatus(msg){
     statusLineEl.textContent = msg || "";
@@ -565,81 +826,70 @@
 
   function resetProgressUI(){
     progressBar.style.width = "0%";
+    progressThumb.style.left = "0%";
     currentTimeEl.textContent = "0:00";
     totalTimeEl.textContent = "0:00";
   }
 
-  function seekFromClientX(clientX){
-    if(!audio.duration) return;
-    const rect = progressContainer.getBoundingClientRect();
-    const pct = (clientX - rect.left) / rect.width;
-    const clamped = Math.max(0, Math.min(1, pct));
-    audio.currentTime = clamped * audio.duration;
+  function setProgressUI(pct){
+    const p = clamp01(pct);
+    const perc = (p * 100);
+    progressBar.style.width = perc + "%";
+    progressThumb.style.left = perc + "%";
   }
 
-  // Pointer Events (ideal)
+  function getPctFromClientX(clientX){
+    const rect = progressContainer.getBoundingClientRect();
+    return clamp01((clientX - rect.left) / rect.width);
+  }
+
+  function seekToPct(pct){
+    if(!audio.duration) return;
+    audio.currentTime = clamp01(pct) * audio.duration;
+  }
+
+  /* Preview bolita + tiempo donde está el cursor */
+  function updatePreview(clientX){
+    if(!audio.duration) return;
+    const pct = getPctFromClientX(clientX);
+    const rect = progressContainer.getBoundingClientRect();
+    const x = rect.left + pct * rect.width;
+
+    const perc = pct * 100;
+    seekDot.style.left = perc + "%";
+    seekTip.style.left = perc + "%";
+    seekTip.textContent = formatTime(pct * audio.duration);
+  }
+
+  function showPreview(){ progressContainer.classList.add("preview"); }
+  function hidePreview(){
+    progressContainer.classList.remove("preview");
+  }
+
+  /* Pointer events: preview + drag seek */
   function onPointerDown(e){
     if(!audio.duration) return;
     isScrubbing = true;
     progressContainer.setPointerCapture(e.pointerId);
-    seekFromClientX(e.clientX);
+    showPreview();
+    updatePreview(e.clientX);
+    seekToPct(getPctFromClientX(e.clientX));
   }
+
   function onPointerMove(e){
-    if(!isScrubbing) return;
-    seekFromClientX(e.clientX);
+    if(!audio.duration) return;
+    showPreview();
+    updatePreview(e.clientX);
+    if(isScrubbing){
+      seekToPct(getPctFromClientX(e.clientX));
+    }
   }
+
   function onPointerUp(e){
-    if(!isScrubbing) return;
+    if(!audio.duration) return;
     isScrubbing = false;
     try { progressContainer.releasePointerCapture(e.pointerId); } catch {}
-  }
-
-  // Fallback (mouse/touch) si no hay Pointer Events
-  function bindFallbackScrub(){
-    let down = false;
-
-    function mouseDown(e){
-      if(!audio.duration) return;
-      down = true;
-      seekFromClientX(e.clientX);
-      window.addEventListener("mousemove", mouseMove);
-      window.addEventListener("mouseup", mouseUp);
-    }
-    function mouseMove(e){
-      if(!down) return;
-      seekFromClientX(e.clientX);
-    }
-    function mouseUp(){
-      down = false;
-      window.removeEventListener("mousemove", mouseMove);
-      window.removeEventListener("mouseup", mouseUp);
-    }
-
-    function touchStart(e){
-      if(!audio.duration) return;
-      down = true;
-      const t = e.touches && e.touches[0];
-      if(t) seekFromClientX(t.clientX);
-      window.addEventListener("touchmove", touchMove, { passive:false });
-      window.addEventListener("touchend", touchEnd);
-      window.addEventListener("touchcancel", touchEnd);
-    }
-    function touchMove(e){
-      if(!down) return;
-      const t = e.touches && e.touches[0];
-      if(t) seekFromClientX(t.clientX);
-      e.preventDefault();
-    }
-    function touchEnd(){
-      down = false;
-      window.removeEventListener("touchmove", touchMove);
-      window.removeEventListener("touchend", touchEnd);
-      window.removeEventListener("touchcancel", touchEnd);
-    }
-
-    progressContainer.addEventListener("mousedown", mouseDown);
-    progressContainer.addEventListener("touchstart", touchStart, { passive:false });
-    progressContainer.addEventListener("click", (e)=> seekFromClientX(e.clientX));
+    // dejamos el preview un pelín y se quita al salir (se siente pro)
   }
 
   function loadTrack(index){
@@ -790,22 +1040,21 @@
       if(Number.isInteger(idx)) playTrack(idx);
     });
 
-    // Scrub: pointer si existe, si no, fallback
-    if("PointerEvent" in window){
-      progressContainer.addEventListener("pointerdown", onPointerDown);
-      progressContainer.addEventListener("pointermove", onPointerMove);
-      progressContainer.addEventListener("pointerup", onPointerUp);
-      progressContainer.addEventListener("pointercancel", onPointerUp);
-      progressContainer.addEventListener("pointerleave", onPointerUp);
-    } else {
-      bindFallbackScrub();
-    }
+    // Barra: preview + arrastre + click
+    progressContainer.addEventListener("pointerdown", onPointerDown);
+    progressContainer.addEventListener("pointermove", onPointerMove);
+    progressContainer.addEventListener("pointerup", onPointerUp);
+    progressContainer.addEventListener("pointercancel", onPointerUp);
 
+    progressContainer.addEventListener("pointerenter", ()=> { if(audio.duration) showPreview(); });
+    progressContainer.addEventListener("pointerleave", ()=> { if(!isScrubbing) hidePreview(); });
+
+    // Audio UI
     audio.addEventListener("timeupdate", ()=>{
       if(!audio.duration) return;
       currentTimeEl.textContent = formatTime(audio.currentTime);
       totalTimeEl.textContent = formatTime(audio.duration);
-      progressBar.style.width = (audio.currentTime/audio.duration*100) + "%";
+      setProgressUI(audio.currentTime / audio.duration);
     });
 
     audio.addEventListener("loadedmetadata", ()=>{
@@ -825,6 +1074,7 @@
       }
     });
 
+    // Volumen
     volumeSlider.addEventListener("input", ()=>{
       const v = Number(volumeSlider.value) / 100;
       audio.volume = v;
@@ -853,6 +1103,7 @@
       }
     });
 
+    // Teclado global
     document.addEventListener("keydown", (e)=>{
       if(e.code === "Space"){
         if(document.activeElement && document.activeElement.tagName === "INPUT") return;
@@ -864,10 +1115,54 @@
     });
   }
 
+  /* MODAL BIZUM */
+  function supportInit(){
+    const openBtn = document.getElementById("support-open");
+    const modal = document.getElementById("support-modal");
+    const closeBtn = document.getElementById("support-close");
+    const copyBtn = document.getElementById("copy-bizum");
+    const bizumEl = document.getElementById("bizum-number");
+
+    if(!openBtn || !modal || !closeBtn) return;
+
+    function open(){
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden","false");
+    }
+    function close(){
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden","true");
+    }
+
+    openBtn.addEventListener("click", open);
+    closeBtn.addEventListener("click", close);
+
+    modal.addEventListener("click", (e)=>{
+      if(e.target === modal) close();
+    });
+
+    document.addEventListener("keydown", (e)=>{
+      if(e.key === "Escape" && modal.classList.contains("open")) close();
+    });
+
+    copyBtn?.addEventListener("click", async ()=>{
+      const txt = (bizumEl?.textContent || "").trim();
+      if(!txt) return;
+      try{
+        if(navigator.clipboard){
+          await navigator.clipboard.writeText(txt);
+          copyBtn.textContent = "Copiado";
+          setTimeout(()=> copyBtn.textContent = "Copiar", 900);
+        }
+      } catch {}
+    });
+  }
+
   (function init(){
     renderIcons();
     applyStoredSettings();
     wireEvents();
+    supportInit();
   })();
 </script>
 
