@@ -881,7 +881,9 @@
   function showPreview(){ progressContainer.classList.add("preview"); }
   function hidePreview(){ progressContainer.classList.remove("preview"); }
 
+  // ✅ 3) preventDefault para móvil/iOS durante scrubbing
   function onPointerDown(e){
+    e.preventDefault();
     if(!audio.duration) return;
     isScrubbing = true;
     progressContainer.setPointerCapture(e.pointerId);
@@ -891,6 +893,7 @@
   }
 
   function onPointerMove(e){
+    e.preventDefault();
     if(!audio.duration) return;
     showPreview();
     updatePreview(e.clientX);
@@ -899,10 +902,12 @@
     }
   }
 
+  // ✅ 1) ocultar preview al soltar (evita tooltip “pegado”)
   function onPointerUp(e){
     if(!audio.duration) return;
     isScrubbing = false;
     try { progressContainer.releasePointerCapture(e.pointerId); } catch {}
+    hidePreview();
   }
 
   function loadTrack(index){
@@ -935,6 +940,7 @@
     }
   }
 
+  // ✅ 2) Stop resetea index en localStorage (opcional, pero recomendado)
   function stopTrack(){
     audio.pause();
     audio.currentTime = 0;
@@ -946,6 +952,8 @@
     coverImg.src = tvBase;
     tracks.forEach(t => t.classList.remove("current"));
     currentIndex = 0;
+
+    localStorage.setItem(LS.idx, "0");
 
     resetProgressUI();
     setPlayIcon();
@@ -1133,13 +1141,16 @@
 
     if(!openBtn || !modal || !closeBtn) return;
 
+    // ✅ 4) focus dentro del modal y devolver foco al cerrar
     function open(){
       modal.classList.add("open");
       modal.setAttribute("aria-hidden","false");
+      closeBtn.focus();
     }
     function close(){
       modal.classList.remove("open");
       modal.setAttribute("aria-hidden","true");
+      openBtn.focus();
     }
 
     openBtn.addEventListener("click", open);
