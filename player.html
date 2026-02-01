@@ -27,7 +27,7 @@
   }
 
   :focus{ outline:none; }
-  :focus-visible{
+  button:focus-visible, a:focus-visible, .crt:focus-visible{
     outline: 2px solid rgba(0,255,0,.75);
     outline-offset: 3px;
   }
@@ -257,7 +257,7 @@
     background: rgba(255,255,255,0.10);
     border-radius:999px;
     cursor:pointer;
-    overflow:visible; /* para bolitas */
+    overflow:visible;
     border:1px solid rgba(255,255,255,.10);
     position:relative;
     touch-action: none;
@@ -387,26 +387,40 @@
     transition:.18s ease;
     height:auto;
     width:auto;
+
+    /* ✅ Pulso neón: visible sin ser agresivo */
+    animation: neon-pulse 4.8s ease-in-out infinite;
+    box-shadow: 0 0 14px rgba(0,255,0,.16);
   }
 
   .support-btn:hover{
     transform: translateY(-1px);
-    border-color: rgba(0,255,0,.55);
+    border-color: rgba(0,255,0,.70);
     color: var(--neon);
-    box-shadow: 0 0 18px rgba(0,255,0,.18);
+    box-shadow: 0 0 28px rgba(0,255,0,.30);
+  }
+
+  @keyframes neon-pulse{
+    0%, 70%, 100%{
+      transform: translateY(0);
+      box-shadow: 0 0 14px rgba(0,255,0,.16);
+      border-color: rgba(0,255,0,.40);
+    }
+    80%{
+      transform: translateY(-1px);
+      box-shadow: 0 0 32px rgba(0,255,0,.34);
+      border-color: rgba(0,255,0,.75);
+    }
+    90%{
+      transform: translateY(0);
+      box-shadow: 0 0 18px rgba(0,255,0,.22);
+      border-color: rgba(0,255,0,.50);
+    }
   }
 
   .support-btn .coffee{
     display:inline-block;
-    animation: coffeeBlink 18s infinite;
     transform-origin: 50% 70%;
-  }
-  @keyframes coffeeBlink{
-    0%, 86%, 100% { opacity: .95; transform: none; }
-    88% { opacity: .15; transform: scale(1.03); }
-    90% { opacity: 1; transform: scale(1.06); }
-    92% { opacity: .35; transform: scale(1.02); }
-    94% { opacity: 1; transform: none; }
   }
 
   .support-note{
@@ -441,27 +455,44 @@
     position: relative;
   }
 
-  /* ✅ FIX: X centrada + área clicable correcta */
+  /* ✅ FIX DEFINITIVO: botón cerrar NO hereda estilo de button */
   .modal-close{
     position:absolute;
-    top:8px;
-    right:8px;
-    width:40px;
-    height:40px;
+    top:10px;
+    right:10px;
+
+    width:42px;
+    height:42px;
+    padding:0;
+
     border-radius:999px;
     background: rgba(255,255,255,.06);
     border:1px solid rgba(255,255,255,.14);
-    color: var(--muted);
-    cursor:pointer;
+
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:18px;
-    line-height:1;
+
+    cursor:pointer;
+    color: var(--muted);
+
+    /* anula sombras/animaciones de los otros botones */
+    box-shadow:none;
+    transform:none;
   }
+
   .modal-close:hover{
     border-color: rgba(0,255,0,.45);
     color: var(--neon);
+  }
+
+  .modal-close svg{
+    width:18px;
+    height:18px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:2.2;
+    stroke-linecap:round;
   }
 
   .modal-title{
@@ -591,7 +622,7 @@
     .crt:hover #cover{ animation:none !important; }
     .progress-bar{ animation:none !important; }
     #play-pause.pulse{ animation:none !important; }
-    .support-btn .coffee{ animation:none !important; }
+    .support-btn{ animation:none !important; }
   }
 </style>
 </head>
@@ -652,11 +683,15 @@
     <!-- MODAL BIZUM -->
     <div class="modal" id="support-modal" aria-hidden="true">
       <div class="modal-card" role="dialog" aria-modal="true" aria-label="Colabora con Cosmic Marciana">
-        <button class="modal-close" id="support-close" type="button" aria-label="Cerrar">✕</button>
+        <button class="modal-close" id="support-close" type="button" aria-label="Cerrar">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18"></path>
+          </svg>
+        </button>
 
         <div class="modal-title">Apoya la transmisión</div>
         <div class="modal-text">
-          El transmisor necesita energía. Si este disco te ha acompañado un rato, puedes invitarme a un café vía Bizum.
+          Si este disco te ha acompañado un rato, puedes invitarme a un café vía Bizum.
           <br><br>
           <strong>Gracias por sostener el ruido 💚</strong>
         </div>
@@ -756,9 +791,6 @@
 
   let isScrubbing = false;
 
-  // ✅ Mensaje fantasma: solo una vez por sesión
-  let ghostShown = false;
-
   const LS = {
     vol: "cm_vol",
     idx: "cm_idx",
@@ -780,13 +812,6 @@
       clearTimeout(setStatus._t);
       setStatus._t = setTimeout(()=>{ statusLineEl.textContent = ""; }, 1400);
     }
-  }
-
-  // ✅ Mensaje fantasma (usa el status existente)
-  function ghostMessage(){
-    if(ghostShown) return;
-    ghostShown = true;
-    setStatus("La señal necesita energía.");
   }
 
   function tvForIndex(index){
@@ -1058,11 +1083,6 @@
       currentTimeEl.textContent = formatTime(audio.currentTime);
       totalTimeEl.textContent = formatTime(audio.duration);
       setProgressUI(audio.currentTime / audio.duration);
-
-      // ✅ Mensaje fantasma solo una vez, solo si está sonando y a partir de 35s
-      if(!ghostShown && !audio.paused && audio.currentTime >= 35){
-        ghostMessage();
-      }
     });
 
     audio.addEventListener("loadedmetadata", ()=>{
