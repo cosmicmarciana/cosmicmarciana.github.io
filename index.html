@@ -1,19 +1,11 @@
 <!DOCTYPE html>
-<html lang="ca">
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cosmic Marciana</title>
 
   <style>
-    @font-face {
-      font-family: "Horror";
-      src: url("./fonts/horror.ttf") format("truetype");
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
-    }
-
     :root{
       --neon:#00ff00;
       --ink:#eaeaea;
@@ -80,6 +72,7 @@
       display:block;
       filter:drop-shadow(0 0 22px rgba(0,0,0,.85));
       animation: crt-flicker 4.5s infinite;
+      will-change: transform, filter;
     }
 
     .crt::before{
@@ -287,9 +280,7 @@
     }
 
     @media (prefers-reduced-motion: reduce){
-      *{
-        animation:none !important;
-      }
+      *{ animation:none !important; }
     }
   </style>
 </head>
@@ -298,11 +289,11 @@
   <main class="wrap">
 
     <div class="crt">
-      <img src="tv.png" alt="Cosmic Marciana – La casa del terror" class="hero">
+      <img src="tv.png" alt="Televisor CRT con Cosmic Marciana – La casa del terror" class="hero" />
     </div>
 
     <p class="text">
-      Señales rotas. Pop electrónico.<br>
+      Señales rotas. Pop electrónico.<br />
       Transmisiones desde otra dimensión.
     </p>
 
@@ -313,10 +304,10 @@
     </div>
 
     <div class="links icons">
-      <a href="https://www.instagram.com/cosmicmarciana" target="_blank" aria-label="Instagram">
+      <a href="https://www.instagram.com/cosmicmarciana" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
         <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2"/></svg>
       </a>
-      <a href="https://open.spotify.com/intl-es/artist/0qSO1brlu9jrjrhmMldEVL" target="_blank" aria-label="Spotify">
+      <a href="https://open.spotify.com/intl-es/artist/0qSO1brlu9jrjrhmMldEVL" target="_blank" rel="noopener noreferrer" aria-label="Spotify">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M7 10.5c3-1 7-.8 10 .6"/><path d="M7.5 13c2.5-.7 6-.5 8.5 .5"/><path d="M8 15.5c2-.5 4.5-.4 6.5 .4"/></svg>
       </a>
       <a href="mailto:cosmicmarciana@gmail.com" aria-label="Contacto">
