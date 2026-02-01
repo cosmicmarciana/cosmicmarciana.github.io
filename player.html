@@ -462,6 +462,14 @@
     opacity:.9;
   }
 
+  /* ✅ details/summary: que no parezca un acordeón feo */
+  .support summary{ list-style:none; }
+  .support summary::-webkit-details-marker{ display:none; }
+  .support[open] .support-btn{
+    border-color: rgba(0,255,0,.70);
+    box-shadow: 0 0 28px rgba(0,255,0,.28);
+  }
+
   /* ===== MODAL ===== */
   .modal{
     position: fixed;
@@ -689,29 +697,49 @@
       <span id="total-time">0:00</span>
     </div>
 
+    <!-- ✅ PLAYLIST SUBE AQUÍ -->
+    <div class="playlist" id="playlist">
+      <div class="track" data-index="0">1. Los pobres más</div>
+      <div class="track" data-index="1">2. Volveremos a empezar</div>
+      <div class="track" data-index="2">3. Quién llena los shows</div>
+      <div class="track" data-index="3">4. STOP!</div>
+      <div class="track" data-index="4">5. Reza</div>
+      <div class="track" data-index="5">6. De pie</div>
+      <div class="track" data-index="6">7. Quemarlo todo</div>
+      <div class="track" data-index="7">8. Nadie sabe nada</div>
+      <div class="track" data-index="8">9. Lo que no quiero</div>
+      <div class="track" data-index="9">10. La casa del terror</div>
+      <div class="track" data-index="10">11. Tenemos que hablar</div>
+    </div>
+
+    <!-- Volumen (sin cambios) -->
     <div class="volume-wrapper">
       <span class="volume-icon" id="volume-icon" title="Mute" role="button" tabindex="0"></span>
       <input type="range" id="volume-slider" min="0" max="100" value="100" />
     </div>
 
-    <!-- CAFÉ -->
-    <div class="support">
-      <button class="support-btn" id="support-open" type="button">
-        Invítame a un café <span class="coffee" aria-hidden="true">☕</span>
-      </button>
+    <!-- ✅ SUPPORT PLEGABLE Y ABAJO -->
+    <details class="support" id="support-details">
+      <summary class="support-btn">
+        Apoyar / Descargar <span class="coffee" aria-hidden="true">☕</span>
+      </summary>
 
       <div class="support-note">
         Si te ha gustado la transmisión, puedes colaborar para mantener la emisión viva.
       </div>
 
-      <!-- ✅ ZIP descarga libre -->
       <a class="download-link" href="la-casa-del-terror.zip" download>
         ⬇ Descargar el disco (ZIP)
       </a>
+
       <div class="download-note">
         Descarga libre. Si te nace, apoya la emisión con un café 💚
       </div>
-    </div>
+
+      <button class="support-btn" id="support-open" type="button" style="margin-top:12px;">
+        Bizum <span class="coffee" aria-hidden="true">💚</span>
+      </button>
+    </details>
 
     <!-- MODAL BIZUM -->
     <div class="modal" id="support-modal" aria-hidden="true">
@@ -735,7 +763,6 @@
           <button class="copy-btn" id="copy-bizum" type="button">Copiar</button>
         </div>
 
-        <!-- ✅ También aquí el ZIP -->
         <div style="margin-top:12px;">
           <a class="download-link" href="la-casa-del-terror.zip" download>
             ⬇ Descargar el disco (ZIP)
@@ -745,20 +772,6 @@
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="playlist" id="playlist">
-      <div class="track" data-index="0">1. Los pobres más</div>
-      <div class="track" data-index="1">2. Volveremos a empezar</div>
-      <div class="track" data-index="2">3. Quién llena los shows</div>
-      <div class="track" data-index="3">4. STOP!</div>
-      <div class="track" data-index="4">5. Reza</div>
-      <div class="track" data-index="5">6. De pie</div>
-      <div class="track" data-index="6">7. Quemarlo todo</div>
-      <div class="track" data-index="7">8. Nadie sabe nada</div>
-      <div class="track" data-index="8">9. Lo que no quiero</div>
-      <div class="track" data-index="9">10. La casa del terror</div>
-      <div class="track" data-index="10">11. Tenemos que hablar</div>
     </div>
 
     <!-- playsinline: iOS no fuerza fullscreen -->
