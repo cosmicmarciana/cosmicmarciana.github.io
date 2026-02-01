@@ -448,7 +448,6 @@
     mute:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 9l5 6"/><path d="M21 9l-5 6"/></svg>`
   };
 
-  /* TV por pista */
   const tvBase = "tv.png";
   const tvByTrack = [
     "tv1.png","tv2.png","tv3.png","tv4.png","tv5.png","tv6.png",
@@ -578,25 +577,71 @@
     audio.currentTime = clamped * audio.duration;
   }
 
+  // Pointer Events (ideal)
   function onPointerDown(e){
     if(!audio.duration) return;
     isScrubbing = true;
     progressContainer.setPointerCapture(e.pointerId);
     seekFromClientX(e.clientX);
   }
-
   function onPointerMove(e){
     if(!isScrubbing) return;
     seekFromClientX(e.clientX);
   }
-
   function onPointerUp(e){
     if(!isScrubbing) return;
     isScrubbing = false;
     try { progressContainer.releasePointerCapture(e.pointerId); } catch {}
   }
 
-  /* Load track (no reproduce) */
+  // Fallback (mouse/touch) si no hay Pointer Events
+  function bindFallbackScrub(){
+    let down = false;
+
+    function mouseDown(e){
+      if(!audio.duration) return;
+      down = true;
+      seekFromClientX(e.clientX);
+      window.addEventListener("mousemove", mouseMove);
+      window.addEventListener("mouseup", mouseUp);
+    }
+    function mouseMove(e){
+      if(!down) return;
+      seekFromClientX(e.clientX);
+    }
+    function mouseUp(){
+      down = false;
+      window.removeEventListener("mousemove", mouseMove);
+      window.removeEventListener("mouseup", mouseUp);
+    }
+
+    function touchStart(e){
+      if(!audio.duration) return;
+      down = true;
+      const t = e.touches && e.touches[0];
+      if(t) seekFromClientX(t.clientX);
+      window.addEventListener("touchmove", touchMove, { passive:false });
+      window.addEventListener("touchend", touchEnd);
+      window.addEventListener("touchcancel", touchEnd);
+    }
+    function touchMove(e){
+      if(!down) return;
+      const t = e.touches && e.touches[0];
+      if(t) seekFromClientX(t.clientX);
+      e.preventDefault();
+    }
+    function touchEnd(){
+      down = false;
+      window.removeEventListener("touchmove", touchMove);
+      window.removeEventListener("touchend", touchEnd);
+      window.removeEventListener("touchcancel", touchEnd);
+    }
+
+    progressContainer.addEventListener("mousedown", mouseDown);
+    progressContainer.addEventListener("touchstart", touchStart, { passive:false });
+    progressContainer.addEventListener("click", (e)=> seekFromClientX(e.clientX));
+  }
+
   function loadTrack(index){
     currentIndex = index;
     audio.src = sources[index];
@@ -718,14 +763,10 @@
     coverImg.src = tvBase;
     setPlayIcon();
     resetProgressUI();
-
-    /* Marca la última pista escuchada en la lista (pero TV apagada) */
     markCurrent();
   }
 
-  /* EVENTS */
   function wireEvents(){
-    // Botones
     prevBtn.addEventListener("click", prevTrack);
     nextBtn.addEventListener("click", nextTrack);
     playPauseBtn.addEventListener("click", togglePlay);
@@ -734,7 +775,6 @@
     loopBtn.addEventListener("click", cycleLoop);
     shareBtn.addEventListener("click", sharePage);
 
-    // TV clickable + teclado
     crtBtn.addEventListener("click", togglePlay);
     crtBtn.addEventListener("keydown", (e)=>{
       if(e.key === "Enter" || e.key === " "){
@@ -743,7 +783,6 @@
       }
     });
 
-    // Playlist click (delegación)
     playlistEl.addEventListener("click", (e)=>{
       const item = e.target.closest(".track");
       if(!item) return;
@@ -751,14 +790,17 @@
       if(Number.isInteger(idx)) playTrack(idx);
     });
 
-    // Progress: click + drag (mouse/touch)
-    progressContainer.addEventListener("pointerdown", onPointerDown);
-    progressContainer.addEventListener("pointermove", onPointerMove);
-    progressContainer.addEventListener("pointerup", onPointerUp);
-    progressContainer.addEventListener("pointercancel", onPointerUp);
-    progressContainer.addEventListener("pointerleave", onPointerUp);
+    // Scrub: pointer si existe, si no, fallback
+    if("PointerEvent" in window){
+      progressContainer.addEventListener("pointerdown", onPointerDown);
+      progressContainer.addEventListener("pointermove", onPointerMove);
+      progressContainer.addEventListener("pointerup", onPointerUp);
+      progressContainer.addEventListener("pointercancel", onPointerUp);
+      progressContainer.addEventListener("pointerleave", onPointerUp);
+    } else {
+      bindFallbackScrub();
+    }
 
-    // Audio UI
     audio.addEventListener("timeupdate", ()=>{
       if(!audio.duration) return;
       currentTimeEl.textContent = formatTime(audio.currentTime);
@@ -783,7 +825,6 @@
       }
     });
 
-    // Volumen
     volumeSlider.addEventListener("input", ()=>{
       const v = Number(volumeSlider.value) / 100;
       audio.volume = v;
@@ -812,7 +853,6 @@
       }
     });
 
-    // Teclado global
     document.addEventListener("keydown", (e)=>{
       if(e.code === "Space"){
         if(document.activeElement && document.activeElement.tagName === "INPUT") return;
@@ -824,7 +864,6 @@
     });
   }
 
-  /* INIT */
   (function init(){
     renderIcons();
     applyStoredSettings();
