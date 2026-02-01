@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>La casa del terror</title>
 
 <!-- Favicon (con cache-busting) -->
@@ -41,7 +41,14 @@
     min-height:100vh;
     display:flex;
     justify-content:center;
-    padding:32px 14px;
+
+    /* safe-area para móviles con notch */
+    padding:
+      calc(32px + env(safe-area-inset-top))
+      calc(14px + env(safe-area-inset-right))
+      calc(32px + env(safe-area-inset-bottom))
+      calc(14px + env(safe-area-inset-left));
+
     overflow-x:hidden;
 
     background:
@@ -261,7 +268,8 @@
     overflow:visible;
     border:1px solid rgba(255,255,255,.10);
     position:relative;
-    touch-action: none;
+
+    touch-action: none; /* clave para móviles */
     user-select: none;
   }
 
@@ -389,7 +397,6 @@
     height:auto;
     width:auto;
 
-    /* ✅ SOLO parpadeo de neón (sin movimiento) */
     animation: neon-only 4.8s ease-in-out infinite;
     box-shadow: 0 0 14px rgba(0,255,0,.16);
   }
@@ -448,7 +455,6 @@
     position: relative;
   }
 
-  /* ✅ FIX X: anula hover global y tamaños */
   .modal-close{
     position:absolute;
     top:10px;
@@ -473,7 +479,7 @@
     transform:none !important;
   }
   .modal-close:hover{
-    transform:none !important;  /* evita “bote” del button:hover */
+    transform:none !important;
     border-color: rgba(0,255,0,.45) !important;
     color: var(--neon) !important;
   }
@@ -596,7 +602,6 @@
   }
 
   @media (max-width:480px){
-    body{ padding:22px 14px; }
     h1{ font-size:18px; }
     .progress-wrapper{ gap:8px; }
     #volume-slider{ width: 140px; }
@@ -641,9 +646,7 @@
       <span id="current-time">0:00</span>
       <div class="progress-container" id="progress-container" aria-label="Barra de reproducción">
         <div class="progress-bar" id="progress-bar"></div>
-
         <div class="progress-thumb" id="progress-thumb"></div>
-
         <div class="seek-dot" id="seek-dot"></div>
         <div class="seek-tip" id="seek-tip">0:00</div>
       </div>
@@ -703,7 +706,8 @@
       <div class="track" data-index="10">11. Tenemos que hablar</div>
     </div>
 
-    <audio id="audio" preload="metadata"></audio>
+    <!-- playsinline = iOS no fuerza fullscreen -->
+    <audio id="audio" preload="metadata" playsinline></audio>
 
     <div class="sig">EMISIÓN NO AUTORIZADA · NO AJUSTAR EL DIAL</div>
   </main>
@@ -773,6 +777,7 @@
   let hasLoaded = false;
 
   let isScrubbing = false;
+  let usingTouchFallback = false;
 
   const LS = {
     vol: "cm_vol",
@@ -793,7 +798,7 @@
     statusLineEl.textContent = msg || "";
     if(msg){
       clearTimeout(setStatus._t);
-      setStatus._t = setTimeout(()=>{ statusLineEl.textContent = ""; }, 1400);
+      setStatus._t = setTimeout(()=>{ statusLineEl.textContent = ""; }, 1600);
     }
   }
 
@@ -881,12 +886,13 @@
   function showPreview(){ progressContainer.classList.add("preview"); }
   function hidePreview(){ progressContainer.classList.remove("preview"); }
 
-  // ✅ 3) preventDefault para móvil/iOS durante scrubbing
+  // ===== POINTER EVENTS (principal) =====
   function onPointerDown(e){
     e.preventDefault();
     if(!audio.duration) return;
     isScrubbing = true;
-    progressContainer.setPointerCapture(e.pointerId);
+    usingTouchFallback = false;
+    try { progressContainer.setPointerCapture(e.pointerId); } catch {}
     showPreview();
     updatePreview(e.clientX);
     seekToPct(getPctFromClientX(e.clientX));
@@ -895,18 +901,55 @@
   function onPointerMove(e){
     e.preventDefault();
     if(!audio.duration) return;
+    if(usingTouchFallback) return;
     showPreview();
     updatePreview(e.clientX);
-    if(isScrubbing){
-      seekToPct(getPctFromClientX(e.clientX));
-    }
+    if(isScrubbing) seekToPct(getPctFromClientX(e.clientX));
   }
 
-  // ✅ 1) ocultar preview al soltar (evita tooltip “pegado”)
   function onPointerUp(e){
     if(!audio.duration) return;
+    if(usingTouchFallback) return;
     isScrubbing = false;
     try { progressContainer.releasePointerCapture(e.pointerId); } catch {}
+    hidePreview(); // evita tooltip pegado
+  }
+
+  // ===== TOUCH FALLBACK (iOS viejo / edge cases) =====
+  function touchClientX(ev){
+    const t = ev.touches && ev.touches[0] ? ev.touches[0] : (ev.changedTouches ? ev.changedTouches[0] : null);
+    return t ? t.clientX : null;
+  }
+
+  function onTouchStart(ev){
+    if(!audio.duration) return;
+    usingTouchFallback = true;
+    isScrubbing = true;
+    ev.preventDefault();
+
+    const cx = touchClientX(ev);
+    if(cx == null) return;
+    showPreview();
+    updatePreview(cx);
+    seekToPct(getPctFromClientX(cx));
+  }
+
+  function onTouchMove(ev){
+    if(!audio.duration) return;
+    if(!isScrubbing) return;
+    ev.preventDefault();
+
+    const cx = touchClientX(ev);
+    if(cx == null) return;
+    showPreview();
+    updatePreview(cx);
+    seekToPct(getPctFromClientX(cx));
+  }
+
+  function onTouchEnd(ev){
+    if(!audio.duration) return;
+    ev.preventDefault();
+    isScrubbing = false;
     hidePreview();
   }
 
@@ -923,7 +966,19 @@
 
   function playCurrent(){
     if(!hasLoaded) loadTrack(currentIndex);
-    audio.play().then(()=> setPlayIcon()).catch(()=>{});
+
+    const p = audio.play();
+    if(p && typeof p.then === "function"){
+      p.then(()=> {
+        setPlayIcon();
+      }).catch(()=> {
+        // iOS puede rechazar play si no fue gesto del usuario
+        setPlayIcon();
+        setStatus("Pulsa Play para iniciar.");
+      });
+    } else {
+      setPlayIcon();
+    }
   }
 
   function playTrack(index){
@@ -940,7 +995,7 @@
     }
   }
 
-  // ✅ 2) Stop resetea index en localStorage (opcional, pero recomendado)
+  // Stop resetea index en localStorage
   function stopTrack(){
     audio.pause();
     audio.currentTime = 0;
@@ -992,17 +1047,27 @@
 
   async function sharePage(){
     const url = window.location.href;
+
+    // 1) Native share (móvil)
     try{
       if(navigator.share){
         await navigator.share({ title: "Cosmic Marciana", url });
         setStatus("Compartido 💚");
-      } else if(navigator.clipboard){
-        await navigator.clipboard.writeText(url);
-        setStatus("Link copiado 💚");
-      } else {
-        setStatus("No se puede copiar aquí");
+        return;
       }
     } catch {}
+
+    // 2) Clipboard (solo si contexto seguro https)
+    try{
+      if(navigator.clipboard && window.isSecureContext){
+        await navigator.clipboard.writeText(url);
+        setStatus("Link copiado 💚");
+        return;
+      }
+    } catch {}
+
+    // 3) Fallback final
+    window.prompt("Copia este link:", url);
   }
 
   function applyStoredSettings(){
@@ -1061,13 +1126,25 @@
       if(Number.isInteger(idx)) playTrack(idx);
     });
 
-    progressContainer.addEventListener("pointerdown", onPointerDown);
-    progressContainer.addEventListener("pointermove", onPointerMove);
+    // Pointer events (no-passive para que preventDefault funcione en Safari)
+    progressContainer.addEventListener("pointerdown", onPointerDown, { passive:false });
+    progressContainer.addEventListener("pointermove", onPointerMove, { passive:false });
     progressContainer.addEventListener("pointerup", onPointerUp);
     progressContainer.addEventListener("pointercancel", onPointerUp);
 
+    // Touch fallback (no-passive sí o sí)
+    progressContainer.addEventListener("touchstart", onTouchStart, { passive:false });
+    progressContainer.addEventListener("touchmove", onTouchMove, { passive:false });
+    progressContainer.addEventListener("touchend", onTouchEnd, { passive:false });
+    progressContainer.addEventListener("touchcancel", onTouchEnd, { passive:false });
+
+    // Preview hover (desktop)
     progressContainer.addEventListener("pointerenter", ()=> { if(audio.duration) showPreview(); });
     progressContainer.addEventListener("pointerleave", ()=> { if(!isScrubbing) hidePreview(); });
+
+    // Cinturón extra: si suelta fuera, ocultamos preview
+    document.addEventListener("pointerup", ()=> { if(!isScrubbing) hidePreview(); }, { passive:true });
+    document.addEventListener("touchend", ()=> { if(!isScrubbing) hidePreview(); }, { passive:true });
 
     audio.addEventListener("timeupdate", ()=>{
       if(!audio.duration) return;
@@ -1091,6 +1168,11 @@
       } else {
         nextTrack();
       }
+    });
+
+    audio.addEventListener("error", ()=>{
+      setStatus("Error cargando audio.");
+      setPlayIcon();
     });
 
     volumeSlider.addEventListener("input", ()=>{
@@ -1121,6 +1203,7 @@
       }
     });
 
+    // Teclado (desktop)
     document.addEventListener("keydown", (e)=>{
       if(e.code === "Space"){
         if(document.activeElement && document.activeElement.tagName === "INPUT") return;
@@ -1129,6 +1212,14 @@
       }
       if(e.code === "ArrowRight") nextTrack();
       if(e.code === "ArrowLeft") prevTrack();
+    });
+
+    // Si la pestaña se oculta (móvil cambia de app), pausamos
+    document.addEventListener("visibilitychange", ()=>{
+      if(document.hidden && !audio.paused){
+        audio.pause();
+        setPlayIcon();
+      }
     });
   }
 
@@ -1141,7 +1232,6 @@
 
     if(!openBtn || !modal || !closeBtn) return;
 
-    // ✅ 4) focus dentro del modal y devolver foco al cerrar
     function open(){
       modal.classList.add("open");
       modal.setAttribute("aria-hidden","false");
@@ -1167,13 +1257,17 @@
     copyBtn?.addEventListener("click", async ()=>{
       const txt = (bizumEl?.textContent || "").trim();
       if(!txt) return;
+
       try{
-        if(navigator.clipboard){
+        if(navigator.clipboard && window.isSecureContext){
           await navigator.clipboard.writeText(txt);
           copyBtn.textContent = "Copiado";
           setTimeout(()=> copyBtn.textContent = "Copiar", 900);
+          return;
         }
       } catch {}
+
+      window.prompt("Copia este Bizum:", txt);
     });
   }
 
