@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>La casa del terror</title>
 
-<link rel="icon" type="image/png" href="favicon.png">
+<!-- Favicon (con cache-busting) -->
+<link rel="icon" type="image/png" href="favicon.png?v=2">
+<link rel="apple-touch-icon" href="favicon.png?v=2">
 
 <style>
   :root{
@@ -186,7 +188,6 @@
     box-shadow:0 0 34px rgba(0,255,0,.45);
   }
 
-  /* Latido cuando está en pausa */
   #play-pause.pulse{
     animation: pulse 1.35s ease-in-out infinite;
   }
@@ -388,39 +389,31 @@
     height:auto;
     width:auto;
 
-    /* ✅ Pulso neón: visible sin ser agresivo */
-    animation: neon-pulse 4.8s ease-in-out infinite;
+    /* ✅ SOLO parpadeo de neón (sin movimiento) */
+    animation: neon-only 4.8s ease-in-out infinite;
     box-shadow: 0 0 14px rgba(0,255,0,.16);
   }
 
-  .support-btn:hover{
-    transform: translateY(-1px);
-    border-color: rgba(0,255,0,.70);
-    color: var(--neon);
-    box-shadow: 0 0 28px rgba(0,255,0,.30);
-  }
-
-  @keyframes neon-pulse{
+  @keyframes neon-only{
     0%, 70%, 100%{
-      transform: translateY(0);
       box-shadow: 0 0 14px rgba(0,255,0,.16);
       border-color: rgba(0,255,0,.40);
     }
     80%{
-      transform: translateY(-1px);
       box-shadow: 0 0 32px rgba(0,255,0,.34);
       border-color: rgba(0,255,0,.75);
     }
     90%{
-      transform: translateY(0);
       box-shadow: 0 0 18px rgba(0,255,0,.22);
       border-color: rgba(0,255,0,.50);
     }
   }
 
-  .support-btn .coffee{
-    display:inline-block;
-    transform-origin: 50% 70%;
+  .support-btn:hover{
+    border-color: rgba(0,255,0,.70);
+    color: var(--neon);
+    box-shadow: 0 0 28px rgba(0,255,0,.30);
+    transform: translateY(-1px);
   }
 
   .support-note{
@@ -455,44 +448,44 @@
     position: relative;
   }
 
-  /* ✅ FIX DEFINITIVO: botón cerrar NO hereda estilo de button */
+  /* ✅ FIX X: anula hover global y tamaños */
   .modal-close{
     position:absolute;
     top:10px;
     right:10px;
 
-    width:42px;
-    height:42px;
-    padding:0;
+    width:42px !important;
+    height:42px !important;
+    padding:0 !important;
 
     border-radius:999px;
-    background: rgba(255,255,255,.06);
-    border:1px solid rgba(255,255,255,.14);
+    background: rgba(255,255,255,.06) !important;
+    border:1px solid rgba(255,255,255,.14) !important;
 
     display:flex;
     align-items:center;
     justify-content:center;
 
     cursor:pointer;
-    color: var(--muted);
+    color: var(--muted) !important;
 
-    /* anula sombras/animaciones de los otros botones */
-    box-shadow:none;
-    transform:none;
+    box-shadow:none !important;
+    transform:none !important;
   }
-
   .modal-close:hover{
-    border-color: rgba(0,255,0,.45);
-    color: var(--neon);
+    transform:none !important;  /* evita “bote” del button:hover */
+    border-color: rgba(0,255,0,.45) !important;
+    color: var(--neon) !important;
   }
-
   .modal-close svg{
     width:18px;
     height:18px;
+    display:block;
     fill:none;
     stroke:currentColor;
     stroke-width:2.2;
     stroke-linecap:round;
+    pointer-events:none;
   }
 
   .modal-title{
@@ -551,14 +544,6 @@
   .copy-btn:hover{
     color: var(--neon);
     border-color: rgba(0,255,0,.5);
-  }
-
-  .modal-foot{
-    margin-top:12px;
-    font-size:12px;
-    color: var(--muted);
-    opacity:.9;
-    letter-spacing:.04em;
   }
 
   /* Playlist */
@@ -701,8 +686,6 @@
           <div class="support-value" id="bizum-number">+34 600 000 000</div>
           <button class="copy-btn" id="copy-bizum" type="button">Copiar</button>
         </div>
-
-        <div class="modal-foot">EMISIÓN NO AUTORIZADA · NO AJUSTAR EL DIAL</div>
       </div>
     </div>
 
