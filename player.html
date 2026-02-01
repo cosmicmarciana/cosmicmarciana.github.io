@@ -462,14 +462,6 @@
     opacity:.9;
   }
 
-  /* ✅ details/summary: que no parezca un acordeón feo */
-  .support summary{ list-style:none; }
-  .support summary::-webkit-details-marker{ display:none; }
-  .support[open] .support-btn{
-    border-color: rgba(0,255,0,.70);
-    box-shadow: 0 0 28px rgba(0,255,0,.28);
-  }
-
   /* ===== MODAL ===== */
   .modal{
     position: fixed;
@@ -697,7 +689,12 @@
       <span id="total-time">0:00</span>
     </div>
 
-    <!-- ✅ PLAYLIST SUBE AQUÍ -->
+    <div class="volume-wrapper">
+      <span class="volume-icon" id="volume-icon" title="Mute" role="button" tabindex="0"></span>
+      <input type="range" id="volume-slider" min="0" max="100" value="100" />
+    </div>
+
+    <!-- ✅ PLAYLIST (sube antes de support) -->
     <div class="playlist" id="playlist">
       <div class="track" data-index="0">1. Los pobres más</div>
       <div class="track" data-index="1">2. Volveremos a empezar</div>
@@ -712,17 +709,11 @@
       <div class="track" data-index="10">11. Tenemos que hablar</div>
     </div>
 
-    <!-- Volumen (sin cambios) -->
-    <div class="volume-wrapper">
-      <span class="volume-icon" id="volume-icon" title="Mute" role="button" tabindex="0"></span>
-      <input type="range" id="volume-slider" min="0" max="100" value="100" />
-    </div>
-
-    <!-- ✅ SUPPORT PLEGABLE Y ABAJO -->
-    <details class="support" id="support-details">
-      <summary class="support-btn">
-        Apoyar / Descargar <span class="coffee" aria-hidden="true">☕</span>
-      </summary>
+    <!-- ✅ SUPPORT (baja debajo de playlist) -->
+    <div class="support">
+      <button class="support-btn" id="support-open" type="button">
+        Invítame a un café <span class="coffee" aria-hidden="true">☕</span>
+      </button>
 
       <div class="support-note">
         Si te ha gustado la transmisión, puedes colaborar para mantener la emisión viva.
@@ -731,17 +722,12 @@
       <a class="download-link" href="la-casa-del-terror.zip" download>
         ⬇ Descargar el disco (ZIP)
       </a>
-
       <div class="download-note">
         Descarga libre. Si te nace, apoya la emisión con un café 💚
       </div>
+    </div>
 
-      <button class="support-btn" id="support-open" type="button" style="margin-top:12px;">
-        Bizum <span class="coffee" aria-hidden="true">💚</span>
-      </button>
-    </details>
-
-    <!-- MODAL BIZUM -->
+    <!-- MODAL BIZUM (sin ZIP duplicado dentro) -->
     <div class="modal" id="support-modal" aria-hidden="true">
       <div class="modal-card" role="dialog" aria-modal="true" aria-label="Colabora con Cosmic Marciana">
         <button class="modal-close" id="support-close" type="button" aria-label="Cerrar">
@@ -761,15 +747,6 @@
           <div class="support-label">Bizum</div>
           <div class="support-value" id="bizum-number">+34 600 000 000</div>
           <button class="copy-btn" id="copy-bizum" type="button">Copiar</button>
-        </div>
-
-        <div style="margin-top:12px;">
-          <a class="download-link" href="la-casa-del-terror.zip" download>
-            ⬇ Descargar el disco (ZIP)
-          </a>
-          <div class="download-note" style="margin-top:8px;">
-            Descarga libre. Si te nace, apoya la emisión con un café 💚
-          </div>
         </div>
       </div>
     </div>
@@ -1389,3 +1366,4 @@
 
 </body>
 </html>
+
