@@ -1071,7 +1071,8 @@
   /* ================= SPA NAV (sin recargar) ================= */
   const viewHome = document.getElementById("view-home");
   const viewCanal = document.getElementById("view-canal");
-  const enterBtn = document.getElementById("enter-channel");
+  const enterBtn = document.getElementById("enter-channel")
+  ?.addEventListener("click", ()=> showView("canal", true));
   const exitBtn = document.getElementById("exit-channel");
 
   function showView(name, push=true){
@@ -1778,3 +1779,4 @@
 
 </body>
 </html>
+
