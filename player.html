@@ -399,7 +399,6 @@
     height:auto;
     width:auto;
 
-    /* SOLO brillo, sin movimiento */
     animation: neon-only 4.8s ease-in-out infinite;
     box-shadow: 0 0 14px rgba(0,255,0,.16);
   }
@@ -435,7 +434,6 @@
     letter-spacing:.03em;
   }
 
-  /* ✅ Descarga ZIP */
   .download-link{
     display:inline-flex;
     align-items:center;
@@ -486,7 +484,6 @@
     position: relative;
   }
 
-  /* ✅ X clicable total */
   .modal-close{
     position:absolute;
     top:10px;
@@ -694,7 +691,6 @@
       <input type="range" id="volume-slider" min="0" max="100" value="100" />
     </div>
 
-    <!-- ✅ PLAYLIST (sube antes de support) -->
     <div class="playlist" id="playlist">
       <div class="track" data-index="0">1. Los pobres más</div>
       <div class="track" data-index="1">2. Volveremos a empezar</div>
@@ -709,7 +705,6 @@
       <div class="track" data-index="10">11. Tenemos que hablar</div>
     </div>
 
-    <!-- ✅ SUPPORT (baja debajo de playlist) -->
     <div class="support">
       <button class="support-btn" id="support-open" type="button">
         ¿Me invitas a un café? <span class="coffee" aria-hidden="true">☕</span>
@@ -718,7 +713,7 @@
       <div class="support-note">
         Si te ha gustado la transmisión, la casa del terror es tuya si quieres: descárgatela libremente.
       </div>
-       <div class="download-note">
+      <div class="download-note">
         Pero si me invitas a un café, podré seguir emitiendo. En la casa del terror o donde sea 💚
       </div>
 
@@ -727,7 +722,6 @@
       </a>
     </div>
 
-    <!-- MODAL BIZUM (sin ZIP duplicado dentro) -->
     <div class="modal" id="support-modal" aria-hidden="true">
       <div class="modal-card" role="dialog" aria-modal="true" aria-label="Colabora con Cosmic Marciana">
         <button class="modal-close" id="support-close" type="button" aria-label="Cerrar">
@@ -751,7 +745,6 @@
       </div>
     </div>
 
-    <!-- playsinline: iOS no fuerza fullscreen -->
     <audio id="audio" preload="metadata" playsinline></audio>
 
     <div class="sig">EMISIÓN NO AUTORIZADA · NO AJUSTAR EL DIAL</div>
@@ -824,68 +817,15 @@
   let isScrubbing = false;
   let usingTouchFallback = false;
 
-  // ✅ Continuar automático por canción
-  let lastSavedSec = -1;
-
-  // ✅ (3) Reanudar: aplicar una sola vez, y también en canplay
-  let resumeApplied = false;
+  // Anti-race: cada cambio de pista incrementa
+  let loadId = 0;
 
   const LS = {
     vol: "cm_vol",
     idx: "cm_idx",
-    time: "cm_time",     // ✅ base key
     shuffle: "cm_shuffle",
     loop: "cm_loop"
   };
-
-  function timeKey(index){
-    return `${LS.time}_${index}`;
-  }
-
-  function savePlaybackTime(){
-    if(!hasLoaded) return;
-    if(!audio.duration) return;
-    if(audio.paused) return;
-
-    const sec = Math.floor(audio.currentTime || 0);
-    if(sec === lastSavedSec) return;
-
-    // guardamos cada 4s aprox, evitando machacar
-    if(sec % 4 !== 0) return;
-
-    lastSavedSec = sec;
-    localStorage.setItem(timeKey(currentIndex), String(audio.currentTime || 0));
-  }
-
-  // ✅ Guardado inmediato al pausar/salir (para no perder los últimos segundos)
-  function savePlaybackTimeNow(){
-    if(!hasLoaded) return;
-    if(!audio.duration) return;
-    localStorage.setItem(timeKey(currentIndex), String(audio.currentTime || 0));
-    lastSavedSec = Math.floor(audio.currentTime || 0);
-  }
-
-  // ✅ (3) aplicar saved time solo una vez, robusto (loadedmetadata + canplay)
-  function applySavedTimeIfAnyOnce(){
-    if(resumeApplied) return;
-
-    const t = Number(localStorage.getItem(timeKey(currentIndex)));
-    if(!Number.isFinite(t) || t <= 0) return;
-    if(!audio.duration) return;
-
-    const safeT = Math.min(t, Math.max(0, audio.duration - 0.25));
-    if(safeT > 0) {
-      audio.currentTime = safeT;
-      resumeApplied = true;
-    }
-  }
-
-  function clearAllPlaybackTimes(){
-    for(let i=0; i<sources.length; i++){
-      localStorage.removeItem(timeKey(i));
-    }
-    lastSavedSec = -1;
-  }
 
   function formatTime(t){
     const m = Math.floor(t / 60);
@@ -1054,38 +994,59 @@
     hidePreview();
   }
 
+  // ===== PLAYER (robusto, sin "resume por canción") =====
   function loadTrack(index){
     currentIndex = index;
-    audio.src = sources[index];
-    hasLoaded = true;
 
     coverImg.src = tvForIndex(index);
     markCurrent();
 
     localStorage.setItem(LS.idx, String(currentIndex));
-    lastSavedSec = -1; // reset throttle for new track
 
-    // ✅ (3) reanudar: permitir aplicar de nuevo en la nueva pista
-    resumeApplied = false;
+    // Reset real
+    audio.pause();
+    try { audio.currentTime = 0; } catch {}
+    audio.src = sources[index];
+    audio.load();
+
+    hasLoaded = true;
   }
 
-  function playCurrent(){
+  async function waitCanPlay(){
+    // readyState >= 3: HAVE_FUTURE_DATA
+    if(audio.readyState >= 3) return;
+    await new Promise((resolve, reject)=>{
+      const onCanPlay = ()=>{ cleanup(); resolve(); };
+      const onError = ()=>{ cleanup(); reject(new Error("audio error")); };
+      const cleanup = ()=>{
+        audio.removeEventListener("canplay", onCanPlay);
+        audio.removeEventListener("error", onError);
+      };
+      audio.addEventListener("canplay", onCanPlay, { once:true });
+      audio.addEventListener("error", onError, { once:true });
+    });
+  }
+
+  async function playCurrent(){
     if(!hasLoaded) loadTrack(currentIndex);
 
-    const p = audio.play();
-    if(p && typeof p.then === "function"){
-      p.then(()=> setPlayIcon()).catch(()=> {
-        setPlayIcon();
-        setStatus("Pulsa Play para iniciar.");
-      });
-    } else {
+    const myId = ++loadId;
+
+    try{
+      await waitCanPlay();
+      if(myId !== loadId) return;
+
+      await audio.play();
+      if(myId !== loadId) return;
+
       setPlayIcon();
+    } catch(e){
+      setPlayIcon();
+      setStatus("Pulsa Play para iniciar.");
     }
   }
 
   function playTrack(index){
-    // ✅ (2) guardar la posición de la pista actual antes de cambiar
-    try { savePlaybackTimeNow(); } catch {}
     loadTrack(index);
     playCurrent();
   }
@@ -1098,10 +1059,11 @@
     }
   }
 
-  // ✅ (1) STOP: reset + borrar tiempos guardados (NO guardar)
   function stopTrack(){
+    ++loadId; // cancela posibles plays en vuelo
+
     audio.pause();
-    audio.currentTime = 0;
+    try { audio.currentTime = 0; } catch {}
     audio.removeAttribute("src");
     audio.load();
 
@@ -1112,7 +1074,6 @@
     currentIndex = 0;
 
     localStorage.setItem(LS.idx, "0");
-    clearAllPlaybackTimes(); // ✅ borra el punto guardado
 
     resetProgressUI();
     setPlayIcon();
@@ -1126,15 +1087,11 @@
   }
 
   function nextTrack(){
-    // ✅ (2) guardar antes de saltar
-    try { savePlaybackTimeNow(); } catch {}
     if(shuffleOn) return playTrack(getRandomNextIndex());
     playTrack((currentIndex + 1) % tracks.length);
   }
 
   function prevTrack(){
-    // ✅ (2) guardar antes de saltar
-    try { savePlaybackTimeNow(); } catch {}
     if(shuffleOn) return playTrack(getRandomNextIndex());
     playTrack((currentIndex - 1 + tracks.length) % tracks.length);
   }
@@ -1207,7 +1164,7 @@
     markCurrent();
   }
 
-  // ✅ Cinturón extra: si suelta fuera, cortamos scrubbing sí o sí
+  // ✅ cinturón extra: si suelta fuera, cortamos scrubbing sí o sí
   function endScrub(){
     if(!isScrubbing) return;
     isScrubbing = false;
@@ -1235,14 +1192,17 @@
       const item = e.target.closest(".track");
       if(!item) return;
       const idx = Number(item.dataset.index);
-      if(Number.isInteger(idx)){
-        // ✅ (2) guardar antes de cambiar por click en playlist
-        try { savePlaybackTimeNow(); } catch {}
-        playTrack(idx);
+      if(!Number.isInteger(idx)) return;
+
+      // Si pinchas la misma pista: toggle play/pause (opcional, más natural)
+      if(idx === currentIndex && hasLoaded){
+        togglePlay();
+        return;
       }
+      playTrack(idx);
     });
 
-    // Pointer events (no-passive para Safari)
+    // Pointer events
     progressContainer.addEventListener("pointerdown", onPointerDown, { passive:false });
     progressContainer.addEventListener("pointermove", onPointerMove, { passive:false });
     progressContainer.addEventListener("pointerup", onPointerUp);
@@ -1258,7 +1218,7 @@
     progressContainer.addEventListener("pointerenter", ()=> { if(audio.duration) showPreview(); });
     progressContainer.addEventListener("pointerleave", ()=> { if(!isScrubbing) hidePreview(); });
 
-    // ✅ Cinturón extra real: soltar fuera / cancelar
+    // Soltar fuera / cancelar
     document.addEventListener("pointerup", endScrub, { passive:true });
     document.addEventListener("pointercancel", endScrub, { passive:true });
     document.addEventListener("touchend", endScrub, { passive:true });
@@ -1269,20 +1229,11 @@
       currentTimeEl.textContent = formatTime(audio.currentTime);
       totalTimeEl.textContent = formatTime(audio.duration);
       setProgressUI(audio.currentTime / audio.duration);
-
-      // ✅ Guardado automático ligero
-      savePlaybackTime();
     });
 
     audio.addEventListener("loadedmetadata", ()=>{
       if(audio.duration) totalTimeEl.textContent = formatTime(audio.duration);
-
-      // ✅ (3) Continuar donde lo dejaste (robusto)
-      applySavedTimeIfAnyOnce();
     });
-
-    // ✅ (3) fallback extra iOS/Safari
-    audio.addEventListener("canplay", applySavedTimeIfAnyOnce);
 
     audio.addEventListener("ended", ()=>{
       if(loopMode === 1) return playTrack(currentIndex);
@@ -1301,10 +1252,6 @@
       setStatus("Error cargando audio.");
       setPlayIcon();
     });
-
-    // ✅ Guardar también al pausar / salir (mejor fiabilidad)
-    audio.addEventListener("pause", savePlaybackTimeNow);
-    window.addEventListener("pagehide", savePlaybackTimeNow);
 
     volumeSlider.addEventListener("input", ()=>{
       const v = Number(volumeSlider.value) / 100;
@@ -1345,11 +1292,9 @@
       if(e.code === "ArrowLeft") prevTrack();
     });
 
-    // Si la pestaña se oculta
+    // Si la pestaña se oculta: pausar (sin guardar tiempos)
     document.addEventListener("visibilitychange", ()=>{
       if(document.hidden){
-        // ✅ guarda SIEMPRE antes de pausar
-        try { savePlaybackTimeNow(); } catch {}
         if(!audio.paused){
           audio.pause();
           setPlayIcon();
