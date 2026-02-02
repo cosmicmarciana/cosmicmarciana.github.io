@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Cosmic Marciana</title>
 
-<!-- Favicons -->
 <link rel="icon" href="favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -86,7 +85,7 @@
   .view{ display:none; }
   .view.active{ display:block; }
 
-  /* ===== Home (tu index) ===== */
+  /* ===== Home ===== */
   .home-wrap{ width:100%; max-width:760px; margin:0 auto; text-align:center; }
 
   .crt-home{
@@ -94,6 +93,7 @@
     width:fit-content;
     margin:0 auto 22px;
     isolation:isolate;
+    border-radius:12px;
   }
 
   .hero{
@@ -104,6 +104,8 @@
     animation: crt-flicker 4.5s infinite;
     will-change: transform, filter;
     border-radius:12px;
+    user-select:none;
+    -webkit-user-drag:none;
   }
 
   .crt-home::before{
@@ -141,7 +143,7 @@
     opacity:.72;
     letter-spacing:.20em;
     text-transform:lowercase;
-    margin:-6px auto 22px;
+    margin:-6px auto 14px;
     color:var(--muted);
     user-select:none;
     animation: whisper-jitter 1.35s infinite steps(2,end);
@@ -166,7 +168,7 @@
     animation: whisper-glitch-2 1s infinite linear;
   }
 
-  .cta{ margin-bottom:18px; }
+  .cta{ margin-bottom:12px; }
 
   .btn{
     display:inline-block;
@@ -187,6 +189,87 @@
   .btn:hover{
     transform:translateY(-1px);
     box-shadow:0 0 34px rgba(0,255,0,.45);
+  }
+
+  /* ===== Mini player (HOME) ===== */
+  .mini{
+    margin: 10px auto 16px;
+    width: min(560px, 100%);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:10px 12px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.25);
+    border: 1px solid rgba(255,255,255,.14);
+    color: var(--muted);
+    backdrop-filter: blur(4px);
+    cursor:pointer;
+    user-select:none;
+    transition: .18s ease;
+  }
+  .mini:hover{
+    border-color: rgba(0,255,0,.35);
+    box-shadow: 0 0 18px rgba(0,255,0,.12);
+  }
+
+  .mini-left{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width: 0;
+  }
+
+  .mini-dot{
+    width:10px;
+    height:10px;
+    border-radius:999px;
+    background: rgba(0,255,0,.85);
+    box-shadow: 0 0 16px rgba(0,255,0,.20);
+    flex:0 0 auto;
+  }
+
+  .mini.playing .mini-dot{
+    animation: miniPulse 1.2s ease-in-out infinite;
+  }
+  @keyframes miniPulse{
+    0%,100%{ transform: scale(1); box-shadow: 0 0 14px rgba(0,255,0,.20); opacity:.85; }
+    50%{ transform: scale(1.25); box-shadow: 0 0 26px rgba(0,255,0,.35); opacity:1; }
+  }
+
+  .mini-text{
+    font-size:12px;
+    letter-spacing:.03em;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    max-width: 40ch;
+  }
+
+  .mini-text strong{
+    color: var(--ink);
+    font-weight:700;
+  }
+
+  .mini-btn{
+    border:none;
+    cursor:pointer;
+    padding:8px 12px;
+    border-radius:999px;
+    background: rgba(0,255,0,.10);
+    border: 1px solid rgba(0,255,0,.28);
+    color: var(--ink);
+    transition:.18s ease;
+    font-size:12px;
+    white-space:nowrap;
+    flex:0 0 auto;
+  }
+
+  .mini-btn:hover{
+    color: var(--neon);
+    border-color: rgba(0,255,0,.55);
+    box-shadow: 0 0 16px rgba(0,255,0,.16);
   }
 
   .links.icons{
@@ -253,7 +336,7 @@
     opacity:.9;
   }
 
-  /* ===== Player (tu player con ajustes) ===== */
+  /* ===== Player view ===== */
   .back{
     display:inline-block;
     color:var(--ink);
@@ -538,6 +621,7 @@
     accent-color: var(--neon);
   }
 
+  /* ===== SUPPORT ===== */
   .support{
     margin: 18px auto 10px;
     width: min(720px, 100%);
@@ -583,6 +667,7 @@
     color: var(--neon);
     box-shadow: 0 0 28px rgba(0,255,0,.30);
   }
+
   .support-note{
     margin-top:10px;
     font-size:12px;
@@ -617,6 +702,7 @@
     opacity:.9;
   }
 
+  /* ===== MODAL ===== */
   .modal{
     position: fixed;
     inset: 0;
@@ -665,7 +751,6 @@
 
     z-index:5;
     pointer-events:auto;
-    touch-action: manipulation;
   }
   .modal-close:hover{
     border-color: rgba(0,255,0,.45) !important;
@@ -740,6 +825,7 @@
     border-color: rgba(0,255,0,.5);
   }
 
+  /* ===== Playlist ===== */
   .playlist{
     margin:18px auto 0;
     text-align:left;
@@ -775,18 +861,16 @@
     color:var(--muted);
   }
 
-  /* ===== Animaciones ===== */
+  /* ===== Animaciones base ===== */
   @keyframes crt-flicker{
-    0%{filter:brightness(1) contrast(1)}
-    50%{filter:brightness(.97) contrast(1)}
-    100%{filter:brightness(1) contrast(1)}
+    0%{filter:brightness(1)}
+    50%{filter:brightness(.97)}
+    100%{filter:brightness(1)}
   }
   @keyframes crt-glitch{
-    0%{transform:translate(0); filter:none}
-    25%{transform:translate(-1px,0); filter:hue-rotate(-6deg)}
-    50%{transform:translate(1px,0); filter:hue-rotate(6deg)}
-    75%{transform:translate(-1px,0); filter:contrast(1.1)}
-    100%{transform:translate(0); filter:none}
+    0%{transform:none}
+    50%{transform:translateX(1px)}
+    100%{transform:none}
   }
   @keyframes whisper-jitter{
     0%{transform:none}
@@ -824,6 +908,7 @@
     #volume-slider{ width: 140px; }
     h1{ font-size:18px; }
     .progress-wrapper{ gap:8px; }
+    .mini-text{ max-width: 26ch; }
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -838,7 +923,6 @@
     <!-- ================= HOME ================= -->
     <section id="view-home" class="view active" aria-label="Inicio">
       <div class="home-wrap">
-
         <div class="crt-home">
           <img src="tv.png" alt="Televisor CRT con Cosmic Marciana – La casa del terror" class="hero" />
         </div>
@@ -851,8 +935,16 @@
         <div class="whisper" data-text="transmisión en curso…">transmisión en curso…</div>
 
         <div class="cta">
-          <!-- Antes: href="player.html" -->
           <button id="enter-channel" class="btn" type="button">¿Te atreves a entrar en la casa del terror?</button>
+        </div>
+
+        <!-- Mini-player (solo aparece si hay pista cargada) -->
+        <div id="mini-player" class="mini" aria-live="polite" hidden>
+          <div class="mini-left">
+            <span class="mini-dot" aria-hidden="true"></span>
+            <span class="mini-text">Sonando: <strong id="mini-title">—</strong></span>
+          </div>
+          <button id="mini-toggle" class="mini-btn" type="button" aria-label="Pausar/Reanudar">Pausar</button>
         </div>
 
         <div class="links icons">
@@ -870,7 +962,6 @@
         <div class="sig" data-text="COSMIC MARCIANA 2026 · EMISIÓN NO AUTORIZADA · NO AJUSTAR EL DIAL">
           COSMIC MARCIANA <span class="hit">2026</span> · EMISIÓN NO AUTORIZADA · NO AJUSTAR EL DIAL
         </div>
-
       </div>
     </section>
 
@@ -972,7 +1063,7 @@
       <div class="sig-player">EMISIÓN NO AUTORIZADA · NO AJUSTAR EL DIAL</div>
     </section>
 
-    <!-- ✅ el audio vive fuera de las vistas, así NO se destruye al navegar -->
+    <!-- El audio vive fuera de las vistas -->
     <audio id="audio" preload="metadata" playsinline></audio>
   </main>
 
@@ -989,23 +1080,15 @@
     viewCanal.classList.toggle("active", isCanal);
 
     const hash = isCanal ? "#canal" : "#home";
-    if(push){
-      // evita duplicar estados iguales
-      if(location.hash !== hash) history.pushState({ view:name }, "", hash);
-    }
-    // foco agradable
-    if(isCanal){
-      // no forzamos autoplay; solo cambiamos vista
-      setTimeout(()=> exitBtn?.focus?.(), 0);
-    } else {
-      setTimeout(()=> enterBtn?.focus?.(), 0);
-    }
+    if(push && location.hash !== hash) history.pushState({ view:name }, "", hash);
+
+    if(isCanal) setTimeout(()=> exitBtn?.focus?.(), 0);
+    else setTimeout(()=> enterBtn?.focus?.(), 0);
   }
 
   function syncFromUrl(){
     const h = (location.hash || "#home").toLowerCase();
-    if(h === "#canal") showView("canal", false);
-    else showView("home", false);
+    showView(h === "#canal" ? "canal" : "home", false);
   }
 
   window.addEventListener("popstate", syncFromUrl);
@@ -1080,6 +1163,11 @@
 
   const tracks = Array.from(document.querySelectorAll(".track"));
 
+  // Mini-player
+  const miniPlayer = document.getElementById("mini-player");
+  const miniTitle = document.getElementById("mini-title");
+  const miniToggle = document.getElementById("mini-toggle");
+
   let currentIndex = 0;
   let lastVolume = 1;
   let loopMode = 0; // 0=OFF,1=SONG,2=ALBUM
@@ -1089,7 +1177,6 @@
   let isScrubbing = false;
   let usingTouchFallback = false;
 
-  // Anti-race
   let loadId = 0;
 
   const LS = {
@@ -1099,12 +1186,13 @@
     loop: "cm_loop"
   };
 
+  function clamp01(n){ return Math.max(0, Math.min(1, n)); }
+
   function formatTime(t){
     const m = Math.floor(t / 60);
     const s = Math.floor(t % 60);
     return m + ":" + ("0" + s).slice(-2);
   }
-  function clamp01(n){ return Math.max(0, Math.min(1, n)); }
 
   function setStatus(msg){
     statusLineEl.textContent = msg || "";
@@ -1167,20 +1255,6 @@
     totalTimeEl.textContent = "0:00";
   }
 
-  function setProgressUI(pct){
-    const p = clamp01(pct);
-    const perc = (p * 100);
-    progressBar.style.width = perc + "%";
-    progressThumb.style.left = perc + "%;
-  }
-</script>
-<script>
-  // Fix accidental quote in previous script block (kept separate to keep everything working even if pasted as-is)
-</script>
-<script>
-  // The line above was an artifact guard. The actual player continues here:
-
-  // Re-define setProgressUI correctly (overwrite)
   function setProgressUI(pct){
     const p = clamp01(pct);
     const perc = (p * 100);
@@ -1275,6 +1349,70 @@
     hidePreview();
   }
 
+  function endScrub(){
+    if(!isScrubbing) return;
+    isScrubbing = false;
+    hidePreview();
+  }
+
+  function cleanTrackTitle(){
+    const raw = tracks[currentIndex]?.textContent || "Cosmic Marciana";
+    return raw.replace(/^\s*\d+\.\s*/, "").trim();
+  }
+
+  // ===== Mini-player HOME =====
+  function updateMiniPlayer(){
+    if(!miniPlayer) return;
+
+    const isActive = hasLoaded && !!audio.src;
+    miniPlayer.hidden = !isActive;
+
+    if(!isActive) return;
+
+    miniTitle.textContent = cleanTrackTitle();
+    miniToggle.textContent = audio.paused ? "Reanudar" : "Pausar";
+    miniToggle.setAttribute("aria-label", audio.paused ? "Reanudar" : "Pausar");
+
+    miniPlayer.classList.toggle("playing", !audio.paused);
+  }
+
+  miniToggle?.addEventListener("click", (e)=>{
+    // No queremos que al clicar el botón nos lleve al canal.
+    e.stopPropagation();
+    togglePlay();
+    updateMiniPlayer();
+  });
+
+  miniPlayer?.addEventListener("click", ()=>{
+    // Click en el mini-player = abrir canal (sin cortar audio)
+    showView("canal", true);
+  });
+
+  // ===== Media Session (modo Spotify) =====
+  function updateMediaSession(){
+    if(!("mediaSession" in navigator)) return;
+
+    try{
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: cleanTrackTitle(),
+        artist: "Cosmic Marciana",
+        album: "La casa del terror",
+        artwork: [
+          { src: tvForIndex(currentIndex), sizes: "512x512", type: "image/png" },
+          { src: tvForIndex(currentIndex), sizes: "256x256", type: "image/png" }
+        ]
+      });
+
+      navigator.mediaSession.playbackState = audio.paused ? "paused" : "playing";
+
+      navigator.mediaSession.setActionHandler("play", ()=> playCurrent());
+      navigator.mediaSession.setActionHandler("pause", ()=> { audio.pause(); setPlayIcon(); updateMiniPlayer(); updateMediaSession(); });
+      navigator.mediaSession.setActionHandler("previoustrack", ()=> prevTrack());
+      navigator.mediaSession.setActionHandler("nexttrack", ()=> nextTrack());
+      navigator.mediaSession.setActionHandler("stop", ()=> stopTrack());
+    } catch {}
+  }
+
   function loadTrack(index){
     currentIndex = index;
 
@@ -1290,10 +1428,12 @@
 
     hasLoaded = true;
 
+    updateMiniPlayer();
     updateMediaSession();
   }
 
   async function waitCanPlay(){
+    // readyState >= 3: HAVE_FUTURE_DATA
     if(audio.readyState >= 3) return;
     await new Promise((resolve, reject)=>{
       const onCanPlay = ()=>{ cleanup(); resolve(); };
@@ -1320,9 +1460,11 @@
       if(myId !== loadId) return;
 
       setPlayIcon();
+      updateMiniPlayer();
       updateMediaSession();
     } catch(e){
       setPlayIcon();
+      updateMiniPlayer();
       setStatus("Pulsa Play para iniciar.");
     }
   }
@@ -1337,6 +1479,7 @@
     else{
       audio.pause();
       setPlayIcon();
+      updateMiniPlayer();
       updateMediaSession();
     }
   }
@@ -1359,6 +1502,7 @@
 
     resetProgressUI();
     setPlayIcon();
+    updateMiniPlayer();
     updateMediaSession();
   }
 
@@ -1395,6 +1539,7 @@
 
   async function sharePage(){
     const url = window.location.href.split("#")[0] + "#canal";
+
     try{
       if(navigator.share){
         await navigator.share({ title: "Cosmic Marciana", url });
@@ -1444,44 +1589,8 @@
     setPlayIcon();
     resetProgressUI();
     markCurrent();
+    updateMiniPlayer();
     updateMediaSession();
-  }
-
-  function endScrub(){
-    if(!isScrubbing) return;
-    isScrubbing = false;
-    hidePreview();
-  }
-
-  /* ================= Media Session (modo Spotify) ================= */
-  function cleanTrackTitle(){
-    const raw = tracks[currentIndex]?.textContent || "Cosmic Marciana";
-    return raw.replace(/^\s*\d+\.\s*/, "").trim();
-  }
-
-  function updateMediaSession(){
-    if(!("mediaSession" in navigator)) return;
-
-    try{
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: cleanTrackTitle(),
-        artist: "Cosmic Marciana",
-        album: "La casa del terror",
-        artwork: [
-          { src: tvForIndex(currentIndex), sizes: "512x512", type: "image/png" },
-          { src: tvForIndex(currentIndex), sizes: "256x256", type: "image/png" }
-        ]
-      });
-
-      navigator.mediaSession.playbackState = audio.paused ? "paused" : "playing";
-
-      navigator.mediaSession.setActionHandler("play", ()=> playCurrent());
-      navigator.mediaSession.setActionHandler("pause", ()=> { audio.pause(); setPlayIcon(); updateMediaSession(); });
-      navigator.mediaSession.setActionHandler("previoustrack", ()=> prevTrack());
-      navigator.mediaSession.setActionHandler("nexttrack", ()=> nextTrack());
-      navigator.mediaSession.setActionHandler("stop", ()=> stopTrack());
-      // seek/back/forward opcionales: mejor no forzar para no liar
-    } catch {}
   }
 
   function wireEvents(){
@@ -1541,10 +1650,17 @@
 
     audio.addEventListener("loadedmetadata", ()=>{
       if(audio.duration) totalTimeEl.textContent = formatTime(audio.duration);
+      updateMiniPlayer();
       updateMediaSession();
     });
 
+    audio.addEventListener("play", ()=>{ updateMiniPlayer(); updateMediaSession(); });
+    audio.addEventListener("pause", ()=>{ updateMiniPlayer(); updateMediaSession(); });
+
     audio.addEventListener("ended", ()=>{
+      updateMiniPlayer();
+      updateMediaSession();
+
       if(loopMode === 1) return playTrack(currentIndex);
       if(loopMode === 2) return nextTrack();
       if(shuffleOn) return nextTrack();
@@ -1560,6 +1676,7 @@
     audio.addEventListener("error", ()=>{
       setStatus("Error cargando audio.");
       setPlayIcon();
+      updateMiniPlayer();
       updateMediaSession();
     });
 
@@ -1655,6 +1772,7 @@
     applyStoredSettings();
     wireEvents();
     supportInit();
+    updateMiniPlayer();
   })();
 </script>
 
