@@ -109,107 +109,130 @@
     opacity: .95;
   }
 
-  /* ===== Subtítulo rojo con glitch setentero (mismo ancho que h1) ===== */
+  /* ===== TITULAR ROJO (más pro, más “setentero”) ===== */
   .subtitle-wrap{
-    width: 100%;                 /* MISMO ANCHO que h1 (ocupa todo el contenedor) */
+    width: 100%;
     display:block;
-    margin: 0 0 6px 0;
+    margin: 0 0 4px 0;
   }
 
   .subtitle{
     position:relative;
     display:block;
-    width: 100%;                 /* MISMO ANCHO exacto que h1 */
-    margin: 0;
-    padding: 0;
-    font: inherit;               /* misma tipografía base */
-    font-size: 18px;             /* un poco menos alto */
-    letter-spacing: .22em;       /* igual que h1 */
-    font-weight: 800;            /* igual que h1 */
-    text-transform: uppercase;   /* igual que h1 */
+    width:100%;
+    margin:0;
+    padding:0;
+    font: inherit;
+    font-size: 18px;
+    letter-spacing: .22em;
+    font-weight: 800;
+    text-transform: uppercase;
     color: var(--blood);
     opacity: .95;
     line-height: 1.05;
     transform: translateZ(0);
-    text-shadow:
-      0 0 14px rgba(255,43,43,.15),
-      0 0 2px rgba(255,43,43,.25);
     user-select:none;
-    animation: red-flicker 5.4s infinite;
+
+    /* “cinta analógica” + halo */
+    text-shadow:
+      0 0 1px rgba(255,255,255,.10),
+      0 0 22px rgba(255,43,43,.22),
+      0 0 4px rgba(255,43,43,.28);
+    filter: saturate(1.05);
   }
 
-  /* capas para glitch */
-  .subtitle::before,
-  .subtitle::after{
-    content: attr(data-text);
+  /* Capas extra (más ricas) */
+  .subtitle .layer{
     position:absolute;
     inset:0;
     pointer-events:none;
-    opacity:.70;
     mix-blend-mode: screen;
+    opacity:.9;
+    transform: translateZ(0);
+    will-change: transform, clip-path, opacity, filter;
   }
 
-  .subtitle::before{
-    color: rgba(255, 60, 60, .95);
-    transform: translate(-1px, 0);
-    clip-path: inset(0 0 60% 0);
-    animation: red-glitch-a 3.6s infinite;
+  .subtitle .layer.r{
+    color: rgba(255, 35, 35, .95);
+    text-shadow: 0 0 18px rgba(255,43,43,.20);
+  }
+  .subtitle .layer.c{
+    color: rgba(255, 120, 0, .35); /* toque “70s” cálido */
+  }
+  .subtitle .layer.m{
+    color: rgba(255, 255, 255, .16);
+    mix-blend-mode: overlay;
   }
 
-  .subtitle::after{
-    color: rgba(255, 0, 0, .95);
-    transform: translate(1px, 0);
-    clip-path: inset(55% 0 0 0);
-    animation: red-glitch-b 4.4s infinite;
+  /* Glitch “slice” (suave en reposo) */
+  @keyframes sliceA{
+    0%, 86%, 100% { clip-path: inset(0 0 0 0); transform: translate(0,0); opacity:.70; }
+    87% { clip-path: inset(10% 0 75% 0); transform: translate(-1px, -1px); opacity:.85; }
+    88% { clip-path: inset(35% 0 40% 0); transform: translate(2px, 0); opacity:.85; }
+    89% { clip-path: inset(65% 0 18% 0); transform: translate(-2px, 1px); opacity:.85; }
+    90% { clip-path: inset(0 0 0 0); transform: translate(0,0); opacity:.70; }
+  }
+  @keyframes sliceB{
+    0%, 90%, 100% { clip-path: inset(0 0 0 0); transform: translate(0,0); opacity:.55; }
+    91% { clip-path: inset(0 0 60% 0); transform: translate(2px, 0); opacity:.80; }
+    92% { clip-path: inset(40% 0 0 0); transform: translate(-2px, 0); opacity:.80; }
+    93% { clip-path: inset(20% 0 35% 0); transform: translate(1px, -1px); opacity:.80; }
+    94% { clip-path: inset(0 0 0 0); transform: translate(0,0); opacity:.55; }
+  }
+  @keyframes jitter{
+    0%, 100% { transform: translateZ(0); filter: none; }
+    50% { transform: translateZ(0) translateY(-.2px); filter: contrast(1.08); }
   }
 
-  /* cuando hay música: crece y más glitch */
+  .subtitle .layer.r{ animation: sliceA 4.8s infinite; }
+  .subtitle .layer.c{ animation: sliceB 6.2s infinite; opacity:.35; }
+  .subtitle .layer.m{ animation: jitter 3.9s infinite; }
+
+  /* Cuando suena: más fuerte + escala */
   body.playing .subtitle{
-    transform: translateZ(0) scale(1.08);
+    transform: translateZ(0) scale(1.10);
     text-shadow:
-      0 0 18px rgba(255,43,43,.25),
-      0 0 3px rgba(255,43,43,.35);
-    animation: red-flicker-playing 2.1s infinite;
+      0 0 1px rgba(255,255,255,.12),
+      0 0 28px rgba(255,43,43,.30),
+      0 0 6px rgba(255,43,43,.38);
+    filter: saturate(1.15) contrast(1.06);
   }
-  body.playing .subtitle::before{
-    animation-duration: 1.2s;
-    opacity:.85;
-  }
-  body.playing .subtitle::after{
-    animation-duration: 1.35s;
-    opacity:.85;
+  body.playing .subtitle .layer.r{ animation-duration: 1.25s; opacity:.95; }
+  body.playing .subtitle .layer.c{ animation-duration: 1.55s; opacity:.55; }
+  body.playing .subtitle .layer.m{ animation-duration: 1.1s; opacity:.22; }
+
+  /* ===== LÍNEA VERDE: CANCIÓN ACTUAL ===== */
+  .nowplaying-wrap{
+    width:100%;
+    display:block;
+    margin: 2px 0 18px 0;
   }
 
-  @keyframes red-flicker{
-    0%, 55%, 100% { filter: none; transform: translateZ(0); }
-    60% { filter: contrast(1.05); }
-    63% { filter: contrast(1.10) saturate(1.05); transform: translateY(-.2px); }
-    66% { filter: none; transform: translateY(0); }
+  .nowplaying{
+    display:block;
+    width:100%;
+    margin:0;
+    padding:0;
+    font: inherit;
+    font-size: 13px;
+    letter-spacing: .18em;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--neon);
+    opacity:.92;
+    line-height: 1.15;
+    user-select:none;
+
+    text-shadow:
+      0 0 18px rgba(0,255,0,.18),
+      0 0 2px rgba(0,255,0,.22);
   }
 
-  @keyframes red-flicker-playing{
-    0%, 100% { filter: none; }
-    15% { filter: contrast(1.08) saturate(1.06); }
-    30% { transform: translateZ(0) scale(1.085) translateY(-.3px); }
-    45% { filter: contrast(1.12); }
-    70% { transform: translateZ(0) scale(1.075); }
-    85% { filter: none; }
-  }
-
-  @keyframes red-glitch-a{
-    0%, 92%, 100% { transform: translate(-1px, 0); clip-path: inset(0 0 60% 0); }
-    93% { transform: translate(-2px, -1px); clip-path: inset(0 0 35% 0); }
-    94% { transform: translate(-1px, 1px); clip-path: inset(10% 0 45% 0); }
-    95% { transform: translate(-3px, 0); clip-path: inset(0 0 70% 0); }
-    96% { transform: translate(-1px, 0); clip-path: inset(0 0 60% 0); }
-  }
-
-  @keyframes red-glitch-b{
-    0%, 90%, 100% { transform: translate(1px, 0); clip-path: inset(55% 0 0 0); }
-    91% { transform: translate(2px, 1px); clip-path: inset(60% 0 0 0); }
-    92% { transform: translate(3px, -1px); clip-path: inset(48% 0 8% 0); }
-    93% { transform: translate(2px, 0); clip-path: inset(70% 0 0 0); }
-    94% { transform: translate(1px, 0); clip-path: inset(55% 0 0 0); }
+  body.playing .nowplaying{
+    opacity:1;
+    text-shadow:
+      0 0 26px rgba(0,255,0,.28),
+      0 0 3px rgba(0,255,0,.35);
   }
 
   /* TV CRT */
@@ -740,7 +763,8 @@
 
   @media (max-width:480px){
     h1{ font-size:18px; }
-    .subtitle{ font-size:15px; } /* proporcional en móvil */
+    .subtitle{ font-size:15px; }
+    .nowplaying{ font-size:11px; }
     .progress-wrapper{ gap:8px; }
     #volume-slider{ width: 140px; }
   }
@@ -752,7 +776,7 @@
     #play-pause.pulse{ animation:none !important; }
     .support-btn{ animation:none !important; }
 
-    .subtitle, .subtitle::before, .subtitle::after{
+    .subtitle, .subtitle .layer{
       animation:none !important;
       transform:none !important;
     }
@@ -762,13 +786,23 @@
 
 <body>
   <main class="wrap">
-    <a href="index.html" class="back">← HUYE! Sal corriendo...</a>
+    <a href="index.html" class="back">← Salir del canal</a>
 
     <h1>Cosmic Marciana</h1>
 
-    <!-- Subtítulo rojo -->
+    <!-- LA CASA DEL TERROR (rojo) -->
     <div class="subtitle-wrap" aria-hidden="true">
-      <div class="subtitle" id="subtitle" data-text="La casa del terror">La casa del terror</div>
+      <div class="subtitle" id="subtitle" data-text="LA CASA DEL TERROR">
+        LA CASA DEL TERROR
+        <span class="layer r" aria-hidden="true">LA CASA DEL TERROR</span>
+        <span class="layer c" aria-hidden="true">LA CASA DEL TERROR</span>
+        <span class="layer m" aria-hidden="true">LA CASA DEL TERROR</span>
+      </div>
+    </div>
+
+    <!-- CANCIÓN ACTUAL (verde) -->
+    <div class="nowplaying-wrap" aria-live="polite">
+      <div class="nowplaying" id="nowplaying">—</div>
     </div>
 
     <div class="crt" role="button" aria-label="Play/Pause" tabindex="0">
@@ -829,7 +863,7 @@
         Si te ha gustado la transmisión, la casa del terror es tuya si quieres: descárgatela libremente.
       </div>
       <div class="download-note">
-        Pero si me invitas a un café, podré seguir emitiendo. En la casa del terror, en la de la risa o donde sea 💚
+        Pero si me invitas a un café, podré seguir emitiendo. En la casa del terror o donde sea 💚
       </div>
 
       <a class="download-link" href="la-casa-del-terror.zip" download>
@@ -896,6 +930,7 @@
 
   const coverImg = $("cover");
   const audio = $("audio");
+  const nowPlayingEl = $("nowplaying");
 
   const progressContainer = $("progress-container");
   const progressBar = $("progress-bar");
@@ -1069,6 +1104,12 @@
     if(el) el.classList.add("current");
   }
 
+  function updateNowPlaying(){
+    const t = tracks[currentIndex];
+    const txt = t ? t.textContent.trim() : "—";
+    if(nowPlayingEl) nowPlayingEl.textContent = txt || "—";
+  }
+
   function resetProgressUI(){
     progressBar.style.width = "0%";
     progressThumb.style.left = "0%";
@@ -1180,6 +1221,7 @@
 
     coverImg.src = tvForIndex(index);
     markCurrent();
+    updateNowPlaying();
 
     localStorage.setItem(LS.idx, String(currentIndex));
 
@@ -1264,6 +1306,7 @@
 
     resetProgressUI();
     setPlayIcon();
+    updateNowPlaying();
   }
 
   function getRandomNextIndex(){
@@ -1353,6 +1396,7 @@
     setPlayIcon();
     resetProgressUI();
     markCurrent();
+    updateNowPlaying();
 
     // ✅ Preload desde el arranque si shuffle está off
     if(!shuffleOn) primePreload(getNextIndexLinear());
@@ -1390,7 +1434,6 @@
       const idx = Number(item.dataset.index);
       if(!Number.isInteger(idx)) return;
 
-      // Si pinchas la misma pista: toggle play/pause
       if(idx === currentIndex && hasLoaded){
         togglePlay();
         return;
@@ -1449,7 +1492,7 @@
       setPlayIcon();
     });
 
-    // ✅ para el glitch/crecimiento del subtítulo cuando suena
+    // ✅ para el glitch/crecimiento del titular cuando suena
     audio.addEventListener("play", setPlayingClass);
     audio.addEventListener("pause", setPlayingClass);
     audio.addEventListener("ended", setPlayingClass);
@@ -1562,4 +1605,3 @@
 
 </body>
 </html>
-
