@@ -725,7 +725,6 @@
       <a class="download-link" href="la-casa-del-terror.zip" download>
         ⬇ Descargar el disco (ZIP)
       </a>
-      
     </div>
 
     <!-- MODAL BIZUM (sin ZIP duplicado dentro) -->
@@ -831,7 +830,7 @@
   const LS = {
     vol: "cm_vol",
     idx: "cm_idx",
-    time: "cm_time",     // ✅ NUEVO (base key)
+    time: "cm_time",     // ✅ base key
     shuffle: "cm_shuffle",
     loop: "cm_loop"
   };
@@ -853,6 +852,14 @@
 
     lastSavedSec = sec;
     localStorage.setItem(timeKey(currentIndex), String(audio.currentTime || 0));
+  }
+
+  // ✅ Guardado inmediato al pausar/salir (para no perder los últimos segundos)
+  function savePlaybackTimeNow(){
+    if(!hasLoaded) return;
+    if(!audio.duration) return;
+    localStorage.setItem(timeKey(currentIndex), String(audio.currentTime || 0));
+    lastSavedSec = Math.floor(audio.currentTime || 0);
   }
 
   function applySavedTimeIfAny(){
@@ -1079,6 +1086,9 @@
 
   // ✅ STOP: reset + borrar tiempos guardados
   function stopTrack(){
+    // guarda por si acaso
+    try { savePlaybackTimeNow(); } catch {}
+
     audio.pause();
     audio.currentTime = 0;
     audio.removeAttribute("src");
@@ -1182,6 +1192,13 @@
     markCurrent();
   }
 
+  // ✅ Cinturón extra: si suelta fuera, cortamos scrubbing sí o sí
+  function endScrub(){
+    if(!isScrubbing) return;
+    isScrubbing = false;
+    hidePreview();
+  }
+
   function wireEvents(){
     prevBtn.addEventListener("click", prevTrack);
     nextBtn.addEventListener("click", nextTrack);
@@ -1222,9 +1239,11 @@
     progressContainer.addEventListener("pointerenter", ()=> { if(audio.duration) showPreview(); });
     progressContainer.addEventListener("pointerleave", ()=> { if(!isScrubbing) hidePreview(); });
 
-    // Cinturón extra: si suelta fuera
-    document.addEventListener("pointerup", ()=> { if(!isScrubbing) hidePreview(); }, { passive:true });
-    document.addEventListener("touchend", ()=> { if(!isScrubbing) hidePreview(); }, { passive:true });
+    // ✅ Cinturón extra real: soltar fuera / cancelar
+    document.addEventListener("pointerup", endScrub, { passive:true });
+    document.addEventListener("pointercancel", endScrub, { passive:true });
+    document.addEventListener("touchend", endScrub, { passive:true });
+    document.addEventListener("touchcancel", endScrub, { passive:true });
 
     audio.addEventListener("timeupdate", ()=>{
       if(!audio.duration) return;
@@ -1260,6 +1279,10 @@
       setStatus("Error cargando audio.");
       setPlayIcon();
     });
+
+    // ✅ Guardar también al pausar / salir (mejor fiabilidad)
+    audio.addEventListener("pause", savePlaybackTimeNow);
+    window.addEventListener("pagehide", savePlaybackTimeNow);
 
     volumeSlider.addEventListener("input", ()=>{
       const v = Number(volumeSlider.value) / 100;
@@ -1302,9 +1325,13 @@
 
     // Si la pestaña se oculta
     document.addEventListener("visibilitychange", ()=>{
-      if(document.hidden && !audio.paused){
-        audio.pause();
-        setPlayIcon();
+      if(document.hidden){
+        // ✅ guarda SIEMPRE antes de pausar
+        try { savePlaybackTimeNow(); } catch {}
+        if(!audio.paused){
+          audio.pause();
+          setPlayIcon();
+        }
       }
     });
   }
@@ -1367,10 +1394,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
