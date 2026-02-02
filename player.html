@@ -827,6 +827,9 @@
   // ✅ Continuar automático por canción
   let lastSavedSec = -1;
 
+  // ✅ (3) Reanudar: aplicar una sola vez, y también en canplay
+  let resumeApplied = false;
+
   const LS = {
     vol: "cm_vol",
     idx: "cm_idx",
@@ -862,13 +865,19 @@
     lastSavedSec = Math.floor(audio.currentTime || 0);
   }
 
-  function applySavedTimeIfAny(){
+  // ✅ (3) aplicar saved time solo una vez, robusto (loadedmetadata + canplay)
+  function applySavedTimeIfAnyOnce(){
+    if(resumeApplied) return;
+
     const t = Number(localStorage.getItem(timeKey(currentIndex)));
     if(!Number.isFinite(t) || t <= 0) return;
     if(!audio.duration) return;
 
     const safeT = Math.min(t, Math.max(0, audio.duration - 0.25));
-    if(safeT > 0) audio.currentTime = safeT;
+    if(safeT > 0) {
+      audio.currentTime = safeT;
+      resumeApplied = true;
+    }
   }
 
   function clearAllPlaybackTimes(){
@@ -1055,6 +1064,9 @@
 
     localStorage.setItem(LS.idx, String(currentIndex));
     lastSavedSec = -1; // reset throttle for new track
+
+    // ✅ (3) reanudar: permitir aplicar de nuevo en la nueva pista
+    resumeApplied = false;
   }
 
   function playCurrent(){
@@ -1072,6 +1084,8 @@
   }
 
   function playTrack(index){
+    // ✅ (2) guardar la posición de la pista actual antes de cambiar
+    try { savePlaybackTimeNow(); } catch {}
     loadTrack(index);
     playCurrent();
   }
@@ -1084,11 +1098,8 @@
     }
   }
 
-  // ✅ STOP: reset + borrar tiempos guardados
+  // ✅ (1) STOP: reset + borrar tiempos guardados (NO guardar)
   function stopTrack(){
-    // guarda por si acaso
-    try { savePlaybackTimeNow(); } catch {}
-
     audio.pause();
     audio.currentTime = 0;
     audio.removeAttribute("src");
@@ -1115,11 +1126,15 @@
   }
 
   function nextTrack(){
+    // ✅ (2) guardar antes de saltar
+    try { savePlaybackTimeNow(); } catch {}
     if(shuffleOn) return playTrack(getRandomNextIndex());
     playTrack((currentIndex + 1) % tracks.length);
   }
 
   function prevTrack(){
+    // ✅ (2) guardar antes de saltar
+    try { savePlaybackTimeNow(); } catch {}
     if(shuffleOn) return playTrack(getRandomNextIndex());
     playTrack((currentIndex - 1 + tracks.length) % tracks.length);
   }
@@ -1220,7 +1235,11 @@
       const item = e.target.closest(".track");
       if(!item) return;
       const idx = Number(item.dataset.index);
-      if(Number.isInteger(idx)) playTrack(idx);
+      if(Number.isInteger(idx)){
+        // ✅ (2) guardar antes de cambiar por click en playlist
+        try { savePlaybackTimeNow(); } catch {}
+        playTrack(idx);
+      }
     });
 
     // Pointer events (no-passive para Safari)
@@ -1258,9 +1277,12 @@
     audio.addEventListener("loadedmetadata", ()=>{
       if(audio.duration) totalTimeEl.textContent = formatTime(audio.duration);
 
-      // ✅ Continuar donde lo dejaste (por canción)
-      applySavedTimeIfAny();
+      // ✅ (3) Continuar donde lo dejaste (robusto)
+      applySavedTimeIfAnyOnce();
     });
+
+    // ✅ (3) fallback extra iOS/Safari
+    audio.addEventListener("canplay", applySavedTimeIfAnyOnce);
 
     audio.addEventListener("ended", ()=>{
       if(loopMode === 1) return playTrack(currentIndex);
