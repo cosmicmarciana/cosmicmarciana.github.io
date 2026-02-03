@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cosmic Marciana</title>
+  <title>fffffffCosmic Marciana</title>
   <link rel="icon" href="favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -414,9 +414,10 @@
   let running = false;
   let unlocked = false;
 
-  const clamp = (n,min,max)=>Math.max(min,Math.min(max,n));
+  // Para evitar que pointer events “maten” el sonido en móvil
+  let touchMode = false;
 
-  /* ===== noise pink-ish ===== */
+  /* ===== pink-ish noise (más grave) ===== */
   function makeNoise(seconds=3){
     const len = ctx.sampleRate * seconds;
     const buf = ctx.createBuffer(1,len,ctx.sampleRate);
@@ -424,8 +425,8 @@
     let last = 0;
     for(let i=0;i<len;i++){
       const white = Math.random()*2-1;
-      last = (last*0.98)+(white*0.02); // pink-ish
-      d[i]=last;
+      last = (last*0.987) + (white*0.013);
+      d[i] = last;
     }
     return buf;
   }
@@ -437,23 +438,23 @@
     master.gain.value = 0;
     master.connect(ctx.destination);
 
-    /* ===== noise ===== */
     const noise = ctx.createBufferSource();
     noise.buffer = makeNoise();
     noise.loop = true;
 
     noiseGain = ctx.createGain();
-    noiseGain.gain.value = 0.7;
+    noiseGain.gain.value = 0.85; // base constante
 
+    // filtros oscuros (más “tubo”)
     hp = ctx.createBiquadFilter();
     hp.type="highpass";
-    hp.frequency.value = 40;
+    hp.frequency.value = 50;
 
     lp = ctx.createBiquadFilter();
     lp.type="lowpass";
-    lp.frequency.value = 1600;
+    lp.frequency.value = 1850;
 
-    /* ===== hum CRT ===== */
+    // hum CRT (constante)
     const hum50 = ctx.createOscillator();
     hum50.frequency.value = 50;
     hum50.type="sine";
@@ -463,26 +464,24 @@
     hum100.type="sine";
 
     humGain = ctx.createGain();
-    humGain.gain.value = 0.05;
+    humGain.gain.value = 0.11;
 
-    /* ===== wow / flutter ===== */
+    // wow / flutter (tracking)
     wowOsc = ctx.createOscillator();
-    wowOsc.frequency.value = 0.35; // lento
+    wowOsc.frequency.value = 0.22;
     wowOsc.type="sine";
 
     wowDepth = ctx.createGain();
-    wowDepth.gain.value = 2200;
-    wowOsc.frequency.value = 0.18;
-
+    wowDepth.gain.value = 1700;
 
     flutterOsc = ctx.createOscillator();
-    flutterOsc.frequency.value = 7.5; // rápido suave
+    flutterOsc.frequency.value = 9.0;
     flutterOsc.type="sine";
 
     flutterDepth = ctx.createGain();
-    flutterDepth.gain.value = 120;
+    flutterDepth.gain.value = 220;
 
-    /* ===== routing ===== */
+    // routing
     noise.connect(noiseGain);
     noiseGain.connect(hp);
     hp.connect(lp);
@@ -517,26 +516,38 @@
     }
   }
 
-  function fade(to,ms){
+  function fade(to, ms){
     if(!ctx || !master) return;
     const t = ctx.currentTime;
     master.gain.cancelScheduledValues(t);
-    master.gain.setValueAtTime(master.gain.value,t);
-    master.gain.linearRampToValueAtTime(to,t+ms/1000);
+    master.gain.setValueAtTime(master.gain.value, t);
+    master.gain.linearRampToValueAtTime(to, t + ms/1000);
   }
 
-  /* ===== tracking dropouts ===== */
+  /* ===== Dropouts “rotos” pero SIN apagar =====
+     Antes bajaba a 0.02 → parecía que se paraba.
+     Ahora baja a un mínimo seguro (0.45) y vuelve rápido.
+  */
   function startDropouts(){
     stopDropouts();
     dropoutTimer = setInterval(()=>{
-      if(!running) return;
-      if(Math.random() < 0.6){
+      if(!running || !ctx) return;
+
+      if(Math.random() < 0.45){
         const now = ctx.currentTime;
+
+        // mínimo seguro: nunca se queda a cero
+        const BASE = 0.85;
+        const MIN  = 0.45;
+
+        noiseGain.gain.cancelScheduledValues(now);
         noiseGain.gain.setValueAtTime(noiseGain.gain.value, now);
-        noiseGain.gain.linearRampToValueAtTime(0.05, now + 0.02);
-        noiseGain.gain.linearRampToValueAtTime(0.7,  now + 0.12);
+
+        // baja rápido a MIN y vuelve a BASE
+        noiseGain.gain.linearRampToValueAtTime(MIN,  now + 0.018);
+        noiseGain.gain.linearRampToValueAtTime(BASE, now + 0.110);
       }
-    }, 220);
+    }, 170);
   }
 
   function stopDropouts(){
@@ -551,7 +562,7 @@
     const ok = await unlock();
     if(!ok) return;
     running = true;
-    fade(0.55, 140);
+    fade(0.48, 120);     // volumen
     startDropouts();
   }
 
@@ -559,7 +570,7 @@
     if(!running) return;
     running = false;
     stopDropouts();
-    fade(0, 200);
+    fade(0, 260);
   }
 
   function toggle(){
@@ -568,26 +579,28 @@
 
   /* ===== EVENTS ===== */
 
-  // Desktop hover
-  tv.addEventListener("pointerenter", start, {passive:true});
-  tv.addEventListener("pointerleave", stop, {passive:true});
+  // Desktop: hover (solo si NO estamos en modo touch)
+  tv.addEventListener("pointerenter", () => { if(!touchMode) start(); }, {passive:true});
+  tv.addEventListener("pointerleave", () => { if(!touchMode) stop();  }, {passive:true});
 
   // Móvil: TAP ON / TAP OFF
   tv.addEventListener("touchstart", (e)=>{
-    e.preventDefault(); // evita double tap / zoom
+    touchMode = true;         // desactiva hover/pointerleave en móviles
+    e.preventDefault();
     toggle();
   }, {passive:false});
 
-  // seguridad
+  // Si cambias de pestaña, apaga
   document.addEventListener("visibilitychange", ()=>{
     if(document.hidden) stop();
   });
-
 })();
 </script>
 
+
 </body>
 </html>
+
 
 
 
