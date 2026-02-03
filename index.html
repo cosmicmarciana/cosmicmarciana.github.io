@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cosmic Marciana</title>
+  <title>popopopopCosmic Marciana</title>
   <link rel="icon" href="favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -404,111 +404,96 @@
   const tv = document.querySelector(".crt");
   if (!tv) return;
 
-  let ctx, master;
-  let noiseGain, humGain;
-  let lp, hp;
-  let wowOsc, wowDepth;
-  let flutterOsc, flutterDepth;
-  let dropoutTimer = null;
+  // === AJUSTES RÁPIDOS ===
+  const NOISE_TYPE = "PINK"; // "WHITE" o "PINK"
+  const VOLUME_ON  = 0.33;   // sube/baja (0.25 - 0.5 suele ir bien)
+  const HUM_ON     = true;   // hum CRT suave (true/false)
 
+  let ctx, master, noiseSrc, noiseGain, hp, lp, humGain;
   let running = false;
   let unlocked = false;
-
-  // Para evitar que pointer events “maten” el sonido en móvil
   let touchMode = false;
 
-  /* ===== pink-ish noise (más grave) ===== */
-  function makeNoise(seconds=3){
-    const len = ctx.sampleRate * seconds;
-    const buf = ctx.createBuffer(1,len,ctx.sampleRate);
+  function makeWhiteBuffer(seconds = 2.5){
+    const len = Math.floor(ctx.sampleRate * seconds);
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for(let i=0;i<len;i++) d[i] = Math.random()*2 - 1;
+    return buf;
+  }
+
+  // Pink-ish simple: integra el white (suena más “cálido”)
+  function makePinkBuffer(seconds = 2.5){
+    const len = Math.floor(ctx.sampleRate * seconds);
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
     const d = buf.getChannelData(0);
     let last = 0;
     for(let i=0;i<len;i++){
-      const white = Math.random()*2-1;
-      last = (last*0.987) + (white*0.013);
+      const white = Math.random()*2 - 1;
+      last = last*0.985 + white*0.015;
       d[i] = last;
     }
     return buf;
   }
 
   function build(){
-    ctx = new (window.AudioContext||window.webkitAudioContext)();
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
 
     master = ctx.createGain();
     master.gain.value = 0;
     master.connect(ctx.destination);
 
-    const noise = ctx.createBufferSource();
-    noise.buffer = makeNoise();
-    noise.loop = true;
+    // fuente de ruido en loop (constante)
+    noiseSrc = ctx.createBufferSource();
+    noiseSrc.buffer = (NOISE_TYPE === "WHITE") ? makeWhiteBuffer() : makePinkBuffer();
+    noiseSrc.loop = true;
 
     noiseGain = ctx.createGain();
-    noiseGain.gain.value = 0.85; // base constante
+    noiseGain.gain.value = 1.0;
 
-    // filtros oscuros (más “tubo”)
+    // filtros para que no suene “digital”
     hp = ctx.createBiquadFilter();
-    hp.type="highpass";
-    hp.frequency.value = 50;
+    hp.type = "highpass";
+    hp.frequency.value = 70;       // deja algo de grave pero quita “rumble” feo
 
     lp = ctx.createBiquadFilter();
-    lp.type="lowpass";
-    lp.frequency.value = 1850;
+    lp.type = "lowpass";
+    lp.frequency.value = 5200;     // recorta brillo “ordenador”, deja nieve
 
-    // hum CRT (constante)
-    const hum50 = ctx.createOscillator();
-    hum50.frequency.value = 50;
-    hum50.type="sine";
-
-    const hum100 = ctx.createOscillator();
-    hum100.frequency.value = 100;
-    hum100.type="sine";
-
-    humGain = ctx.createGain();
-    humGain.gain.value = 0.11;
-
-    // wow / flutter (tracking)
-    wowOsc = ctx.createOscillator();
-    wowOsc.frequency.value = 0.22;
-    wowOsc.type="sine";
-
-    wowDepth = ctx.createGain();
-    wowDepth.gain.value = 1700;
-
-    flutterOsc = ctx.createOscillator();
-    flutterOsc.frequency.value = 9.0;
-    flutterOsc.type="sine";
-
-    flutterDepth = ctx.createGain();
-    flutterDepth.gain.value = 220;
-
-    // routing
-    noise.connect(noiseGain);
+    noiseSrc.connect(noiseGain);
     noiseGain.connect(hp);
     hp.connect(lp);
     lp.connect(master);
 
-    hum50.connect(humGain);
-    hum100.connect(humGain);
-    humGain.connect(master);
+    // hum CRT opcional (muy suave)
+    if(HUM_ON){
+      const hum50 = ctx.createOscillator();
+      hum50.type = "sine";
+      hum50.frequency.value = 50;
 
-    wowOsc.connect(wowDepth);
-    wowDepth.connect(lp.frequency);
+      const hum100 = ctx.createOscillator();
+      hum100.type = "sine";
+      hum100.frequency.value = 100;
 
-    flutterOsc.connect(flutterDepth);
-    flutterDepth.connect(lp.frequency);
+      humGain = ctx.createGain();
+      humGain.gain.value = 0.03; // suave, no molesta
 
-    noise.start();
-    hum50.start();
-    hum100.start();
-    wowOsc.start();
-    flutterOsc.start();
+      hum50.connect(humGain);
+      hum100.connect(humGain);
+      humGain.connect(master);
+
+      hum50.start();
+      hum100.start();
+    }
+
+    noiseSrc.start();
   }
 
   async function unlock(){
     if(unlocked) return true;
     try{
       if(!ctx) build();
-      if(ctx.state==="suspended") await ctx.resume();
+      if(ctx.state === "suspended") await ctx.resume();
       unlocked = true;
       return true;
     }catch{
@@ -524,82 +509,47 @@
     master.gain.linearRampToValueAtTime(to, t + ms/1000);
   }
 
-  /* ===== Dropouts “rotos” pero SIN apagar =====
-     Antes bajaba a 0.02 → parecía que se paraba.
-     Ahora baja a un mínimo seguro (0.45) y vuelve rápido.
-  */
-  function startDropouts(){
-    stopDropouts();
-    dropoutTimer = setInterval(()=>{
-      if(!running || !ctx) return;
-
-      if(Math.random() < 0.45){
-        const now = ctx.currentTime;
-
-        // mínimo seguro: nunca se queda a cero
-        const BASE = 0.85;
-        const MIN  = 0.45;
-
-        noiseGain.gain.cancelScheduledValues(now);
-        noiseGain.gain.setValueAtTime(noiseGain.gain.value, now);
-
-        // baja rápido a MIN y vuelve a BASE
-        noiseGain.gain.linearRampToValueAtTime(MIN,  now + 0.018);
-        noiseGain.gain.linearRampToValueAtTime(BASE, now + 0.110);
-      }
-    }, 170);
-  }
-
-  function stopDropouts(){
-    if(dropoutTimer){
-      clearInterval(dropoutTimer);
-      dropoutTimer = null;
-    }
-  }
-
   async function start(){
     if(running) return;
     const ok = await unlock();
     if(!ok) return;
     running = true;
-    fade(0.48, 120);     // volumen
-    startDropouts();
+    fade(VOLUME_ON, 120); // constante, sin dropouts
   }
 
   function stop(){
     if(!running) return;
     running = false;
-    stopDropouts();
-    fade(0, 260);
+    fade(0, 180);
   }
 
   function toggle(){
     running ? stop() : start();
   }
 
-  /* ===== EVENTS ===== */
-
-  // Desktop: hover (solo si NO estamos en modo touch)
-  tv.addEventListener("pointerenter", () => { if(!touchMode) start(); }, {passive:true});
-  tv.addEventListener("pointerleave", () => { if(!touchMode) stop();  }, {passive:true});
+  // Desktop: hover (solo si no estamos en touchMode)
+  tv.addEventListener("pointerenter", () => { if(!touchMode) start(); }, { passive:true });
+  tv.addEventListener("pointerleave", () => { if(!touchMode) stop();  }, { passive:true });
 
   // Móvil: TAP ON / TAP OFF
-  tv.addEventListener("touchstart", (e)=>{
-    touchMode = true;         // desactiva hover/pointerleave en móviles
+  tv.addEventListener("touchstart", (e) => {
+    touchMode = true;
     e.preventDefault();
     toggle();
-  }, {passive:false});
+  }, { passive:false });
 
-  // Si cambias de pestaña, apaga
-  document.addEventListener("visibilitychange", ()=>{
+  // Si se oculta la pestaña, cortar
+  document.addEventListener("visibilitychange", () => {
     if(document.hidden) stop();
   });
 })();
 </script>
 
 
+
 </body>
 </html>
+
 
 
 
