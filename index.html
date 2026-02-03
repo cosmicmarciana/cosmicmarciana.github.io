@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>iiiiiiiiCosmic Marciana</title>
+  <title>Cosmic Marciana</title>
   <link rel="icon" href="favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -447,11 +447,11 @@
 
     hp = ctx.createBiquadFilter();
     hp.type="highpass";
-    hp.frequency.value = 90;
+    hp.frequency.value = 40;
 
     lp = ctx.createBiquadFilter();
     lp.type="lowpass";
-    lp.frequency.value = 2800;
+    lp.frequency.value = 1600;
 
     /* ===== hum CRT ===== */
     const hum50 = ctx.createOscillator();
@@ -471,7 +471,9 @@
     wowOsc.type="sine";
 
     wowDepth = ctx.createGain();
-    wowDepth.gain.value = 900;
+    wowDepth.gain.value = 2200;
+    wowOsc.frequency.value = 0.18;
+
 
     flutterOsc = ctx.createOscillator();
     flutterOsc.frequency.value = 7.5; // rápido suave
@@ -528,7 +530,7 @@
     stopDropouts();
     dropoutTimer = setInterval(()=>{
       if(!running) return;
-      if(Math.random() < 0.25){
+      if(Math.random() < 0.6){
         const now = ctx.currentTime;
         noiseGain.gain.setValueAtTime(noiseGain.gain.value, now);
         noiseGain.gain.linearRampToValueAtTime(0.05, now + 0.02);
@@ -586,6 +588,7 @@
 
 </body>
 </html>
+
 
 
 
