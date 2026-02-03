@@ -1,581 +1,1610 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>hhhhCosmic Marciana</title>
-  <link rel="icon" href="favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <link rel="manifest" href="site.webmanifest">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>La casa del terror</title>
 
-  <style>
-    :root{
-      --neon:#00ff00;
-      --ink:#eaeaea;
-      --muted:#cfcfcf;
+<!-- Favicons -->
+<link rel="icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+
+<style>
+  :root{
+    --neon:#00ff00;
+    --ink:#eaeaea;
+    --muted:#cfcfcf;
+    --blood:#ff2b2b;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html, body{ -webkit-tap-highlight-color: transparent; }
+
+  button, a, .crt{
+    -webkit-tap-highlight-color: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    outline: none;
+    touch-action: manipulation;
+  }
+
+  :focus{ outline:none; }
+  button:focus-visible, a:focus-visible, .crt:focus-visible{
+    outline: 2px solid rgba(0,255,0,.75);
+    outline-offset: 3px;
+  }
+
+  body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+
+    padding:
+      calc(32px + env(safe-area-inset-top))
+      calc(14px + env(safe-area-inset-right))
+      calc(32px + env(safe-area-inset-bottom))
+      calc(14px + env(safe-area-inset-left));
+
+    overflow-x:hidden;
+
+    background:
+      repeating-radial-gradient(
+        circle at 30% 40%,
+        rgba(255,255,255,.04) 0,
+        rgba(255,255,255,.04) 1px,
+        transparent 2px,
+        transparent 7px
+      ),
+      repeating-radial-gradient(
+        circle at 70% 60%,
+        rgba(255,255,255,.025) 0,
+        rgba(255,255,255,.025) 1px,
+        transparent 1px,
+        transparent 4px
+      ),
+      linear-gradient(
+        180deg,
+        rgba(255,255,255,.06),
+        rgba(0,0,0,.08)
+      ),
+      linear-gradient(
+        180deg,
+        #1a1412,
+        #0e0a09 50%,
+        #050303
+      );
+  }
+
+  .wrap{
+    width:100%;
+    max-width:820px;
+    text-align:center;
+  }
+
+  .back{
+    display:inline-block;
+    color:var(--ink);
+    text-decoration:none;
+    opacity:.75;
+    margin-bottom:14px;
+    border-bottom:1px dotted rgba(255,255,255,.35);
+    padding-bottom:2px;
+  }
+  .back:hover{ opacity:1; color:var(--neon); border-bottom-color:rgba(0,255,0,.65); }
+
+  h1{
+    margin: 0 0 6px 0;
+    font-size: 22px;
+    letter-spacing: .22em;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--ink);
+    opacity: .95;
+  }
+
+  /* ===== Subtítulo rojo con glitch setentero (mismo ancho que h1) ===== */
+  .subtitle-wrap{
+    width: 100%;
+    display:block;
+    margin: 0 0 6px 0;
+  }
+
+  .subtitle{
+    position:relative;
+    display:block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font: inherit;
+    font-size: 18px;
+    letter-spacing: .22em;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--blood);
+    opacity: .95;
+    line-height: 1.05;
+    transform: translateZ(0);
+    text-shadow:
+      0 0 14px rgba(255,43,43,.15),
+      0 0 2px rgba(255,43,43,.25);
+    user-select:none;
+    animation: red-flicker 5.4s infinite;
+  }
+
+  /* capas para glitch */
+  .subtitle::before,
+  .subtitle::after{
+    content: attr(data-text);
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    opacity:.70;
+    mix-blend-mode: screen;
+  }
+
+  .subtitle::before{
+    color: rgba(255, 60, 60, .95);
+    transform: translate(-1px, 0);
+    clip-path: inset(0 0 60% 0);
+    animation: red-glitch-a 3.6s infinite;
+  }
+
+  .subtitle::after{
+    color: rgba(255, 0, 0, .95);
+    transform: translate(1px, 0);
+    clip-path: inset(55% 0 0 0);
+    animation: red-glitch-b 4.4s infinite;
+  }
+
+  /* ====== CUANDO HAY MÚSICA: MÁS GLITCH ROTO (SIN AGRANDAR) ====== */
+  body.playing .subtitle{
+    transform: translateZ(0); /* sin scale */
+    text-shadow:
+      0 0 22px rgba(255,43,43,.28),
+      0 0 4px rgba(255,43,43,.45);
+    filter: contrast(1.2) saturate(1.1);
+    animation:
+      red-flicker-playing 1.35s infinite steps(2,end),
+      title-glitch-jitter .22s infinite steps(2,end);
+  }
+
+  body.playing .subtitle::before{
+    opacity:.95;
+    transform: translate(-3px, -1px);
+    animation: red-glitch-a-play .35s infinite steps(2,end);
+    filter: brightness(1.05);
+  }
+
+  body.playing .subtitle::after{
+    opacity:.95;
+    transform: translate(3px, 1px);
+    animation: red-glitch-b-play .28s infinite steps(2,end);
+    filter: brightness(1.05);
+  }
+
+  @keyframes red-flicker{
+    0%, 55%, 100% { filter: none; transform: translateZ(0); }
+    60% { filter: contrast(1.05); }
+    63% { filter: contrast(1.10) saturate(1.05); transform: translateY(-.2px); }
+    66% { filter: none; transform: translateY(0); }
+  }
+
+  @keyframes red-flicker-playing{
+    0%, 100% { filter: none; }
+    15% { filter: contrast(1.12) saturate(1.10); }
+    30% { filter: contrast(1.20) saturate(1.12); }
+    45% { filter: contrast(1.15); }
+    70% { filter: none; }
+    85% { filter: contrast(1.10); }
+  }
+
+  @keyframes title-glitch-jitter{
+    0%{ transform: translate(0,0) skewX(0deg); }
+    20%{ transform: translate(-1px,0) skewX(-6deg); }
+    40%{ transform: translate(2px,-1px) skewX(7deg); }
+    60%{ transform: translate(-2px,1px) skewX(-10deg); }
+    80%{ transform: translate(1px,0) skewX(5deg); }
+    100%{ transform: translate(0,0) skewX(0deg); }
+  }
+
+  @keyframes red-glitch-a{
+    0%, 92%, 100% { transform: translate(-1px, 0); clip-path: inset(0 0 60% 0); }
+    93% { transform: translate(-2px, -1px); clip-path: inset(0 0 35% 0); }
+    94% { transform: translate(-1px, 1px); clip-path: inset(10% 0 45% 0); }
+    95% { transform: translate(-3px, 0); clip-path: inset(0 0 70% 0); }
+    96% { transform: translate(-1px, 0); clip-path: inset(0 0 60% 0); }
+  }
+
+  @keyframes red-glitch-b{
+    0%, 90%, 100% { transform: translate(1px, 0); clip-path: inset(55% 0 0 0); }
+    91% { transform: translate(2px, 1px); clip-path: inset(60% 0 0 0); }
+    92% { transform: translate(3px, -1px); clip-path: inset(48% 0 8% 0); }
+    93% { transform: translate(2px, 0); clip-path: inset(70% 0 0 0); }
+    94% { transform: translate(1px, 0); clip-path: inset(55% 0 0 0); }
+  }
+
+  /* más “slice roto” solo en play */
+  @keyframes red-glitch-a-play{
+    0%   { clip-path: inset(10% 0 82% 0); transform: translate(-4px,0); }
+    10%  { clip-path: inset(40% 0 30% 0); transform: translate(-2px,-1px); }
+    20%  { clip-path: inset(0 0 60% 0);  transform: translate(-6px,1px); }
+    30%  { clip-path: inset(70% 0 5% 0); transform: translate(-1px,0); }
+    40%  { clip-path: inset(20% 0 55% 0); transform: translate(-5px,-1px); }
+    50%  { clip-path: inset(55% 0 20% 0); transform: translate(-2px,1px); }
+    60%  { clip-path: inset(5% 0 75% 0); transform: translate(-7px,0); }
+    70%  { clip-path: inset(85% 0 0 0); transform: translate(-3px,-1px); }
+    80%  { clip-path: inset(35% 0 40% 0); transform: translate(-6px,1px); }
+    90%  { clip-path: inset(0 0 88% 0);  transform: translate(-2px,0); }
+    100% { clip-path: inset(10% 0 82% 0); transform: translate(-4px,0); }
+  }
+
+  @keyframes red-glitch-b-play{
+    0%   { clip-path: inset(75% 0 5% 0); transform: translate(5px,0); }
+    12%  { clip-path: inset(50% 0 25% 0); transform: translate(2px,1px); }
+    24%  { clip-path: inset(10% 0 70% 0); transform: translate(7px,-1px); }
+    36%  { clip-path: inset(90% 0 0 0); transform: translate(3px,0); }
+    48%  { clip-path: inset(30% 0 45% 0); transform: translate(6px,1px); }
+    60%  { clip-path: inset(0 0 92% 0); transform: translate(2px,0); }
+    72%  { clip-path: inset(62% 0 18% 0); transform: translate(8px,-1px); }
+    84%  { clip-path: inset(15% 0 65% 0); transform: translate(4px,1px); }
+    100% { clip-path: inset(75% 0 5% 0); transform: translate(5px,0); }
+  }
+
+  /* TV CRT */
+  .crt{
+    position:relative;
+    width:fit-content;
+    margin:12px auto 18px;
+    isolation:isolate;
+    cursor: default; /* <- ya no es botón */
+    border-radius:12px;
+  }
+
+  #cover{
+    width:100%;
+    max-width:420px;
+    border-radius:12px;
+    display:block;
+    filter:drop-shadow(0 0 22px rgba(0,0,0,.85));
+    animation: crt-flicker 4.5s infinite;
+    transition: transform .2s ease;
+    user-select:none;
+    -webkit-user-drag:none;
+    will-change: transform, filter;
+  }
+
+  .crt::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.025),
+        rgba(255,255,255,.025) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+    pointer-events:none;
+    mix-blend-mode:overlay;
+    opacity:.25;
+    z-index:2;
+    border-radius:12px;
+  }
+
+  .crt:active #cover{ transform: translateY(-1px); }
+  .crt:hover #cover{ transform: translateY(-2px); animation: crt-glitch .35s steps(2,end); }
+
+  /* Controls */
+  .controls{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:12px;
+    margin: 10px 0 10px;
+    flex-wrap:wrap;
+  }
+
+  button{
+    border:none;
+    width:52px;
+    height:52px;
+    padding:0;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background: rgba(0,255,0,.12);
+    color: var(--ink);
+    cursor:pointer;
+    border:1px solid rgba(0,255,0,.25);
+    transition:.18s ease;
+    line-height:1;
+  }
+
+  button:hover{
+    transform: translateY(-1px);
+    border-color: rgba(0,255,0,.45);
+    color: var(--neon);
+  }
+
+  /* Play/Pause un pelín más compacto */
+  #play-pause{
+    width:48px;
+    height:48px;
+    background: var(--neon);
+    color:#000;
+    border-color: rgba(0,255,0,0);
+    box-shadow:0 0 22px rgba(0,255,0,.28);
+  }
+  #play-pause:hover{
+    color:#000;
+    box-shadow:0 0 34px rgba(0,255,0,.45);
+  }
+
+  #play-pause.pulse{
+    animation: pulse 1.35s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ transform: translateY(0) scale(1); box-shadow:0 0 22px rgba(0,255,0,.28); }
+    50%{ transform: translateY(-1px) scale(1.04); box-shadow:0 0 38px rgba(0,255,0,.45); }
+  }
+
+  .actions{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin: 6px 0 6px;
+  }
+  .icon-btn{
+    width:44px;
+    height:44px;
+    background: rgba(0,0,0,.25);
+    color: var(--muted);
+    border:1px solid rgba(255,255,255,.14);
+    box-shadow:none;
+  }
+  .icon-btn:hover{
+    color: var(--neon);
+    border-color: rgba(0,255,0,.35);
+  }
+  .icon-btn.on{
+    background: rgba(0,255,0,.14);
+    color: var(--neon);
+    border-color: rgba(0,255,0,.45);
+    box-shadow:0 0 18px rgba(0,255,0,.18);
+  }
+
+  .ico{
+    width:22px;
+    height:22px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+  }
+  #play-pause .ico{ width:22px; height:22px; stroke:#000; }
+
+  #status-line{
+    min-height:18px;
+    font-size:12px;
+    color:var(--muted);
+    opacity:.9;
+    margin: 8px 0 10px;
+    letter-spacing:.06em;
+  }
+
+  /* Progress */
+  .progress-wrapper{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    width:min(680px, 100%);
+    margin: 0 auto;
+    gap:10px;
+  }
+
+  .progress-container{
+    flex:1;
+    height:10px;
+    background: rgba(255,255,255,0.10);
+    border-radius:999px;
+    cursor:pointer;
+    overflow:visible;
+    border:1px solid rgba(255,255,255,.10);
+    position:relative;
+
+    touch-action: none;
+    user-select: none;
+  }
+
+  .progress-bar{
+    width:0%;
+    height:100%;
+    border-radius:999px;
+    background: linear-gradient(90deg, rgba(0,255,0,.35), rgba(0,255,0,.8), rgba(0,255,0,.35));
+    background-size:400% 100%;
+    animation: flow 4s linear infinite;
+    transition: width 0.08s linear;
+  }
+  @keyframes flow{ 0%{background-position:0%} 100%{background-position:400%} }
+
+  .progress-thumb{
+    position:absolute;
+    top:50%;
+    left:0%;
+    transform: translate(-50%, -50%);
+    width:14px;
+    height:14px;
+    border-radius:999px;
+    background: rgba(0,255,0,.95);
+    box-shadow: 0 0 14px rgba(0,255,0,.35);
+    border: 1px solid rgba(0,0,0,.35);
+    pointer-events:none;
+  }
+
+  .seek-dot{
+    position:absolute;
+    top:50%;
+    left:0%;
+    transform: translate(-50%, -50%);
+    width:10px;
+    height:10px;
+    border-radius:999px;
+    background: rgba(255,255,255,.85);
+    box-shadow: 0 0 10px rgba(0,0,0,.35);
+    border: 1px solid rgba(0,0,0,.35);
+    opacity:0;
+    pointer-events:none;
+  }
+
+  .seek-tip{
+    position:absolute;
+    top:-30px;
+    left:0%;
+    transform: translate(-50%, 0);
+    padding:6px 8px;
+    font-size:12px;
+    color: var(--ink);
+    background: rgba(0,0,0,.55);
+    border:1px solid rgba(255,255,255,.14);
+    border-radius: 10px;
+    letter-spacing:.04em;
+    opacity:0;
+    pointer-events:none;
+    white-space:nowrap;
+    backdrop-filter: blur(4px);
+  }
+
+  .progress-container.preview .seek-dot,
+  .progress-container.preview .seek-tip{
+    opacity:1;
+  }
+
+  #current-time,#total-time{
+    font-size:12px;
+    color:var(--muted);
+    min-width:46px;
+    text-align:center;
+  }
+
+  /* Volume */
+  .volume-wrapper{
+    margin-top:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+  }
+  .volume-icon{
+    width:44px;
+    height:44px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:999px;
+    background: rgba(0,0,0,.25);
+    color: var(--muted);
+    border:1px solid rgba(255,255,255,.14);
+    cursor:pointer;
+    transition:.18s ease;
+  }
+  .volume-icon:hover{
+    color: var(--neon);
+    border-color: rgba(0,255,0,.35);
+    transform: translateY(-1px);
+  }
+  #volume-slider{
+    width:160px;
+    height:4px;
+    cursor:pointer;
+    accent-color: var(--neon);
+  }
+
+  /* ===== SUPPORT (CAFÉ) ===== */
+  .support{
+    margin: 18px auto 10px;
+    width: min(720px, 100%);
+    text-align:center;
+  }
+
+  .support-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding: 12px 18px;
+    border-radius: 999px;
+    border:1px solid rgba(0,255,0,.35);
+    background: rgba(0,255,0,.10);
+    color: var(--ink);
+    cursor:pointer;
+    transition:.18s ease;
+    height:auto;
+    width:auto;
+
+    animation: neon-only 4.8s ease-in-out infinite;
+    box-shadow: 0 0 14px rgba(0,255,0,.16);
+  }
+
+  @keyframes neon-only{
+    0%, 70%, 100%{
+      box-shadow: 0 0 14px rgba(0,255,0,.16);
+      border-color: rgba(0,255,0,.40);
     }
-
-    *{ box-sizing:border-box; }
-
-    body{
-      margin:0;
-      font-family:Arial, sans-serif;
-      color:var(--ink);
-      min-height:100vh;
-      display:flex;
-      justify-content:center;
-      padding:32px 14px;
-      overflow-x:hidden;
-
-      background:
-        repeating-radial-gradient(
-          circle at 30% 40%,
-          rgba(255,255,255,.04) 0,
-          rgba(255,255,255,.04) 1px,
-          transparent 2px,
-          transparent 7px
-        ),
-        repeating-radial-gradient(
-          circle at 70% 60%,
-          rgba(255,255,255,.025) 0,
-          rgba(255,255,255,.025) 1px,
-          transparent 1px,
-          transparent 4px
-        ),
-        linear-gradient(
-          180deg,
-          rgba(255,255,255,.06),
-          rgba(0,0,0,.08)
-        ),
-        linear-gradient(
-          180deg,
-          #1a1412,
-          #0e0a09 50%,
-          #050303
-        );
+    80%{
+      box-shadow: 0 0 32px rgba(0,255,0,.34);
+      border-color: rgba(0,255,0,.75);
     }
-
-    .wrap{
-      width:100%;
-      max-width:760px;
-      text-align:center;
+    90%{
+      box-shadow: 0 0 18px rgba(0,255,0,.22);
+      border-color: rgba(0,255,0,.50);
     }
+  }
 
-    /* ===== CRT ===== */
-    .crt{
-      position:relative;
-      width:fit-content;
-      margin:0 auto 22px;
-      isolation:isolate;
-      cursor: default;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
+  .support-btn:hover{
+    transform:none !important;
+    border-color: rgba(0,255,0,.70);
+    color: var(--neon);
+    box-shadow: 0 0 28px rgba(0,255,0,.30);
+  }
+  .support-btn:active{ transform:none !important; }
+
+  .support-note{
+    margin-top:10px;
+    font-size:12px;
+    color: var(--muted);
+    opacity:.9;
+    letter-spacing:.03em;
+  }
+
+  .download-link{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    margin-top:10px;
+    padding:10px 14px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.14);
+    background: rgba(0,0,0,.25);
+    color: var(--muted);
+    text-decoration:none;
+    transition:.18s ease;
+  }
+  .download-link:hover{
+    color: var(--neon);
+    border-color: rgba(0,255,0,.35);
+    box-shadow: 0 0 18px rgba(0,255,0,.16);
+  }
+  .download-note{
+    margin-top:8px;
+    font-size:12px;
+    color: var(--muted);
+    opacity:.9;
+  }
+
+  /* ===== MODAL ===== */
+  .modal{
+    position: fixed;
+    inset: 0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding: 18px;
+    background: rgba(0,0,0,.55);
+    z-index: 999;
+  }
+  .modal.open{ display:flex; }
+
+  .modal-card{
+    width: min(560px, 100%);
+    border-radius: 16px;
+    background: rgba(10,8,8,.95);
+    border: 1px solid rgba(255,255,255,.12);
+    box-shadow: 0 0 34px rgba(0,0,0,.55);
+    padding: 16px 16px 14px;
+    text-align:left;
+    position: relative;
+  }
+
+  .modal-close{
+    position:absolute;
+    top:10px;
+    right:10px;
+
+    width:48px !important;
+    height:48px !important;
+    padding:0 !important;
+
+    border-radius:999px;
+    background: rgba(255,255,255,.08) !important;
+    border:1px solid rgba(255,255,255,.16) !important;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+    color: var(--muted) !important;
+
+    box-shadow:none !important;
+    transform:none !important;
+
+    z-index:5;
+    pointer-events:auto;
+    touch-action: manipulation;
+  }
+  .modal-close:hover{
+    transform:none !important;
+    border-color: rgba(0,255,0,.45) !important;
+    color: var(--neon) !important;
+  }
+  .modal-close svg{
+    width:18px;
+    height:18px;
+    display:block;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:2.2;
+    stroke-linecap:round;
+    pointer-events:none !important;
+  }
+
+  .modal-title{
+    font-size:14px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color: var(--ink);
+    opacity:.95;
+    margin: 4px 0 8px;
+  }
+
+  .modal-text{
+    font-size:13px;
+    color: var(--muted);
+    line-height:1.45;
+    margin-bottom:12px;
+  }
+
+  .support-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:12px;
+    background: rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.08);
+  }
+
+  .support-label{
+    font-size:12px;
+    color: var(--muted);
+    letter-spacing:.10em;
+    text-transform:uppercase;
+  }
+
+  .support-value{
+    font-size:13px;
+    color: var(--ink);
+    flex:1;
+    text-align:center;
+  }
+
+  .copy-btn{
+    padding: 10px 12px;
+    border-radius: 999px;
+    border:1px solid rgba(0,255,0,.28);
+    background: rgba(0,255,0,.10);
+    color: var(--ink);
+    cursor:pointer;
+    transition:.18s ease;
+    white-space:nowrap;
+    width:auto;
+    height:auto;
+  }
+  .copy-btn:hover{
+    color: var(--neon);
+    border-color: rgba(0,255,0,.5);
+  }
+
+  /* Playlist */
+  .playlist{
+    margin:18px auto 0;
+    text-align:left;
+    width:min(720px, 100%);
+  }
+  .track{
+    padding:10px 14px;
+    border-radius:10px;
+    background: rgba(255,255,255,0.05);
+    margin:8px 0;
+    transition: background 0.2s, transform 0.15s, border-color .2s;
+    cursor:pointer;
+    border:1px solid rgba(255,255,255,.08);
+    color: var(--ink);
+  }
+  .track:hover{
+    background: rgba(255,255,255,0.09);
+    transform: translateY(-1px);
+    border-color: rgba(0,255,0,.25);
+  }
+  .track.current{
+    background: rgba(0,255,0,0.10);
+    border-color: rgba(0,255,0,.45);
+    color: var(--neon);
+  }
+
+  .sig{
+    margin-top:16px;
+    font-size:12px;
+    opacity:.6;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+
+  @keyframes crt-flicker{
+    0%{filter:brightness(1) contrast(1)}
+    50%{filter:brightness(.97) contrast(1)}
+    100%{filter:brightness(1) contrast(1)}
+  }
+  @keyframes crt-glitch{
+    0%{transform:translate(0); filter:none}
+    25%{transform:translate(-1px,0); filter:hue-rotate(-6deg)}
+    50%{transform:translate(1px,0); filter:hue-rotate(6deg)}
+    75%{transform:translate(-1px,0); filter:contrast(1.1)}
+    100%{transform:translate(0); filter:none}
+  }
+
+  @media (max-width:480px){
+    h1{ font-size:18px; }
+    .subtitle{ font-size:15px; }
+    .progress-wrapper{ gap:8px; }
+    #volume-slider{ width: 140px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    #cover{ animation:none !important; }
+    .crt:hover #cover{ animation:none !important; }
+    .progress-bar{ animation:none !important; }
+    #play-pause.pulse{ animation:none !important; }
+    .support-btn{ animation:none !important; }
+
+    .subtitle, .subtitle::before, .subtitle::after{
+      animation:none !important;
+      transform:none !important;
+      filter:none !important;
     }
-
-    .hero{
-      width:100%;
-      max-width:420px;
-      display:block;
-      filter:drop-shadow(0 0 22px rgba(0,0,0,.85));
-      animation: crt-flicker 4.5s infinite;
-      will-change: transform, filter;
-      -webkit-user-drag:none;
-    }
-
-    .crt::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:
-        repeating-linear-gradient(
-          to bottom,
-          rgba(255,255,255,.025),
-          rgba(255,255,255,.025) 1px,
-          transparent 1px,
-          transparent 3px
-        );
-      pointer-events:none;
-      mix-blend-mode:overlay;
-      opacity:.25;
-    }
-
-    .crt:hover .hero{
-      animation: crt-glitch .35s steps(2,end);
-    }
-
-    /* ===== TEXTO ===== */
-    .text{
-      font-size:15px;
-      line-height:1.55;
-      margin:0 auto 18px;
-      max-width:50ch;
-      color:var(--muted);
-    }
-
-    /* ===== WHISPER ===== */
-    .whisper{
-      position:relative;
-      display:inline-block;
-      font-size:12px;
-      opacity:.72;
-      letter-spacing:.20em;
-      text-transform:lowercase;
-      margin:-6px auto 22px;
-      color:var(--muted);
-      user-select:none;
-      animation: whisper-jitter 1.35s infinite steps(2,end);
-    }
-
-    .whisper::before,
-    .whisper::after{
-      content: attr(data-text);
-      position:absolute;
-      inset:0;
-    }
-
-    .whisper::before{
-      color: rgba(0,255,0,.75);
-      transform: translate(1px,0);
-      animation: whisper-glitch-1 1.15s infinite linear;
-    }
-
-    .whisper::after{
-      color: rgba(255,0,0,.65);
-      transform: translate(-1px,0);
-      animation: whisper-glitch-2 1s infinite linear;
-    }
-
-    /* ===== CTA ===== */
-    .cta{ margin-bottom:18px; }
-
-    .btn{
-      display:inline-block;
-      padding:16px 28px;
-      font-size:16px;
-      border-radius:999px;
-      text-decoration:none;
-      background:var(--neon);
-      color:#000;
-      box-shadow:0 0 22px rgba(0,255,0,.3);
-      transition:.2s ease;
-      white-space:normal;
-      line-height:1.25;
-    }
-
-    .btn:hover{
-      transform:translateY(-1px);
-      box-shadow:0 0 34px rgba(0,255,0,.45);
-    }
-
-    /* ===== ICONOS ===== */
-    .links.icons{
-      display:flex;
-      justify-content:center;
-      gap:22px;
-      margin-top:6px;
-    }
-
-    .links.icons a{
-      padding:6px;
-      opacity:.75;
-      transition:.2s ease;
-    }
-
-    .links.icons a:hover{
-      opacity:1;
-      transform:translateY(-1px);
-    }
-
-    .links.icons svg{
-      width:22px;
-      height:22px;
-      fill:none;
-      stroke:var(--ink);
-      stroke-width:1.6;
-    }
-
-    .links.icons a:hover svg{
-      stroke:var(--neon);
-    }
-
-    /* ===== FIRMA CON GLITCH SUAVE ===== */
-    .sig{
-      position:relative;
-      margin-top:16px;
-      font-size:12px;
-      opacity:.65;
-      letter-spacing:.14em;
-      text-transform:uppercase;
-      color:var(--muted);
-    }
-
-    .sig::before,
-    .sig::after{
-      content: attr(data-text);
-      position:absolute;
-      inset:0;
-      opacity:.5;
-      pointer-events:none;
-    }
-
-    .sig::before{
-      color: rgba(0,255,0,.35);
-      animation: sig-glitch-1 6s infinite;
-    }
-
-    .sig::after{
-      color: rgba(255,0,0,.25);
-      animation: sig-glitch-2 7s infinite;
-    }
-
-    .sig .hit{
-      color:var(--ink);
-      opacity:.9;
-    }
-
-    /* ===== ANIMACIONES ===== */
-    @keyframes crt-flicker{
-      0%{filter:brightness(1)}
-      50%{filter:brightness(.97)}
-      100%{filter:brightness(1)}
-    }
-
-    @keyframes crt-glitch{
-      0%{transform:none}
-      50%{transform:translateX(1px)}
-      100%{transform:none}
-    }
-
-    @keyframes whisper-jitter{
-      0%{transform:none}
-      50%{transform:translate(.5px,-.5px)}
-      100%{transform:none}
-    }
-
-    @keyframes whisper-glitch-1{
-      12%{clip-path:inset(20% 0 60% 0)}
-      14%{clip-path:inset(0)}
-    }
-
-    @keyframes whisper-glitch-2{
-      18%{clip-path:inset(60% 0 10% 0)}
-      20%{clip-path:inset(0)}
-    }
-
-    /* glitch MUY ocasional para la firma */
-    @keyframes sig-glitch-1{
-      0%,92%{transform:none; clip-path:inset(0)}
-      93%{transform:translateX(1px); clip-path:inset(40% 0 30% 0)}
-      94%{transform:none; clip-path:inset(0)}
-      100%{transform:none}
-    }
-
-    @keyframes sig-glitch-2{
-      0%,88%{transform:none; clip-path:inset(0)}
-      89%{transform:translateX(-1px); clip-path:inset(60% 0 15% 0)}
-      90%{transform:none; clip-path:inset(0)}
-      100%{transform:none}
-    }
-
-    @media (max-width:480px){
-      .btn{
-        width:100%;
-        max-width:26ch;
-        padding:16px 18px;
-        font-size:15px;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce){
-      *{ animation:none !important; }
-    }
-  </style>
+  }
+</style>
 </head>
 
 <body>
   <main class="wrap">
+    <a href="index.html" class="back">← HUYE! Sal corriendo...</a>
 
-    <div class="crt" aria-label="Televisor CRT">
-      <img src="tv.png" alt="Televisor CRT con Cosmic Marciana – La casa del terror" class="hero" />
+    <h1>Cosmic Marciana</h1>
+
+    <!-- Subtítulo rojo -->
+    <div class="subtitle-wrap" aria-hidden="true">
+      <div class="subtitle" id="subtitle" data-text="La casa del terror">La casa del terror</div>
     </div>
 
-    <p class="text">
-      Señales rotas. Pop electrónico.<br />
-      Transmisiones desde otra dimensión.
-    </p>
-
-    <div class="whisper" data-text="transmisión en curso…">transmisión en curso…</div>
-
-    <div class="cta">
-      <a class="btn" href="player.html">¿Te atreves a entrar en la casa del terror?</a>
+    <!-- TV: ya NO es botón (no activa play/pause) -->
+    <div class="crt" aria-hidden="true">
+      <img id="cover" src="tv.png" alt="Televisor CRT / portada" />
     </div>
 
-    <div class="links icons">
-      <a href="https://www.instagram.com/cosmicmarciana" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2"/></svg>
+    <div class="controls">
+      <button id="prev-btn" aria-label="Anterior" title="Anterior"></button>
+      <button id="play-pause" aria-label="Play/Pause" title="Play/Pause"></button>
+      <button id="stop-btn" aria-label="Stop" title="Stop"></button>
+      <button id="next-btn" aria-label="Siguiente" title="Siguiente"></button>
+    </div>
+
+    <div class="actions" aria-label="Acciones">
+      <button id="shuffle-btn" class="icon-btn" aria-label="Shuffle" title="Shuffle"></button>
+      <button id="loop-btn" class="icon-btn" aria-label="Loop" title="Loop"></button>
+      <button id="share-btn" class="icon-btn" aria-label="Compartir" title="Compartir"></button>
+    </div>
+
+    <div id="status-line"></div>
+
+    <div class="progress-wrapper">
+      <span id="current-time">0:00</span>
+      <div class="progress-container" id="progress-container" aria-label="Barra de reproducción">
+        <div class="progress-bar" id="progress-bar"></div>
+        <div class="progress-thumb" id="progress-thumb"></div>
+        <div class="seek-dot" id="seek-dot"></div>
+        <div class="seek-tip" id="seek-tip">0:00</div>
+      </div>
+      <span id="total-time">0:00</span>
+    </div>
+
+    <div class="volume-wrapper">
+      <span class="volume-icon" id="volume-icon" title="Mute" role="button" tabindex="0"></span>
+      <input type="range" id="volume-slider" min="0" max="100" value="100" />
+    </div>
+
+    <div class="playlist" id="playlist">
+      <div class="track" data-index="0">1. Los pobres más</div>
+      <div class="track" data-index="1">2. Volveremos a empezar</div>
+      <div class="track" data-index="2">3. Quién llena los shows</div>
+      <div class="track" data-index="3">4. STOP!</div>
+      <div class="track" data-index="4">5. Reza</div>
+      <div class="track" data-index="5">6. De pie</div>
+      <div class="track" data-index="6">7. Quemarlo todo</div>
+      <div class="track" data-index="7">8. Nadie sabe nada</div>
+      <div class="track" data-index="8">9. Lo que no quiero</div>
+      <div class="track" data-index="9">10. La casa del terror</div>
+      <div class="track" data-index="10">11. Tenemos que hablar</div>
+    </div>
+
+    <div class="support">
+      <button class="support-btn" id="support-open" type="button">
+        ¿Me invitas a un café? <span class="coffee" aria-hidden="true">☕</span>
+      </button>
+
+      <div class="support-note">
+        Si te ha gustado la transmisión, la casa del terror es tuya si quieres: descárgatela libremente.
+      </div>
+      <div class="download-note">
+        Pero si me invitas a un café, podré seguir emitiendo. En la casa del terror, en la de la risa o donde sea 💚
+      </div>
+
+      <a class="download-link" href="la-casa-del-terror.zip" download>
+        ⬇ Descargar el disco (ZIP)
       </a>
-      <a href="https://open.spotify.com/intl-es/artist/0qSO1brlu9jrjrhmMldEVL" target="_blank" rel="noopener noreferrer" aria-label="Spotify">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M7 10.5c3-1 7-.8 10 .6"/><path d="M7.5 13c2.5-.7 6-.5 8.5 .5"/><path d="M8 15.5c2-.5 4.5-.4 6.5 .4"/></svg>
-      </a>
-      <a href="mailto:cosmicmarciana@gmail.com" aria-label="Contacto">
-        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
-      </a>
     </div>
 
-    <div class="sig" data-text="COSMIC MARCIANA 2026 · EMISIÓN NO AUTORIZADA · NO AJUSTAR EL DIAL">
-      COSMIC MARCIANA <span class="hit">2026</span> · EMISIÓN NO AUTORIZADA · NO AJUSTAR EL DIAL
+    <div class="modal" id="support-modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-label="Colabora con Cosmic Marciana">
+        <button class="modal-close" id="support-close" type="button" aria-label="Cerrar">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18"></path>
+          </svg>
+        </button>
+
+        <div class="modal-title">Apoya la transmisión</div>
+        <div class="modal-text">
+          Si este disco te ha acompañado un rato, puedes invitarme a un café vía Bizum.
+          <br><br>
+          <strong>Gracias por sostener el ruido 💚</strong>
+        </div>
+
+        <div class="support-row">
+          <div class="support-label">Bizum</div>
+          <div class="support-value" id="bizum-number">+34 623 190 151</div>
+          <button class="copy-btn" id="copy-bizum" type="button">Copiar</button>
+        </div>
+      </div>
     </div>
 
+    <audio id="audio" preload="metadata" playsinline></audio>
+
+    <div class="sig">EMISIÓN NO AUTORIZADA · NO MIRES ATRÁS!</div>
   </main>
 
-  <!-- ===== VHS NOISE REAL (WebAudio, sin mp3) ===== -->
-  <script>
-  (() => {
-    const tv = document.querySelector(".crt");
-    if (!tv) return;
+<script>
+  const ICONS = {
+    prev: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6v12"/><path d="M18 6l-8 6 8 6z"/></svg>`,
+    next: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6v12"/><path d="M6 6l8 6-8 6z"/></svg>`,
+    stop: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="1"/></svg>`,
+    play: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7l10 5-10 5z"/></svg>`,
+    pause:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6v12"/><path d="M16 6v12"/></svg>`,
+    shuffle:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5"/><path d="M4 20l7-7"/><path d="M4 4l7 7"/><path d="M21 16v5h-5"/><path d="M14 14l7 7"/><path d="M14 10l7-7"/></svg>`,
+    loop:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>`,
+    loop1:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/><path d="M12 8v8"/><path d="M11 9h2"/></svg>`,
+    share:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4"/><path d="M8 8l4-4 4 4"/><path d="M6 12v7a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-7"/></svg>`,
+    vol3:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 8a4 4 0 0 1 0 8"/><path d="M18.5 5.5a7 7 0 0 1 0 13"/></svg>`,
+    vol2:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 8a4 4 0 0 1 0 8"/></svg>`,
+    mute:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 9l5 6"/><path d="M21 9l-5 6"/></svg>`
+  };
 
-    let ctx, master, noiseGain, humGain, hp, lp, wobble, wobbleDepth;
-    let hissGain, popGain;
-    let running = false;
-    let unlocked = false;
+  const tvBase = "tv.png";
+  const tvByTrack = [
+    "tv1.png","tv2.png","tv3.png","tv4.png","tv5.png","tv6.png",
+    "tv7.png","tv8.png","tv9.png","tv10.png","tv11.png"
+  ];
 
-    const clamp01 = (n) => Math.max(0, Math.min(1, n));
+  const sources = [
+    "lospobres.mp3","vae.mp3","shows.mp3","canco4.mp3","canco5.mp3",
+    "canco6.mp3","canco7.mp3","canco8.mp3","canco9.mp3","canco10.mp3","canco11.mp3"
+  ];
 
-    // Ruido blanco bufferizado
-    function makeNoiseBuffer(audioCtx, seconds = 2.4) {
-      const rate = audioCtx.sampleRate;
-      const length = Math.floor(rate * seconds);
-      const buffer = audioCtx.createBuffer(1, length, rate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1);
-      return buffer;
+  const $ = (id) => document.getElementById(id);
+
+  const coverImg = $("cover");
+  const audio = $("audio");
+
+  const progressContainer = $("progress-container");
+  const progressBar = $("progress-bar");
+  const progressThumb = $("progress-thumb");
+  const seekDot = $("seek-dot");
+  const seekTip = $("seek-tip");
+
+  const currentTimeEl = $("current-time");
+  const totalTimeEl = $("total-time");
+
+  const volumeSlider = $("volume-slider");
+  const volumeIcon = $("volume-icon");
+
+  const statusLineEl = $("status-line");
+  const shuffleBtn = $("shuffle-btn");
+  const loopBtn = $("loop-btn");
+  const playPauseBtn = $("play-pause");
+
+  const prevBtn = $("prev-btn");
+  const nextBtn = $("next-btn");
+  const stopBtn = $("stop-btn");
+  const shareBtn = $("share-btn");
+  const playlistEl = $("playlist");
+  const crtBtn = document.querySelector(".crt");
+
+  const tracks = Array.from(document.querySelectorAll(".track"));
+
+  let currentIndex = 0;
+  let lastVolume = 1;
+  let loopMode = 0; // 0=OFF,1=SONG,2=ALBUM
+  let shuffleOn = false;
+  let hasLoaded = false;
+
+  let isScrubbing = false;
+  let usingTouchFallback = false;
+
+  // Anti-race: cada cambio de pista incrementa
+  let loadId = 0;
+
+  const LS = {
+    vol: "cm_vol",
+    idx: "cm_idx",
+    shuffle: "cm_shuffle",
+    loop: "cm_loop"
+  };
+
+  // ===== PRELOAD NEXT (más instantáneo) =====
+  let preloader = null;
+  let preloadedIndex = -1;
+
+  function destroyPreloader(){
+    if(!preloader) return;
+    try{
+      preloader.pause();
+      preloader.removeAttribute("src");
+      preloader.load();
+    }catch{}
+    preloader = null;
+    preloadedIndex = -1;
+  }
+
+  function getNextIndexLinear(){
+    return (currentIndex + 1) % tracks.length;
+  }
+
+  function primePreload(index){
+    if(index == null || index < 0 || index >= sources.length) return;
+    if(shuffleOn) return;
+    if(preloadedIndex === index && preloader) return;
+
+    destroyPreloader();
+
+    preloader = new Audio();
+    preloader.preload = "auto";
+    preloader.src = sources[index];
+    preloadedIndex = index;
+
+    try{ preloader.load(); } catch {}
+  }
+
+  // ===== SCRUBBING SUAVE (RAF) =====
+  let pendingSeekPct = null;
+  let rafSeekId = 0;
+
+  function requestSeek(pct){
+    pendingSeekPct = clamp01(pct);
+    if(rafSeekId) return;
+
+    rafSeekId = requestAnimationFrame(() => {
+      rafSeekId = 0;
+      if(pendingSeekPct == null) return;
+      seekToPct(pendingSeekPct);
+      pendingSeekPct = null;
+    });
+  }
+
+  function cancelSeekRAF(){
+    if(rafSeekId){
+      cancelAnimationFrame(rafSeekId);
+      rafSeekId = 0;
     }
+    pendingSeekPct = null;
+  }
 
-    function createGraph() {
-      ctx = new (window.AudioContext || window.webkitAudioContext)();
+  function formatTime(t){
+    const m = Math.floor(t / 60);
+    const s = Math.floor(t % 60);
+    return m + ":" + ("0" + s).slice(-2);
+  }
 
-      // Master
-      master = ctx.createGain();
-      master.gain.value = 0; // empieza mute
-      master.connect(ctx.destination);
+  function clamp01(n){ return Math.max(0, Math.min(1, n)); }
 
-      // ===== Noise base =====
-      const noiseSrc = ctx.createBufferSource();
-      noiseSrc.buffer = makeNoiseBuffer(ctx, 2.4);
-      noiseSrc.loop = true;
-
-      noiseGain = ctx.createGain();
-      noiseGain.gain.value = 0.8;
-
-      // Filtros: más "tele vieja": recorta brillo, deja cuerpo
-      hp = ctx.createBiquadFilter();
-      hp.type = "highpass";
-      hp.frequency.value = 120;
-
-      lp = ctx.createBiquadFilter();
-      lp.type = "lowpass";
-      lp.frequency.value = 3800;
-
-      // Un poco de hiss extra (agudos controlados)
-      const hissSrc = ctx.createBufferSource();
-      hissSrc.buffer = makeNoiseBuffer(ctx, 1.6);
-      hissSrc.loop = true;
-
-      const hissHP = ctx.createBiquadFilter();
-      hissHP.type = "highpass";
-      hissHP.frequency.value = 2600;
-
-      hissGain = ctx.createGain();
-      hissGain.gain.value = 0.12;
-
-      // ===== Hum CRT =====
-      const hum1 = ctx.createOscillator();
-      hum1.type = "sine";
-      hum1.frequency.value = 50;
-
-      const hum2 = ctx.createOscillator();
-      hum2.type = "sine";
-      hum2.frequency.value = 100;
-
-      humGain = ctx.createGain();
-      humGain.gain.value = 0.06;
-
-      // ===== Tracking wobble (modula el lowpass) =====
-      wobble = ctx.createOscillator();
-      wobble.type = "sine";
-      wobble.frequency.value = 2.2; // tracking lento
-
-      wobbleDepth = ctx.createGain();
-      wobbleDepth.gain.value = 900;
-
-      wobble.connect(wobbleDepth);
-      wobbleDepth.connect(lp.frequency);
-
-      // ===== Pops de sintonización (pequeños "clacks") =====
-      const popOsc = ctx.createOscillator();
-      popOsc.type = "square";
-      popOsc.frequency.value = 880;
-
-      popGain = ctx.createGain();
-      popGain.gain.value = 0; // se dispara puntualmente
-
-      const popLP = ctx.createBiquadFilter();
-      popLP.type = "lowpass";
-      popLP.frequency.value = 1400;
-
-      popOsc.connect(popLP);
-      popLP.connect(popGain);
-      popGain.connect(master);
-      popOsc.start();
-
-      // Cadena principal
-      noiseSrc.connect(noiseGain);
-      noiseGain.connect(hp);
-      hp.connect(lp);
-      lp.connect(master);
-
-      // hiss chain
-      hissSrc.connect(hissHP);
-      hissHP.connect(hissGain);
-      hissGain.connect(master);
-
-      // hum chain
-      hum1.connect(humGain);
-      hum2.connect(humGain);
-      humGain.connect(master);
-
-      // Start sources
-      noiseSrc.start();
-      hissSrc.start();
-      hum1.start();
-      hum2.start();
-      wobble.start();
+  function setStatus(msg){
+    statusLineEl.textContent = msg || "";
+    if(msg){
+      clearTimeout(setStatus._t);
+      setStatus._t = setTimeout(()=>{ statusLineEl.textContent = ""; }, 1600);
     }
+  }
 
-    async function unlock() {
-      if (unlocked) return;
-      try{
-        if (!ctx) createGraph();
-        if (ctx.state === "suspended") await ctx.resume();
-        unlocked = true;
-      }catch{}
+  function tvForIndex(index){
+    return tvByTrack[index] || tvBase;
+  }
+
+  function renderIcons(){
+    prevBtn.innerHTML = ICONS.prev;
+    nextBtn.innerHTML = ICONS.next;
+    stopBtn.innerHTML = ICONS.stop;
+    shareBtn.innerHTML = ICONS.share;
+    shuffleBtn.innerHTML = ICONS.shuffle;
+    loopBtn.innerHTML = ICONS.loop;
+    volumeIcon.innerHTML = ICONS.vol3;
+    playPauseBtn.innerHTML = ICONS.play;
+  }
+
+  function setPlayingClass(){
+    document.body.classList.toggle("playing", !audio.paused && hasLoaded);
+  }
+
+  function setPlayIcon(){
+    playPauseBtn.innerHTML = audio.paused ? ICONS.play : ICONS.pause;
+    playPauseBtn.classList.toggle("pulse", audio.paused);
+    setPlayingClass();
+  }
+
+  function syncButtons(){
+    shuffleBtn.classList.toggle("on", shuffleOn);
+    loopBtn.classList.toggle("on", loopMode !== 0);
+
+    if(loopMode === 0){
+      loopBtn.innerHTML = ICONS.loop;
+      loopBtn.title = "Loop OFF";
+    } else if(loopMode === 1){
+      loopBtn.innerHTML = ICONS.loop1;
+      loopBtn.title = "Loop CANCIÓN";
+    } else {
+      loopBtn.innerHTML = ICONS.loop;
+      loopBtn.title = "Loop ÁLBUM";
     }
+  }
 
-    function fadeMasterTo(target, ms = 160) {
-      if (!master || !ctx) return;
-      target = clamp01(target);
-      const now = ctx.currentTime;
-      master.gain.cancelScheduledValues(now);
-      master.gain.setValueAtTime(master.gain.value, now);
-      master.gain.linearRampToValueAtTime(target, now + ms / 1000);
+  function updateVolumeIcon(){
+    if(audio.volume === 0) volumeIcon.innerHTML = ICONS.mute;
+    else if(audio.volume < 0.5) volumeIcon.innerHTML = ICONS.vol2;
+    else volumeIcon.innerHTML = ICONS.vol3;
+  }
+
+  function markCurrent(){
+    tracks.forEach(t=>t.classList.remove("current"));
+    const el = tracks[currentIndex];
+    if(el) el.classList.add("current");
+  }
+
+  function resetProgressUI(){
+    progressBar.style.width = "0%";
+    progressThumb.style.left = "0%";
+    currentTimeEl.textContent = "0:00";
+    totalTimeEl.textContent = "0:00";
+  }
+
+  function setProgressUI(pct){
+    const p = clamp01(pct);
+    const perc = (p * 100);
+    progressBar.style.width = perc + "%";
+    progressThumb.style.left = perc + "%";
+  }
+
+  function getPctFromClientX(clientX){
+    const rect = progressContainer.getBoundingClientRect();
+    return clamp01((clientX - rect.left) / rect.width);
+  }
+
+  function seekToPct(pct){
+    if(!audio.duration) return;
+    audio.currentTime = clamp01(pct) * audio.duration;
+  }
+
+  function updatePreview(clientX){
+    if(!audio.duration) return;
+    const pct = getPctFromClientX(clientX);
+    const perc = pct * 100;
+    seekDot.style.left = perc + "%";
+    seekTip.style.left = perc + "%";
+    seekTip.textContent = formatTime(pct * audio.duration);
+  }
+
+  function showPreview(){ progressContainer.classList.add("preview"); }
+  function hidePreview(){ progressContainer.classList.remove("preview"); }
+
+  // ===== POINTER EVENTS =====
+  function onPointerDown(e){
+    e.preventDefault();
+    if(!audio.duration) return;
+    isScrubbing = true;
+    usingTouchFallback = false;
+    try { progressContainer.setPointerCapture(e.pointerId); } catch {}
+    showPreview();
+    updatePreview(e.clientX);
+    requestSeek(getPctFromClientX(e.clientX));
+  }
+
+  function onPointerMove(e){
+    e.preventDefault();
+    if(!audio.duration) return;
+    if(usingTouchFallback) return;
+    showPreview();
+    updatePreview(e.clientX);
+    if(isScrubbing) requestSeek(getPctFromClientX(e.clientX));
+  }
+
+  function onPointerUp(e){
+    if(!audio.duration) return;
+    if(usingTouchFallback) return;
+    isScrubbing = false;
+    cancelSeekRAF();
+    try { progressContainer.releasePointerCapture(e.pointerId); } catch {}
+    hidePreview();
+  }
+
+  // ===== TOUCH FALLBACK =====
+  function touchClientX(ev){
+    const t = ev.touches && ev.touches[0] ? ev.touches[0] : (ev.changedTouches ? ev.changedTouches[0] : null);
+    return t ? t.clientX : null;
+  }
+
+  function onTouchStart(ev){
+    if(!audio.duration) return;
+    usingTouchFallback = true;
+    isScrubbing = true;
+    ev.preventDefault();
+
+    const cx = touchClientX(ev);
+    if(cx == null) return;
+    showPreview();
+    updatePreview(cx);
+    requestSeek(getPctFromClientX(cx));
+  }
+
+  function onTouchMove(ev){
+    if(!audio.duration) return;
+    if(!isScrubbing) return;
+    ev.preventDefault();
+
+    const cx = touchClientX(ev);
+    if(cx == null) return;
+    showPreview();
+    updatePreview(cx);
+    requestSeek(getPctFromClientX(cx));
+  }
+
+  function onTouchEnd(ev){
+    if(!audio.duration) return;
+    ev.preventDefault();
+    isScrubbing = false;
+    cancelSeekRAF();
+    hidePreview();
+  }
+
+  // ===== PLAYER (robusto, sin "resume por canción") =====
+  function loadTrack(index){
+    currentIndex = index;
+
+    coverImg.src = tvForIndex(index);
+    markCurrent();
+
+    localStorage.setItem(LS.idx, String(currentIndex));
+
+    // Reset real
+    audio.pause();
+    try { audio.currentTime = 0; } catch {}
+    audio.src = sources[index];
+    audio.load();
+
+    hasLoaded = true;
+    setPlayingClass();
+
+    // ✅ Precarga la siguiente (si no estás en shuffle)
+    primePreload(getNextIndexLinear());
+  }
+
+  async function waitCanPlay(){
+    // readyState >= 3: HAVE_FUTURE_DATA
+    if(audio.readyState >= 3) return;
+    await new Promise((resolve, reject)=>{
+      const onCanPlay = ()=>{ cleanup(); resolve(); };
+      const onError = ()=>{ cleanup(); reject(new Error("audio error")); };
+      const cleanup = ()=>{
+        audio.removeEventListener("canplay", onCanPlay);
+        audio.removeEventListener("error", onError);
+      };
+      audio.addEventListener("canplay", onCanPlay, { once:true });
+      audio.addEventListener("error", onError, { once:true });
+    });
+  }
+
+  async function playCurrent(){
+    if(!hasLoaded) loadTrack(currentIndex);
+
+    const myId = ++loadId;
+
+    try{
+      await waitCanPlay();
+      if(myId !== loadId) return;
+
+      await audio.play();
+      if(myId !== loadId) return;
+
+      setPlayIcon();
+    } catch(e){
+      setPlayIcon();
+      setStatus("Pulsa Play para iniciar.");
     }
+  }
 
-    // “clack” de sintonizador (muy corto)
-    function triggerPop(strength = 1){
-      if(!ctx || !popGain) return;
-      const now = ctx.currentTime;
-      const a = 0.010 * strength;
-      popGain.gain.cancelScheduledValues(now);
-      popGain.gain.setValueAtTime(0, now);
-      popGain.gain.linearRampToValueAtTime(a, now + 0.008);
-      popGain.gain.linearRampToValueAtTime(0, now + 0.040);
+  function playTrack(index){
+    loadTrack(index);
+    playCurrent();
+  }
+
+  function togglePlay(){
+    if(audio.paused) playCurrent();
+    else{
+      audio.pause();
+      setPlayIcon();
     }
+  }
 
-    // Intensidad: más analógico, menos "digital"
-    function setIntensity(intensity01) {
-      if (!ctx || !noiseGain || !humGain || !lp || !wobbleDepth || !hissGain) return;
-      const g = clamp01(intensity01);
+  function stopTrack(){
+    ++loadId; // cancela posibles plays en vuelo
+    cancelSeekRAF();
 
-      // Ruido principal: cuerpo
-      noiseGain.gain.setValueAtTime(0.55 + g * 0.85, ctx.currentTime);
+    audio.pause();
+    try { audio.currentTime = 0; } catch {}
+    audio.removeAttribute("src");
+    audio.load();
 
-      // Hiss: agudo controlado, como estática de canal
-      hissGain.gain.setValueAtTime(0.05 + g * 0.22, ctx.currentTime);
+    hasLoaded = false;
 
-      // Hum CRT: clave para "tele vieja"
-      humGain.gain.setValueAtTime(0.045 + g * 0.14, ctx.currentTime);
+    coverImg.src = tvBase;
+    tracks.forEach(t => t.classList.remove("current"));
+    currentIndex = 0;
 
-      // Lowpass: cuanto más señal rota, más abre (pero siempre vintage)
-      lp.frequency.setValueAtTime(2600 + g * 2800, ctx.currentTime);
+    localStorage.setItem(LS.idx, "0");
 
-      // Tracking: más inestable cuanto más cerca del centro
-      wobbleDepth.gain.setValueAtTime(700 + g * 1800, ctx.currentTime);
-    }
+    destroyPreloader();
 
-    let popTimer = 0;
-    function startPopLoop(){
-      stopPopLoop();
-      // pops aleatorios tipo sintonización
-      popTimer = setInterval(()=>{
-        if(!running) return;
-        // probabilidad variable: a veces nada, a veces un clack
-        if(Math.random() < 0.35){
-          triggerPop(0.6 + Math.random() * 1.2);
-        }
-      }, 220);
-    }
-    function stopPopLoop(){
-      if(popTimer){
-        clearInterval(popTimer);
-        popTimer = 0;
+    resetProgressUI();
+    setPlayIcon();
+  }
+
+  function getRandomNextIndex(){
+    if(tracks.length <= 1) return currentIndex;
+    let n = currentIndex;
+    while(n === currentIndex) n = Math.floor(Math.random() * tracks.length);
+    return n;
+  }
+
+  function nextTrack(){
+    if(shuffleOn) return playTrack(getRandomNextIndex());
+    playTrack((currentIndex + 1) % tracks.length);
+  }
+
+  function prevTrack(){
+    if(shuffleOn) return playTrack(getRandomNextIndex());
+    playTrack((currentIndex - 1 + tracks.length) % tracks.length);
+  }
+
+  function toggleShuffle(){
+    shuffleOn = !shuffleOn;
+    localStorage.setItem(LS.shuffle, shuffleOn ? "1" : "0");
+    syncButtons();
+    setStatus(shuffleOn ? "Shuffle ON" : "Shuffle OFF");
+
+    // ✅ Preload: si apagas shuffle, precarga; si lo enciendes, lo destruimos
+    if(!shuffleOn) primePreload(getNextIndexLinear());
+    else destroyPreloader();
+  }
+
+  function cycleLoop(){
+    loopMode = (loopMode + 1) % 3;
+    localStorage.setItem(LS.loop, String(loopMode));
+    syncButtons();
+    setStatus(loopMode === 0 ? "Loop OFF" : (loopMode === 1 ? "Loop CANCIÓN" : "Loop ÁLBUM"));
+  }
+
+  async function sharePage(){
+    const url = window.location.href;
+
+    try{
+      if(navigator.share){
+        await navigator.share({ title: "Cosmic Marciana", url });
+        setStatus("Compartido 💚");
+        return;
       }
+    } catch {}
+
+    try{
+      if(navigator.clipboard && window.isSecureContext){
+        await navigator.clipboard.writeText(url);
+        setStatus("Link copiado 💚");
+        return;
+      }
+    } catch {}
+
+    window.prompt("Copia este link:", url);
+  }
+
+  function applyStoredSettings(){
+    const v = Number(localStorage.getItem(LS.vol));
+    if(Number.isFinite(v) && v >= 0 && v <= 1){
+      audio.volume = v;
+      volumeSlider.value = String(Math.round(v * 100));
+      lastVolume = v || 1;
+    } else {
+      audio.volume = 1;
+      volumeSlider.value = "100";
+      lastVolume = 1;
     }
 
-    async function startNoise() {
-      running = true;
-      await unlock();
-      if (!unlocked) return;
-
-      // mordisco inicial + pop
-      setIntensity(0.95);
-      triggerPop(1.2);
-      fadeMasterTo(0.24, 120);
-
-      startPopLoop();
+    const idx = Number(localStorage.getItem(LS.idx));
+    if(Number.isInteger(idx) && idx >= 0 && idx < sources.length){
+      currentIndex = idx;
+    } else {
+      currentIndex = 0;
     }
 
-    function stopNoise() {
-      running = false;
-      stopPopLoop();
-      fadeMasterTo(0, 180);
-    }
+    shuffleOn = localStorage.getItem(LS.shuffle) === "1";
+    const lm = Number(localStorage.getItem(LS.loop));
+    loopMode = (lm === 0 || lm === 1 || lm === 2) ? lm : 0;
 
-    // Desktop hover
-    tv.addEventListener("pointerenter", () => { startNoise(); }, { passive:true });
-    tv.addEventListener("pointerleave", () => { stopNoise(); }, { passive:true });
+    updateVolumeIcon();
+    syncButtons();
 
-    // ✅ MÓVIL: mantener pulsado (las “dos líneas”)
-    tv.addEventListener("touchstart", () => { startNoise(); }, { passive:true });
-    tv.addEventListener("touchend", () => { stopNoise(); }, { passive:true });
+    coverImg.src = tvBase;
+    setPlayIcon();
+    resetProgressUI();
+    markCurrent();
 
-    // Intensidad según posición: centro = más “señal rota”
-    tv.addEventListener("pointermove", (e) => {
-      if (!running || !unlocked) return;
-      const r = tv.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width;
-      const y = (e.clientY - r.top) / r.height;
+    // ✅ Preload desde el arranque si shuffle está off
+    if(!shuffleOn) primePreload(getNextIndexLinear());
+    else destroyPreloader();
+  }
 
-      const dx = x - 0.5, dy = y - 0.5;
-      const dist = Math.min(1, Math.sqrt(dx*dx + dy*dy) / 0.80);
-      const intensity = 1 - dist;
-      setIntensity(intensity);
-    }, { passive:true });
+  // ✅ cinturón extra: si suelta fuera, cortamos scrubbing sí o sí
+  function endScrub(){
+    if(!isScrubbing) return;
+    isScrubbing = false;
+    cancelSeekRAF();
+    hidePreview();
+  }
 
-    // Desbloqueo por gesto (para Safari/iOS)
-    tv.addEventListener("pointerdown", unlock, { passive:true });
-    window.addEventListener("pointerdown", unlock, { once:true, passive:true });
-    window.addEventListener("touchstart", unlock, { once:true, passive:true });
+  function wireEvents(){
+    prevBtn.addEventListener("click", prevTrack);
+    nextBtn.addEventListener("click", nextTrack);
+    playPauseBtn.addEventListener("click", togglePlay);
+    stopBtn.addEventListener("click", stopTrack);
+    shuffleBtn.addEventListener("click", toggleShuffle);
+    loopBtn.addEventListener("click", cycleLoop);
+    shareBtn.addEventListener("click", sharePage);
 
-    // Si se oculta la pestaña, apagar
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) stopNoise();
+    // ✅ IMPORTANTE: quitado el togglePlay en la tele (crt)
+
+    playlistEl.addEventListener("click", (e)=>{
+      const item = e.target.closest(".track");
+      if(!item) return;
+      const idx = Number(item.dataset.index);
+      if(!Number.isInteger(idx)) return;
+
+      // Si pinchas la misma pista: toggle play/pause
+      if(idx === currentIndex && hasLoaded){
+        togglePlay();
+        return;
+      }
+      playTrack(idx);
     });
 
+    // Pointer events
+    progressContainer.addEventListener("pointerdown", onPointerDown, { passive:false });
+    progressContainer.addEventListener("pointermove", onPointerMove, { passive:false });
+    progressContainer.addEventListener("pointerup", onPointerUp);
+    progressContainer.addEventListener("pointercancel", onPointerUp);
+
+    // Touch fallback
+    progressContainer.addEventListener("touchstart", onTouchStart, { passive:false });
+    progressContainer.addEventListener("touchmove", onTouchMove, { passive:false });
+    progressContainer.addEventListener("touchend", onTouchEnd, { passive:false });
+    progressContainer.addEventListener("touchcancel", onTouchEnd, { passive:false });
+
+    // Preview hover (desktop)
+    progressContainer.addEventListener("pointerenter", ()=> { if(audio.duration) showPreview(); });
+    progressContainer.addEventListener("pointerleave", ()=> { if(!isScrubbing) hidePreview(); });
+
+    // Soltar fuera / cancelar
+    document.addEventListener("pointerup", endScrub, { passive:true });
+    document.addEventListener("pointercancel", endScrub, { passive:true });
+    document.addEventListener("touchend", endScrub, { passive:true });
+    document.addEventListener("touchcancel", endScrub, { passive:true });
+
+    audio.addEventListener("timeupdate", ()=>{
+      if(!audio.duration) return;
+      currentTimeEl.textContent = formatTime(audio.currentTime);
+      totalTimeEl.textContent = formatTime(audio.duration);
+      setProgressUI(audio.currentTime / audio.duration);
+    });
+
+    audio.addEventListener("loadedmetadata", ()=>{
+      if(audio.duration) totalTimeEl.textContent = formatTime(audio.duration);
+    });
+
+    audio.addEventListener("ended", ()=>{
+      if(loopMode === 1) return playTrack(currentIndex);
+      if(loopMode === 2) return nextTrack();
+      if(shuffleOn) return nextTrack();
+
+      if(currentIndex === tracks.length - 1){
+        stopTrack();
+        setStatus("Final del disco.");
+      } else {
+        nextTrack();
+      }
+    });
+
+    audio.addEventListener("error", ()=>{
+      setStatus("Error cargando audio.");
+      setPlayIcon();
+    });
+
+    // ✅ para el glitch del subtítulo cuando suena
+    audio.addEventListener("play", setPlayingClass);
+    audio.addEventListener("pause", setPlayingClass);
+    audio.addEventListener("ended", setPlayingClass);
+
+    volumeSlider.addEventListener("input", ()=>{
+      const v = Number(volumeSlider.value) / 100;
+      audio.volume = v;
+      lastVolume = v || lastVolume;
+      localStorage.setItem(LS.vol, String(v));
+      updateVolumeIcon();
+    });
+
+    volumeIcon.addEventListener("click", ()=>{
+      if(audio.volume > 0){
+        lastVolume = audio.volume;
+        audio.volume = 0;
+        volumeSlider.value = "0";
+      } else {
+        audio.volume = lastVolume || 1;
+        volumeSlider.value = String(Math.round(audio.volume * 100));
+      }
+      localStorage.setItem(LS.vol, String(audio.volume));
+      updateVolumeIcon();
+    });
+
+    volumeIcon.addEventListener("keydown", (e)=>{
+      if(e.key === "Enter" || e.key === " "){
+        e.preventDefault();
+        volumeIcon.click();
+      }
+    });
+
+    // Teclado
+    document.addEventListener("keydown", (e)=>{
+      if(e.code === "Space"){
+        if(document.activeElement && document.activeElement.tagName === "INPUT") return;
+        e.preventDefault();
+        togglePlay();
+      }
+      if(e.code === "ArrowRight") nextTrack();
+      if(e.code === "ArrowLeft") prevTrack();
+    });
+
+    // Si la pestaña se oculta: pausar
+    document.addEventListener("visibilitychange", ()=>{
+      if(document.hidden){
+        if(!audio.paused){
+          audio.pause();
+          setPlayIcon();
+        }
+      }
+    });
+  }
+
+  function supportInit(){
+    const openBtn = document.getElementById("support-open");
+    const modal = document.getElementById("support-modal");
+    const closeBtn = document.getElementById("support-close");
+    const copyBtn = document.getElementById("copy-bizum");
+    const bizumEl = document.getElementById("bizum-number");
+
+    if(!openBtn || !modal || !closeBtn) return;
+
+    function open(){
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden","false");
+      closeBtn.focus();
+    }
+    function close(){
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden","true");
+      openBtn.focus();
+    }
+
+    openBtn.addEventListener("click", open);
+    closeBtn.addEventListener("click", close);
+
+    modal.addEventListener("click", (e)=>{
+      if(e.target === modal) close();
+    });
+
+    document.addEventListener("keydown", (e)=>{
+      if(e.key === "Escape" && modal.classList.contains("open")) close();
+    });
+
+    copyBtn?.addEventListener("click", async ()=>{
+      const txt = (bizumEl?.textContent || "").trim();
+      if(!txt) return;
+
+      try{
+        if(navigator.clipboard && window.isSecureContext){
+          await navigator.clipboard.writeText(txt);
+          copyBtn.textContent = "Copiado";
+          setTimeout(()=> copyBtn.textContent = "Copiar", 900);
+          return;
+        }
+      } catch {}
+
+      window.prompt("Copia este Bizum:", txt);
+    });
+  }
+
+  (function init(){
+    renderIcons();
+    applyStoredSettings();
+    wireEvents();
+    supportInit();
   })();
-  </script>
+</script>
+
 </body>
 </html>
+
 
