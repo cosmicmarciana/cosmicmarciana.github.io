@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>llllllCosmic Marciana</title>
+  <title>Cosmic Marciana</title>
   <link rel="icon" href="favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -70,6 +70,9 @@
       margin:0 auto 22px;
       isolation:isolate;
       cursor: default;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
 
     .hero{
@@ -79,6 +82,7 @@
       filter:drop-shadow(0 0 22px rgba(0,0,0,.85));
       animation: crt-flicker 4.5s infinite;
       will-change: transform, filter;
+      -webkit-user-drag:none;
     }
 
     .crt::before{
@@ -101,9 +105,6 @@
     .crt:hover .hero{
       animation: crt-glitch .35s steps(2,end);
     }
-
-    /* extra: sensación de “vivo” al hover */
-    .crt:hover{ filter: saturate(1.05); }
 
     /* ===== TEXTO ===== */
     .text{
@@ -330,19 +331,21 @@
 
   </main>
 
-  <!-- ===== VHS NOISE (WebAudio) ===== -->
+  <!-- ===== VHS NOISE REAL (WebAudio, sin mp3) ===== -->
   <script>
   (() => {
     const tv = document.querySelector(".crt");
     if (!tv) return;
 
-    let ctx, master, noiseGain, humGain, lp, hp, wobble, wobbleDepth;
+    let ctx, master, noiseGain, humGain, hp, lp, wobble, wobbleDepth;
+    let hissGain, popGain;
     let running = false;
     let unlocked = false;
 
     const clamp01 = (n) => Math.max(0, Math.min(1, n));
 
-    function makeNoiseBuffer(audioCtx, seconds = 2.2) {
+    // Ruido blanco bufferizado
+    function makeNoiseBuffer(audioCtx, seconds = 2.4) {
       const rate = audioCtx.sampleRate;
       const length = Math.floor(rate * seconds);
       const buffer = audioCtx.createBuffer(1, length, rate);
@@ -354,29 +357,41 @@
     function createGraph() {
       ctx = new (window.AudioContext || window.webkitAudioContext)();
 
-      // master final (lo que oyes)
+      // Master
       master = ctx.createGain();
-      master.gain.value = 0; // mute inicial
+      master.gain.value = 0; // empieza mute
       master.connect(ctx.destination);
 
-      // noise source
+      // ===== Noise base =====
       const noiseSrc = ctx.createBufferSource();
-      noiseSrc.buffer = makeNoiseBuffer(ctx, 2.2);
+      noiseSrc.buffer = makeNoiseBuffer(ctx, 2.4);
       noiseSrc.loop = true;
 
       noiseGain = ctx.createGain();
-      noiseGain.gain.value = 0.65;
+      noiseGain.gain.value = 0.8;
 
-      // filtros estilo VHS (hiss)
+      // Filtros: más "tele vieja": recorta brillo, deja cuerpo
       hp = ctx.createBiquadFilter();
       hp.type = "highpass";
-      hp.frequency.value = 160;
+      hp.frequency.value = 120;
 
       lp = ctx.createBiquadFilter();
       lp.type = "lowpass";
-      lp.frequency.value = 5200;
+      lp.frequency.value = 3800;
 
-      // hum 50/100 Hz (muy suave)
+      // Un poco de hiss extra (agudos controlados)
+      const hissSrc = ctx.createBufferSource();
+      hissSrc.buffer = makeNoiseBuffer(ctx, 1.6);
+      hissSrc.loop = true;
+
+      const hissHP = ctx.createBiquadFilter();
+      hissHP.type = "highpass";
+      hissHP.frequency.value = 2600;
+
+      hissGain = ctx.createGain();
+      hissGain.gain.value = 0.12;
+
+      // ===== Hum CRT =====
       const hum1 = ctx.createOscillator();
       hum1.type = "sine";
       hum1.frequency.value = 50;
@@ -386,12 +401,12 @@
       hum2.frequency.value = 100;
 
       humGain = ctx.createGain();
-      humGain.gain.value = 0.055;
+      humGain.gain.value = 0.06;
 
-      // wobble / tracking (modulando el lowpass)
+      // ===== Tracking wobble (modula el lowpass) =====
       wobble = ctx.createOscillator();
       wobble.type = "sine";
-      wobble.frequency.value = 2.4;
+      wobble.frequency.value = 2.2; // tracking lento
 
       wobbleDepth = ctx.createGain();
       wobbleDepth.gain.value = 900;
@@ -399,18 +414,42 @@
       wobble.connect(wobbleDepth);
       wobbleDepth.connect(lp.frequency);
 
-      // chain
+      // ===== Pops de sintonización (pequeños "clacks") =====
+      const popOsc = ctx.createOscillator();
+      popOsc.type = "square";
+      popOsc.frequency.value = 880;
+
+      popGain = ctx.createGain();
+      popGain.gain.value = 0; // se dispara puntualmente
+
+      const popLP = ctx.createBiquadFilter();
+      popLP.type = "lowpass";
+      popLP.frequency.value = 1400;
+
+      popOsc.connect(popLP);
+      popLP.connect(popGain);
+      popGain.connect(master);
+      popOsc.start();
+
+      // Cadena principal
       noiseSrc.connect(noiseGain);
       noiseGain.connect(hp);
       hp.connect(lp);
       lp.connect(master);
 
+      // hiss chain
+      hissSrc.connect(hissHP);
+      hissHP.connect(hissGain);
+      hissGain.connect(master);
+
+      // hum chain
       hum1.connect(humGain);
       hum2.connect(humGain);
       humGain.connect(master);
 
-      // start
+      // Start sources
       noiseSrc.start();
+      hissSrc.start();
       hum1.start();
       hum2.start();
       wobble.start();
@@ -434,17 +473,55 @@
       master.gain.linearRampToValueAtTime(target, now + ms / 1000);
     }
 
+    // “clack” de sintonizador (muy corto)
+    function triggerPop(strength = 1){
+      if(!ctx || !popGain) return;
+      const now = ctx.currentTime;
+      const a = 0.010 * strength;
+      popGain.gain.cancelScheduledValues(now);
+      popGain.gain.setValueAtTime(0, now);
+      popGain.gain.linearRampToValueAtTime(a, now + 0.008);
+      popGain.gain.linearRampToValueAtTime(0, now + 0.040);
+    }
+
+    // Intensidad: más analógico, menos "digital"
     function setIntensity(intensity01) {
-      if (!ctx || !noiseGain || !humGain || !lp || !wobbleDepth) return;
+      if (!ctx || !noiseGain || !humGain || !lp || !wobbleDepth || !hissGain) return;
       const g = clamp01(intensity01);
 
-      // base + subida
-      noiseGain.gain.setValueAtTime(0.40 + g * 0.70, ctx.currentTime);
-      humGain.gain.setValueAtTime(0.025 + g * 0.09, ctx.currentTime);
+      // Ruido principal: cuerpo
+      noiseGain.gain.setValueAtTime(0.55 + g * 0.85, ctx.currentTime);
 
-      // más “brillo” y “tracking” cuando sube
-      lp.frequency.setValueAtTime(3800 + g * 5200, ctx.currentTime);
-      wobbleDepth.gain.setValueAtTime(450 + g * 1150, ctx.currentTime);
+      // Hiss: agudo controlado, como estática de canal
+      hissGain.gain.setValueAtTime(0.05 + g * 0.22, ctx.currentTime);
+
+      // Hum CRT: clave para "tele vieja"
+      humGain.gain.setValueAtTime(0.045 + g * 0.14, ctx.currentTime);
+
+      // Lowpass: cuanto más señal rota, más abre (pero siempre vintage)
+      lp.frequency.setValueAtTime(2600 + g * 2800, ctx.currentTime);
+
+      // Tracking: más inestable cuanto más cerca del centro
+      wobbleDepth.gain.setValueAtTime(700 + g * 1800, ctx.currentTime);
+    }
+
+    let popTimer = 0;
+    function startPopLoop(){
+      stopPopLoop();
+      // pops aleatorios tipo sintonización
+      popTimer = setInterval(()=>{
+        if(!running) return;
+        // probabilidad variable: a veces nada, a veces un clack
+        if(Math.random() < 0.35){
+          triggerPop(0.6 + Math.random() * 1.2);
+        }
+      }, 220);
+    }
+    function stopPopLoop(){
+      if(popTimer){
+        clearInterval(popTimer);
+        popTimer = 0;
+      }
     }
 
     async function startNoise() {
@@ -452,28 +529,37 @@
       await unlock();
       if (!unlocked) return;
 
-      // mordisco inicial
+      // mordisco inicial + pop
       setIntensity(0.95);
-      fadeMasterTo(0.22, 120);
+      triggerPop(1.2);
+      fadeMasterTo(0.24, 120);
+
+      startPopLoop();
     }
 
     function stopNoise() {
       running = false;
+      stopPopLoop();
       fadeMasterTo(0, 180);
     }
 
-    // Hover desktop
+    // Desktop hover
     tv.addEventListener("pointerenter", () => { startNoise(); }, { passive:true });
     tv.addEventListener("pointerleave", () => { stopNoise(); }, { passive:true });
 
-    // Intensidad según posición (centro = más)
+    // ✅ MÓVIL: mantener pulsado (las “dos líneas”)
+    tv.addEventListener("touchstart", () => { startNoise(); }, { passive:true });
+    tv.addEventListener("touchend", () => { stopNoise(); }, { passive:true });
+
+    // Intensidad según posición: centro = más “señal rota”
     tv.addEventListener("pointermove", (e) => {
       if (!running || !unlocked) return;
       const r = tv.getBoundingClientRect();
       const x = (e.clientX - r.left) / r.width;
       const y = (e.clientY - r.top) / r.height;
+
       const dx = x - 0.5, dy = y - 0.5;
-      const dist = Math.min(1, Math.sqrt(dx*dx + dy*dy) / 0.78);
+      const dist = Math.min(1, Math.sqrt(dx*dx + dy*dy) / 0.80);
       const intensity = 1 - dist;
       setIntensity(intensity);
     }, { passive:true });
@@ -492,4 +578,3 @@
   </script>
 </body>
 </html>
-
