@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>llllllCosmic Marciana</title>
+  <title>Cosmic Marciana</title>
   <link rel="icon" href="favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -61,6 +61,7 @@
       width:100%;
       max-width:760px;
       text-align:center;
+      position: relative;
     }
 
     /* ===== CRT ===== */
@@ -69,7 +70,9 @@
       width:fit-content;
       margin:0 auto 22px;
       isolation:isolate;
-      cursor: default;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
 
     .hero{
@@ -79,6 +82,7 @@
       filter:drop-shadow(0 0 22px rgba(0,0,0,.85));
       animation: crt-flicker 4.5s infinite;
       will-change: transform, filter;
+      -webkit-user-drag:none;
     }
 
     .crt::before{
@@ -101,9 +105,6 @@
     .crt:hover .hero{
       animation: crt-glitch .35s steps(2,end);
     }
-
-    /* extra: sensación de “vivo” al hover */
-    .crt:hover{ filter: saturate(1.05); }
 
     /* ===== TEXTO ===== */
     .text{
@@ -235,6 +236,62 @@
       opacity:.9;
     }
 
+    /* ===== OVERLAY activar sonido (solo si el navegador bloquea) ===== */
+    .sound-gate{
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(0,0,0,.55);
+      z-index: 999;
+    }
+    .sound-gate.show{ display:flex; }
+
+    .sound-card{
+      width: min(520px, 100%);
+      border-radius: 16px;
+      background: rgba(10,8,8,.96);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: 0 0 34px rgba(0,0,0,.55);
+      padding: 14px 14px 12px;
+      text-align:center;
+    }
+    .sound-title{
+      font-size:12px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color: var(--ink);
+      opacity:.92;
+      margin: 2px 0 10px;
+    }
+    .sound-note{
+      font-size:13px;
+      color: var(--muted);
+      line-height:1.45;
+      margin: 0 0 12px;
+    }
+    .sound-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      border:1px solid rgba(0,255,0,.40);
+      background: rgba(0,255,0,.10);
+      color: var(--ink);
+      cursor:pointer;
+      transition:.18s ease;
+      box-shadow: 0 0 14px rgba(0,255,0,.16);
+    }
+    .sound-btn:hover{
+      border-color: rgba(0,255,0,.70);
+      color: var(--neon);
+      box-shadow: 0 0 28px rgba(0,255,0,.30);
+    }
+
     /* ===== ANIMACIONES ===== */
     @keyframes crt-flicker{
       0%{filter:brightness(1)}
@@ -264,7 +321,6 @@
       20%{clip-path:inset(0)}
     }
 
-    /* glitch MUY ocasional para la firma */
     @keyframes sig-glitch-1{
       0%,92%{transform:none; clip-path:inset(0)}
       93%{transform:translateX(1px); clip-path:inset(40% 0 30% 0)}
@@ -330,53 +386,138 @@
 
   </main>
 
-  <!-- ===== VHS NOISE (WebAudio) ===== -->
+  <!-- Overlay: solo aparece si el navegador BLOQUEA el audio -->
+  <div class="sound-gate" id="sound-gate" aria-hidden="true">
+    <div class="sound-card">
+      <div class="sound-title">SEÑAL DE AUDIO BLOQUEADA</div>
+      <p class="sound-note">
+        Algunos navegadores no dejan sonar la tele sin un toque.<br>
+        Toca una vez para activar la señal.
+      </p>
+      <button class="sound-btn" id="sound-btn" type="button">🔊 ACTIVAR SONIDO</button>
+    </div>
+  </div>
+
+  <!-- ===== VHS/TV TUNING NOISE (WebAudio) ===== -->
   <script>
   (() => {
     const tv = document.querySelector(".crt");
-    if (!tv) return;
+    const gate = document.getElementById("sound-gate");
+    const gateBtn = document.getElementById("sound-btn");
+    if (!tv || !gate || !gateBtn) return;
 
-    let ctx, master, noiseGain, humGain, lp, hp, wobble, wobbleDepth;
+    let ctx, master, bus, lp, hp, sat, wobble, wobbleDepth;
+    let pinkGain, hissGain, humGain, burstGain, popGain;
     let running = false;
     let unlocked = false;
 
     const clamp01 = (n) => Math.max(0, Math.min(1, n));
 
-    function makeNoiseBuffer(audioCtx, seconds = 2.2) {
+    // Pink-ish buffer (Paul Kellet-ish style by filtering white into pink feel)
+    function makePinkBuffer(audioCtx, seconds = 3.0) {
       const rate = audioCtx.sampleRate;
       const length = Math.floor(rate * seconds);
       const buffer = audioCtx.createBuffer(1, length, rate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1);
+      const out = buffer.getChannelData(0);
+
+      // simple pink filter state
+      let b0=0, b1=0, b2=0, b3=0, b4=0, b5=0, b6=0;
+      for (let i = 0; i < length; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        b3 = 0.86650 * b3 + white * 0.3104856;
+        b4 = 0.55000 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.0168980;
+        const pink = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11;
+        b6 = white * 0.115926;
+        out[i] = pink;
+      }
+      return buffer;
+    }
+
+    function makeWhiteBuffer(audioCtx, seconds = 2.0) {
+      const rate = audioCtx.sampleRate;
+      const length = Math.floor(rate * seconds);
+      const buffer = audioCtx.createBuffer(1, length, rate);
+      const out = buffer.getChannelData(0);
+      for (let i = 0; i < length; i++) out[i] = Math.random() * 2 - 1;
       return buffer;
     }
 
     function createGraph() {
       ctx = new (window.AudioContext || window.webkitAudioContext)();
 
-      // master final (lo que oyes)
+      // master output
       master = ctx.createGain();
-      master.gain.value = 0; // mute inicial
+      master.gain.value = 0;
       master.connect(ctx.destination);
 
-      // noise source
-      const noiseSrc = ctx.createBufferSource();
-      noiseSrc.buffer = makeNoiseBuffer(ctx, 2.2);
-      noiseSrc.loop = true;
+      // bus (antes de master)
+      bus = ctx.createGain();
+      bus.gain.value = 1;
+      bus.connect(master);
 
-      noiseGain = ctx.createGain();
-      noiseGain.gain.value = 0.65;
-
-      // filtros estilo VHS (hiss)
+      // filters: vintage TV (apagado)
       hp = ctx.createBiquadFilter();
       hp.type = "highpass";
-      hp.frequency.value = 160;
+      hp.frequency.value = 90;
 
       lp = ctx.createBiquadFilter();
       lp.type = "lowpass";
-      lp.frequency.value = 5200;
+      lp.frequency.value = 3200;
 
-      // hum 50/100 Hz (muy suave)
+      // soft saturation (analog feel)
+      sat = ctx.createWaveShaper();
+      sat.curve = makeSoftClipCurve(0.9);
+      sat.oversample = "2x";
+
+      // connect chain: hp -> lp -> sat -> bus
+      hp.connect(lp);
+      lp.connect(sat);
+      sat.connect(bus);
+
+      // wobble / wow/flutter (modulate lowpass)
+      wobble = ctx.createOscillator();
+      wobble.type = "sine";
+      wobble.frequency.value = 1.6;
+
+      wobbleDepth = ctx.createGain();
+      wobbleDepth.gain.value = 900;
+      wobble.connect(wobbleDepth);
+      wobbleDepth.connect(lp.frequency);
+      wobble.start();
+
+      // pink noise base
+      const pinkSrc = ctx.createBufferSource();
+      pinkSrc.buffer = makePinkBuffer(ctx, 3.0);
+      pinkSrc.loop = true;
+
+      pinkGain = ctx.createGain();
+      pinkGain.gain.value = 0.0;
+      pinkSrc.connect(pinkGain);
+      pinkGain.connect(hp);
+      pinkSrc.start();
+
+      // hiss layer (highpassed white)
+      const hissSrc = ctx.createBufferSource();
+      hissSrc.buffer = makeWhiteBuffer(ctx, 1.6);
+      hissSrc.loop = true;
+
+      const hissHP = ctx.createBiquadFilter();
+      hissHP.type = "highpass";
+      hissHP.frequency.value = 2200;
+
+      hissGain = ctx.createGain();
+      hissGain.gain.value = 0.0;
+
+      hissSrc.connect(hissHP);
+      hissHP.connect(hissGain);
+      hissGain.connect(hp);
+      hissSrc.start();
+
+      // hum 50/100Hz
       const hum1 = ctx.createOscillator();
       hum1.type = "sine";
       hum1.frequency.value = 50;
@@ -386,46 +527,85 @@
       hum2.frequency.value = 100;
 
       humGain = ctx.createGain();
-      humGain.gain.value = 0.055;
-
-      // wobble / tracking (modulando el lowpass)
-      wobble = ctx.createOscillator();
-      wobble.type = "sine";
-      wobble.frequency.value = 2.4;
-
-      wobbleDepth = ctx.createGain();
-      wobbleDepth.gain.value = 900;
-
-      wobble.connect(wobbleDepth);
-      wobbleDepth.connect(lp.frequency);
-
-      // chain
-      noiseSrc.connect(noiseGain);
-      noiseGain.connect(hp);
-      hp.connect(lp);
-      lp.connect(master);
+      humGain.gain.value = 0.0;
 
       hum1.connect(humGain);
       hum2.connect(humGain);
-      humGain.connect(master);
+      humGain.connect(hp);
 
-      // start
-      noiseSrc.start();
       hum1.start();
       hum2.start();
-      wobble.start();
+
+      // burst layer: short bandpassed static "tuning"
+      const burstSrc = ctx.createBufferSource();
+      burstSrc.buffer = makeWhiteBuffer(ctx, 1.2);
+      burstSrc.loop = true;
+
+      const burstBP = ctx.createBiquadFilter();
+      burstBP.type = "bandpass";
+      burstBP.frequency.value = 900;
+      burstBP.Q.value = 0.8;
+
+      burstGain = ctx.createGain();
+      burstGain.gain.value = 0.0;
+
+      burstSrc.connect(burstBP);
+      burstBP.connect(burstGain);
+      burstGain.connect(hp);
+      burstSrc.start();
+
+      // "clack" tiny tuner pops
+      const popOsc = ctx.createOscillator();
+      popOsc.type = "square";
+      popOsc.frequency.value = 950;
+
+      const popLP = ctx.createBiquadFilter();
+      popLP.type = "lowpass";
+      popLP.frequency.value = 1100;
+
+      popGain = ctx.createGain();
+      popGain.gain.value = 0.0;
+
+      popOsc.connect(popLP);
+      popLP.connect(popGain);
+      popGain.connect(bus);
+      popOsc.start();
+    }
+
+    function makeSoftClipCurve(amount = 1.0) {
+      const n = 1024;
+      const curve = new Float32Array(n);
+      for (let i = 0; i < n; i++) {
+        const x = (i * 2) / (n - 1) - 1;
+        curve[i] = Math.tanh(x * (2.2 * amount));
+      }
+      return curve;
     }
 
     async function unlock() {
-      if (unlocked) return;
+      if (unlocked) return true;
       try{
         if (!ctx) createGraph();
         if (ctx.state === "suspended") await ctx.resume();
         unlocked = true;
-      }catch{}
+        hideGate();
+        return true;
+      }catch{
+        // seguirá bloqueado
+        return false;
+      }
     }
 
-    function fadeMasterTo(target, ms = 160) {
+    function showGate(){
+      gate.classList.add("show");
+      gate.setAttribute("aria-hidden","false");
+    }
+    function hideGate(){
+      gate.classList.remove("show");
+      gate.setAttribute("aria-hidden","true");
+    }
+
+    function fadeMasterTo(target, ms = 140) {
       if (!master || !ctx) return;
       target = clamp01(target);
       const now = ctx.currentTime;
@@ -434,56 +614,115 @@
       master.gain.linearRampToValueAtTime(target, now + ms / 1000);
     }
 
-    function setIntensity(intensity01) {
-      if (!ctx || !noiseGain || !humGain || !lp || !wobbleDepth) return;
-      const g = clamp01(intensity01);
-
-      // base + subida
-      noiseGain.gain.setValueAtTime(0.40 + g * 0.70, ctx.currentTime);
-      humGain.gain.setValueAtTime(0.025 + g * 0.09, ctx.currentTime);
-
-      // más “brillo” y “tracking” cuando sube
-      lp.frequency.setValueAtTime(3800 + g * 5200, ctx.currentTime);
-      wobbleDepth.gain.setValueAtTime(450 + g * 1150, ctx.currentTime);
+    function triggerPop(strength = 1){
+      if(!ctx || !popGain) return;
+      const now = ctx.currentTime;
+      const a = 0.010 * strength;
+      popGain.gain.cancelScheduledValues(now);
+      popGain.gain.setValueAtTime(0, now);
+      popGain.gain.linearRampToValueAtTime(a, now + 0.008);
+      popGain.gain.linearRampToValueAtTime(0, now + 0.050);
     }
 
-    async function startNoise() {
+    let burstTimer = 0;
+    function startBurstLoop(){
+      stopBurstLoop();
+      burstTimer = setInterval(()=>{
+        if(!running || !ctx) return;
+        // "estallidos" cortos tipo sintonización (no constante)
+        if(Math.random() < 0.35){
+          const now = ctx.currentTime;
+          const strength = 0.20 + Math.random() * 0.45;
+          burstGain.gain.cancelScheduledValues(now);
+          burstGain.gain.setValueAtTime(0, now);
+          burstGain.gain.linearRampToValueAtTime(strength, now + 0.02);
+          burstGain.gain.linearRampToValueAtTime(0, now + 0.12);
+          if(Math.random() < 0.55) triggerPop(0.8 + Math.random() * 1.2);
+        }
+      }, 230);
+    }
+    function stopBurstLoop(){
+      if(burstTimer){
+        clearInterval(burstTimer);
+        burstTimer = 0;
+      }
+    }
+
+    function setIntensity(g){
+      if(!ctx || !pinkGain || !hissGain || !humGain || !lp || !wobbleDepth) return;
+      g = clamp01(g);
+
+      // base TV noise (pink-ish): cuerpo real
+      pinkGain.gain.setValueAtTime(0.18 + g * 0.55, ctx.currentTime);
+
+      // hiss (más brillo cuando te acercas al “canal”)
+      hissGain.gain.setValueAtTime(0.02 + g * 0.18, ctx.currentTime);
+
+      // hum CRT: “tubo” y electricidad
+      humGain.gain.setValueAtTime(0.03 + g * 0.10, ctx.currentTime);
+
+      // filtro: sigue vintage; se abre un poco cuando sube la intensidad
+      lp.frequency.setValueAtTime(2400 + g * 2200, ctx.currentTime);
+
+      // tracking/wow: más movimiento cuando g sube
+      wobbleDepth.gain.setValueAtTime(600 + g * 1900, ctx.currentTime);
+    }
+
+    async function startNoise(){
       running = true;
-      await unlock();
-      if (!unlocked) return;
 
-      // mordisco inicial
+      // intentar desbloquear (si está bloqueado, mostramos gate)
+      const ok = await unlock();
+      if(!ok){
+        showGate();
+        running = false;
+        return;
+      }
+
+      // “mordisco” inicial
       setIntensity(0.95);
-      fadeMasterTo(0.22, 120);
+      triggerPop(1.2);
+      fadeMasterTo(0.24, 120);
+      startBurstLoop();
     }
 
-    function stopNoise() {
+    function stopNoise(){
       running = false;
-      fadeMasterTo(0, 180);
+      stopBurstLoop();
+      fadeMasterTo(0, 170);
     }
 
-    // Hover desktop
+    // Desktop: hover
     tv.addEventListener("pointerenter", () => { startNoise(); }, { passive:true });
     tv.addEventListener("pointerleave", () => { stopNoise(); }, { passive:true });
 
-    // Intensidad según posición (centro = más)
+    // Móvil: mantener pulsado
+    tv.addEventListener("touchstart", () => { startNoise(); }, { passive:true });
+    tv.addEventListener("touchend", () => { stopNoise(); }, { passive:true });
+
+    // Intensidad por posición (centro = más “sintonización”)
     tv.addEventListener("pointermove", (e) => {
       if (!running || !unlocked) return;
       const r = tv.getBoundingClientRect();
       const x = (e.clientX - r.left) / r.width;
       const y = (e.clientY - r.top) / r.height;
       const dx = x - 0.5, dy = y - 0.5;
-      const dist = Math.min(1, Math.sqrt(dx*dx + dy*dy) / 0.78);
+      const dist = Math.min(1, Math.sqrt(dx*dx + dy*dy) / 0.82);
       const intensity = 1 - dist;
       setIntensity(intensity);
     }, { passive:true });
 
-    // Desbloqueo por gesto (para Safari/iOS)
-    tv.addEventListener("pointerdown", unlock, { passive:true });
-    window.addEventListener("pointerdown", unlock, { once:true, passive:true });
-    window.addEventListener("touchstart", unlock, { once:true, passive:true });
+    // Botón overlay para activar sonido (solo si el navegador lo requiere)
+    gateBtn.addEventListener("click", async () => {
+      const ok = await unlock();
+      if(ok){
+        hideGate();
+        // si justo estaban intentando hover, arrancamos
+        startNoise();
+      }
+    });
 
-    // Si se oculta la pestaña, apagar
+    // Si la pestaña se oculta: apagar
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) stopNoise();
     });
@@ -492,6 +731,3 @@
   </script>
 </body>
 </html>
-
-
- 
