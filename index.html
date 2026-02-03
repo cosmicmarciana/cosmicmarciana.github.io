@@ -3,14 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cosmic Marciana</title>
+  <title>llllllCosmic Marciana</title>
   <link rel="icon" href="favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="manifest" href="site.webmanifest">
-
-
 
   <style>
     :root{
@@ -71,6 +69,7 @@
       width:fit-content;
       margin:0 auto 22px;
       isolation:isolate;
+      cursor: default;
     }
 
     .hero{
@@ -102,6 +101,9 @@
     .crt:hover .hero{
       animation: crt-glitch .35s steps(2,end);
     }
+
+    /* extra: sensación de “vivo” al hover */
+    .crt:hover{ filter: saturate(1.05); }
 
     /* ===== TEXTO ===== */
     .text{
@@ -295,7 +297,7 @@
 <body>
   <main class="wrap">
 
-    <div class="crt">
+    <div class="crt" aria-label="Televisor CRT">
       <img src="tv.png" alt="Televisor CRT con Cosmic Marciana – La casa del terror" class="hero" />
     </div>
 
@@ -327,9 +329,169 @@
     </div>
 
   </main>
+
+  <!-- ===== VHS NOISE (WebAudio) ===== -->
+  <script>
+  (() => {
+    const tv = document.querySelector(".crt");
+    if (!tv) return;
+
+    let ctx, master, noiseGain, humGain, lp, hp, wobble, wobbleDepth;
+    let running = false;
+    let unlocked = false;
+
+    const clamp01 = (n) => Math.max(0, Math.min(1, n));
+
+    function makeNoiseBuffer(audioCtx, seconds = 2.2) {
+      const rate = audioCtx.sampleRate;
+      const length = Math.floor(rate * seconds);
+      const buffer = audioCtx.createBuffer(1, length, rate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1);
+      return buffer;
+    }
+
+    function createGraph() {
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+      // master final (lo que oyes)
+      master = ctx.createGain();
+      master.gain.value = 0; // mute inicial
+      master.connect(ctx.destination);
+
+      // noise source
+      const noiseSrc = ctx.createBufferSource();
+      noiseSrc.buffer = makeNoiseBuffer(ctx, 2.2);
+      noiseSrc.loop = true;
+
+      noiseGain = ctx.createGain();
+      noiseGain.gain.value = 0.65;
+
+      // filtros estilo VHS (hiss)
+      hp = ctx.createBiquadFilter();
+      hp.type = "highpass";
+      hp.frequency.value = 160;
+
+      lp = ctx.createBiquadFilter();
+      lp.type = "lowpass";
+      lp.frequency.value = 5200;
+
+      // hum 50/100 Hz (muy suave)
+      const hum1 = ctx.createOscillator();
+      hum1.type = "sine";
+      hum1.frequency.value = 50;
+
+      const hum2 = ctx.createOscillator();
+      hum2.type = "sine";
+      hum2.frequency.value = 100;
+
+      humGain = ctx.createGain();
+      humGain.gain.value = 0.055;
+
+      // wobble / tracking (modulando el lowpass)
+      wobble = ctx.createOscillator();
+      wobble.type = "sine";
+      wobble.frequency.value = 2.4;
+
+      wobbleDepth = ctx.createGain();
+      wobbleDepth.gain.value = 900;
+
+      wobble.connect(wobbleDepth);
+      wobbleDepth.connect(lp.frequency);
+
+      // chain
+      noiseSrc.connect(noiseGain);
+      noiseGain.connect(hp);
+      hp.connect(lp);
+      lp.connect(master);
+
+      hum1.connect(humGain);
+      hum2.connect(humGain);
+      humGain.connect(master);
+
+      // start
+      noiseSrc.start();
+      hum1.start();
+      hum2.start();
+      wobble.start();
+    }
+
+    async function unlock() {
+      if (unlocked) return;
+      try{
+        if (!ctx) createGraph();
+        if (ctx.state === "suspended") await ctx.resume();
+        unlocked = true;
+      }catch{}
+    }
+
+    function fadeMasterTo(target, ms = 160) {
+      if (!master || !ctx) return;
+      target = clamp01(target);
+      const now = ctx.currentTime;
+      master.gain.cancelScheduledValues(now);
+      master.gain.setValueAtTime(master.gain.value, now);
+      master.gain.linearRampToValueAtTime(target, now + ms / 1000);
+    }
+
+    function setIntensity(intensity01) {
+      if (!ctx || !noiseGain || !humGain || !lp || !wobbleDepth) return;
+      const g = clamp01(intensity01);
+
+      // base + subida
+      noiseGain.gain.setValueAtTime(0.40 + g * 0.70, ctx.currentTime);
+      humGain.gain.setValueAtTime(0.025 + g * 0.09, ctx.currentTime);
+
+      // más “brillo” y “tracking” cuando sube
+      lp.frequency.setValueAtTime(3800 + g * 5200, ctx.currentTime);
+      wobbleDepth.gain.setValueAtTime(450 + g * 1150, ctx.currentTime);
+    }
+
+    async function startNoise() {
+      running = true;
+      await unlock();
+      if (!unlocked) return;
+
+      // mordisco inicial
+      setIntensity(0.95);
+      fadeMasterTo(0.22, 120);
+    }
+
+    function stopNoise() {
+      running = false;
+      fadeMasterTo(0, 180);
+    }
+
+    // Hover desktop
+    tv.addEventListener("pointerenter", () => { startNoise(); }, { passive:true });
+    tv.addEventListener("pointerleave", () => { stopNoise(); }, { passive:true });
+
+    // Intensidad según posición (centro = más)
+    tv.addEventListener("pointermove", (e) => {
+      if (!running || !unlocked) return;
+      const r = tv.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width;
+      const y = (e.clientY - r.top) / r.height;
+      const dx = x - 0.5, dy = y - 0.5;
+      const dist = Math.min(1, Math.sqrt(dx*dx + dy*dy) / 0.78);
+      const intensity = 1 - dist;
+      setIntensity(intensity);
+    }, { passive:true });
+
+    // Desbloqueo por gesto (para Safari/iOS)
+    tv.addEventListener("pointerdown", unlock, { passive:true });
+    window.addEventListener("pointerdown", unlock, { once:true, passive:true });
+    window.addEventListener("touchstart", unlock, { once:true, passive:true });
+
+    // Si se oculta la pestaña, apagar
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) stopNoise();
+    });
+
+  })();
+  </script>
 </body>
 </html>
 
 
-
-
+ 
