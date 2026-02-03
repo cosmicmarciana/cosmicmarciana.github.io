@@ -111,7 +111,7 @@
 
   /* ===== Subtítulo rojo con glitch setentero (mismo ancho que h1) ===== */
   .subtitle-wrap{
-    width: 100%;                 /* MISMO ANCHO que h1 (ocupa todo el contenedor) */
+    width: 100%;
     display:block;
     margin: 0 0 6px 0;
   }
@@ -119,14 +119,14 @@
   .subtitle{
     position:relative;
     display:block;
-    width: 100%;                 /* MISMO ANCHO exacto que h1 */
+    width: 100%;
     margin: 0;
     padding: 0;
-    font: inherit;               /* misma tipografía base */
-    font-size: 18px;             /* un poco menos alto */
-    letter-spacing: .22em;       /* igual que h1 */
-    font-weight: 800;            /* igual que h1 */
-    text-transform: uppercase;   /* igual que h1 */
+    font: inherit;
+    font-size: 18px;
+    letter-spacing: .22em;
+    font-weight: 800;
+    text-transform: uppercase;
     color: var(--blood);
     opacity: .95;
     line-height: 1.05;
@@ -163,21 +163,30 @@
     animation: red-glitch-b 4.4s infinite;
   }
 
-  /* cuando hay música: crece y más glitch */
+  /* ====== CUANDO HAY MÚSICA: MÁS GLITCH ROTO (SIN AGRANDAR) ====== */
   body.playing .subtitle{
-    transform: translateZ(0) scale(1.08);
+    transform: translateZ(0); /* sin scale */
     text-shadow:
-      0 0 18px rgba(255,43,43,.25),
-      0 0 3px rgba(255,43,43,.35);
-    animation: red-flicker-playing 2.1s infinite;
+      0 0 22px rgba(255,43,43,.28),
+      0 0 4px rgba(255,43,43,.45);
+    filter: contrast(1.2) saturate(1.1);
+    animation:
+      red-flicker-playing 1.35s infinite steps(2,end),
+      title-glitch-jitter .22s infinite steps(2,end);
   }
+
   body.playing .subtitle::before{
-    animation-duration: 1.2s;
-    opacity:.85;
+    opacity:.95;
+    transform: translate(-3px, -1px);
+    animation: red-glitch-a-play .35s infinite steps(2,end);
+    filter: brightness(1.05);
   }
+
   body.playing .subtitle::after{
-    animation-duration: 1.35s;
-    opacity:.85;
+    opacity:.95;
+    transform: translate(3px, 1px);
+    animation: red-glitch-b-play .28s infinite steps(2,end);
+    filter: brightness(1.05);
   }
 
   @keyframes red-flicker{
@@ -189,11 +198,20 @@
 
   @keyframes red-flicker-playing{
     0%, 100% { filter: none; }
-    15% { filter: contrast(1.08) saturate(1.06); }
-    30% { transform: translateZ(0) scale(1.085) translateY(-.3px); }
-    45% { filter: contrast(1.12); }
-    70% { transform: translateZ(0) scale(1.075); }
-    85% { filter: none; }
+    15% { filter: contrast(1.12) saturate(1.10); }
+    30% { filter: contrast(1.20) saturate(1.12); }
+    45% { filter: contrast(1.15); }
+    70% { filter: none; }
+    85% { filter: contrast(1.10); }
+  }
+
+  @keyframes title-glitch-jitter{
+    0%{ transform: translate(0,0) skewX(0deg); }
+    20%{ transform: translate(-1px,0) skewX(-6deg); }
+    40%{ transform: translate(2px,-1px) skewX(7deg); }
+    60%{ transform: translate(-2px,1px) skewX(-10deg); }
+    80%{ transform: translate(1px,0) skewX(5deg); }
+    100%{ transform: translate(0,0) skewX(0deg); }
   }
 
   @keyframes red-glitch-a{
@@ -212,13 +230,40 @@
     94% { transform: translate(1px, 0); clip-path: inset(55% 0 0 0); }
   }
 
+  /* más “slice roto” solo en play */
+  @keyframes red-glitch-a-play{
+    0%   { clip-path: inset(10% 0 82% 0); transform: translate(-4px,0); }
+    10%  { clip-path: inset(40% 0 30% 0); transform: translate(-2px,-1px); }
+    20%  { clip-path: inset(0 0 60% 0);  transform: translate(-6px,1px); }
+    30%  { clip-path: inset(70% 0 5% 0); transform: translate(-1px,0); }
+    40%  { clip-path: inset(20% 0 55% 0); transform: translate(-5px,-1px); }
+    50%  { clip-path: inset(55% 0 20% 0); transform: translate(-2px,1px); }
+    60%  { clip-path: inset(5% 0 75% 0); transform: translate(-7px,0); }
+    70%  { clip-path: inset(85% 0 0 0); transform: translate(-3px,-1px); }
+    80%  { clip-path: inset(35% 0 40% 0); transform: translate(-6px,1px); }
+    90%  { clip-path: inset(0 0 88% 0);  transform: translate(-2px,0); }
+    100% { clip-path: inset(10% 0 82% 0); transform: translate(-4px,0); }
+  }
+
+  @keyframes red-glitch-b-play{
+    0%   { clip-path: inset(75% 0 5% 0); transform: translate(5px,0); }
+    12%  { clip-path: inset(50% 0 25% 0); transform: translate(2px,1px); }
+    24%  { clip-path: inset(10% 0 70% 0); transform: translate(7px,-1px); }
+    36%  { clip-path: inset(90% 0 0 0); transform: translate(3px,0); }
+    48%  { clip-path: inset(30% 0 45% 0); transform: translate(6px,1px); }
+    60%  { clip-path: inset(0 0 92% 0); transform: translate(2px,0); }
+    72%  { clip-path: inset(62% 0 18% 0); transform: translate(8px,-1px); }
+    84%  { clip-path: inset(15% 0 65% 0); transform: translate(4px,1px); }
+    100% { clip-path: inset(75% 0 5% 0); transform: translate(5px,0); }
+  }
+
   /* TV CRT */
   .crt{
     position:relative;
     width:fit-content;
     margin:12px auto 18px;
     isolation:isolate;
-    cursor:pointer;
+    cursor: default; /* <- ya no es botón */
     border-radius:12px;
   }
 
@@ -290,7 +335,10 @@
     color: var(--neon);
   }
 
+  /* Play/Pause un pelín más compacto */
   #play-pause{
+    width:48px;
+    height:48px;
     background: var(--neon);
     color:#000;
     border-color: rgba(0,255,0,0);
@@ -344,7 +392,7 @@
     stroke-linecap:round;
     stroke-linejoin:round;
   }
-  #play-pause .ico{ width:24px; height:24px; stroke:#000; }
+  #play-pause .ico{ width:22px; height:22px; stroke:#000; }
 
   #status-line{
     min-height:18px;
@@ -740,7 +788,7 @@
 
   @media (max-width:480px){
     h1{ font-size:18px; }
-    .subtitle{ font-size:15px; } /* proporcional en móvil */
+    .subtitle{ font-size:15px; }
     .progress-wrapper{ gap:8px; }
     #volume-slider{ width: 140px; }
   }
@@ -755,6 +803,7 @@
     .subtitle, .subtitle::before, .subtitle::after{
       animation:none !important;
       transform:none !important;
+      filter:none !important;
     }
   }
 </style>
@@ -771,7 +820,8 @@
       <div class="subtitle" id="subtitle" data-text="La casa del terror">La casa del terror</div>
     </div>
 
-    <div class="crt" role="button" aria-label="Play/Pause" tabindex="0">
+    <!-- TV: ya NO es botón (no activa play/pause) -->
+    <div class="crt" aria-hidden="true">
       <img id="cover" src="tv.png" alt="Televisor CRT / portada" />
     </div>
 
@@ -1376,13 +1426,7 @@
     loopBtn.addEventListener("click", cycleLoop);
     shareBtn.addEventListener("click", sharePage);
 
-    crtBtn.addEventListener("click", togglePlay);
-    crtBtn.addEventListener("keydown", (e)=>{
-      if(e.key === "Enter" || e.key === " "){
-        e.preventDefault();
-        togglePlay();
-      }
-    });
+    // ✅ IMPORTANTE: quitado el togglePlay en la tele (crt)
 
     playlistEl.addEventListener("click", (e)=>{
       const item = e.target.closest(".track");
@@ -1449,7 +1493,7 @@
       setPlayIcon();
     });
 
-    // ✅ para el glitch/crecimiento del subtítulo cuando suena
+    // ✅ para el glitch del subtítulo cuando suena
     audio.addEventListener("play", setPlayingClass);
     audio.addEventListener("pause", setPlayingClass);
     audio.addEventListener("ended", setPlayingClass);
@@ -1562,7 +1606,3 @@
 
 </body>
 </html>
- 
-
-
-
