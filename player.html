@@ -142,7 +142,6 @@
     animation: red-flicker 5.4s infinite;
   }
 
-  /* capas para glitch */
   .subtitle::before,
   .subtitle::after{
     content: attr(data-text);
@@ -167,7 +166,6 @@
     animation: red-glitch-b 4.4s infinite;
   }
 
-  /* ===== PLAYING: glitch “se rompe la señal” y además baja con el volumen ===== */
   body.playing .subtitle{
     transform: translateZ(0);
     text-shadow:
@@ -197,7 +195,6 @@
     filter: brightness(1.05);
   }
 
-  /* --- anims base --- */
   @keyframes red-flicker{
     0%, 55%, 100% { filter: none; transform: translateZ(0); }
     60% { filter: contrast(1.05); }
@@ -223,7 +220,6 @@
     100%{ transform: translate(0,0) skewX(0deg); }
   }
 
-  /* “rotura de señal”: pequeños saltos/tears sin agrandar */
   @keyframes signal-tear{
     0%, 100% { filter: none; }
     18% { filter: contrast(1.1) saturate(1.05); }
@@ -250,7 +246,6 @@
     94% { transform: translate(1px, 0); clip-path: inset(55% 0 0 0); }
   }
 
-  /* más “slice roto” solo en play */
   @keyframes red-glitch-a-play{
     0%   { clip-path: inset(10% 0 82% 0); transform: translate(-4px,0); }
     10%  { clip-path: inset(40% 0 30% 0); transform: translate(-2px,-1px); }
@@ -283,7 +278,7 @@
     width:fit-content;
     margin:12px auto 18px;
     isolation:isolate;
-    cursor: default; /* ya no es botón */
+    cursor: default;
     border-radius:12px;
   }
 
@@ -322,116 +317,95 @@
   .crt:active #cover{ transform: translateY(-1px); }
   .crt:hover #cover{ transform: translateY(-2px); animation: crt-glitch .35s steps(2,end); }
 
-  /* ===== VHS GLITCH SOLO EN LA PANTALLA (recortado) =====
-     Coordenadas en % para tus PNG (idénticos).
-     Ajusta finísimo aquí si alguna tele difiere.
-  */
+  /* ===== VHS REAL SOLO EN LA PANTALLA ===== */
   .tv-screen{
     position:absolute;
-    /* Ventana (screen) calculada para tus teles */
-    left: 13.28%;
-    top: 23.97%;
-    width: 67.92%;
-    height: 58.64%;
+
+    /* ✅ Ventana calculada para tu PNG (tv1.png 2048x2048) */
+    left: 17.63%;
+    top: 22.75%;
+    width: 62.99%;
+    height: 46.83%;
 
     overflow:hidden;
     pointer-events:none;
-    z-index:3; /* encima del png */
-    border-radius: 12% / 16%; /* curva CRT */
+    z-index:3;
+
+    /* recorte duro (curva CRT) */
+    clip-path: inset(0 round 10% / 14%);
     transform: translateZ(0);
-    will-change: transform, opacity, filter;
+    isolation: isolate;
   }
 
-  .vhs-glitch{
+  .vhs{
     position:absolute;
-    inset:-18%;
-    opacity: 0;
-    transform: translateY(0);
-    transition: opacity .18s ease;
+    inset:-12%;
+    opacity:0;
     mix-blend-mode: screen;
-    filter:
-      contrast(calc(1 + (0.30 * var(--g))))
-      saturate(calc(1 + (0.18 * var(--g))));
+    transform: translateZ(0);
+    filter: url(#vhsDisplace) contrast(1.08) saturate(1.08);
   }
 
-  /* Solo cuando suena */
-  body.playing .vhs-glitch{
-    opacity: calc(0.18 + (0.82 * var(--g)));
-    animation:
-      vhs-drift calc(2.8s - (1.6s * var(--g))) infinite ease-in-out,
-      vhs-jitter calc(0.55s - (0.35s * var(--g))) infinite steps(2,end);
+  body.playing .vhs{
+    opacity: calc(0.10 + (0.70 * var(--g)));
+    animation: vhsFloat calc(2.4s - (1.4s * var(--g))) infinite ease-in-out;
   }
 
-  /* Banda “tracking” que sube/baja */
-  .vhs-glitch::before{
-    content:"";
-    position:absolute;
-    left:0; right:0;
-    top:-25%;
-    height: 22%;
-    background:
-      linear-gradient(to bottom,
-        rgba(255,255,255,0) 0%,
-        rgba(0,255,0, calc(0.06 + (0.14 * var(--g)))) 35%,
-        rgba(255,255,255, calc(0.04 + (0.22 * var(--g)))) 50%,
-        rgba(0,255,0, calc(0.06 + (0.14 * var(--g)))) 65%,
-        rgba(255,255,255,0) 100%);
-    filter: blur(calc(0.6px + (1.6px * var(--g))));
-    opacity: 1;
-    animation:
-      vhs-scan calc(1.55s - (0.95s * var(--g))) infinite linear;
-  }
-
-  /* Scanlines + ruido */
-  .vhs-glitch::after{
+  /* scanlines + ruido */
+  .vhs::before{
     content:"";
     position:absolute;
     inset:0;
     background:
-      /* scanlines */
       repeating-linear-gradient(
         to bottom,
-        rgba(255,255,255, calc(0.015 + (0.020 * var(--g)))),
-        rgba(255,255,255, calc(0.015 + (0.020 * var(--g)))) 1px,
-        rgba(0,0,0,0) 1px,
+        rgba(255,255,255, calc(0.02 + 0.03 * var(--g))) 0px,
+        rgba(255,255,255, calc(0.02 + 0.03 * var(--g))) 1px,
         rgba(0,0,0,0) 3px
       ),
-      /* “ruido” barato sin imágenes */
       repeating-linear-gradient(
         90deg,
-        rgba(255,255,255, calc(0.010 + (0.020 * var(--g)))),
-        rgba(255,255,255, calc(0.010 + (0.020 * var(--g)))) 1px,
-        rgba(0,0,0,0) 1px,
-        rgba(0,0,0,0) 6px
+        rgba(255,255,255, calc(0.01 + 0.03 * var(--g))) 0px,
+        rgba(255,255,255, calc(0.01 + 0.03 * var(--g))) 1px,
+        rgba(0,0,0,0) 5px
       );
-    opacity: calc(0.20 + (0.55 * var(--g)));
-    transform: translateZ(0);
-    animation:
-      vhs-noise calc(0.22s - (0.14s * var(--g))) infinite steps(2,end);
+    opacity: calc(0.18 + (0.55 * var(--g)));
+    animation: vhsNoise calc(0.18s - (0.12s * var(--g))) infinite steps(2,end);
   }
 
-  @keyframes vhs-scan{
-    0%   { transform: translateY(-15%); }
-    100% { transform: translateY(590%); }
+  /* tracking line horizontal (franja VHS) */
+  .vhs::after{
+    content:"";
+    position:absolute;
+    left:0; right:0;
+    top:-30%;
+    height: 16%;
+    background: linear-gradient(to bottom,
+      rgba(255,255,255,0) 0%,
+      rgba(180,255,180, calc(0.08 + 0.18 * var(--g))) 40%,
+      rgba(255,255,255, calc(0.05 + 0.22 * var(--g))) 50%,
+      rgba(180,255,180, calc(0.08 + 0.18 * var(--g))) 60%,
+      rgba(255,255,255,0) 100%
+    );
+    filter: blur(calc(0.8px + 2px * var(--g)));
+    opacity: 1;
+    animation: vhsTrack calc(1.25s - (0.75s * var(--g))) infinite linear;
   }
 
-  @keyframes vhs-drift{
-    0%,100% { transform: translateY(0); }
-    50%     { transform: translateY(calc(-2px - (8px * var(--g)))); }
+  @keyframes vhsTrack{
+    0%   { transform: translateY(-10%); }
+    100% { transform: translateY(800%); }
   }
 
-  @keyframes vhs-jitter{
-    0%   { transform: translateY(0) translateX(0); }
-    25%  { transform: translateY(calc(0px - (2px * var(--g)))) translateX(calc(0px - (2px * var(--g)))); }
-    50%  { transform: translateY(calc(0px + (2px * var(--g)))) translateX(calc(0px + (3px * var(--g)))); }
-    75%  { transform: translateY(calc(0px - (1px * var(--g)))) translateX(calc(0px + (1px * var(--g)))); }
-    100% { transform: translateY(0) translateX(0); }
+  @keyframes vhsFloat{
+    0%,100% { transform: translateY(0) translateX(0); }
+    50%     { transform: translateY(calc(-1px - (5px * var(--g)))) translateX(calc(-1px - (3px * var(--g)))); }
   }
 
-  @keyframes vhs-noise{
-    0%   { filter: none; transform: translateX(0); }
-    50%  { filter: contrast(1.1); transform: translateX(calc(-1px - (3px * var(--g)))); }
-    100% { filter: none; transform: translateX(0); }
+  @keyframes vhsNoise{
+    0%   { transform: translateX(0); filter:none; }
+    50%  { transform: translateX(calc(-1px - (3px * var(--g)))); filter: contrast(1.08); }
+    100% { transform: translateX(0); filter:none; }
   }
 
   /* Controls */
@@ -467,7 +441,6 @@
     color: var(--neon);
   }
 
-  /* play/pause un pelín más compacto */
   #play-pause{
     width:48px;
     height:48px;
@@ -938,8 +911,7 @@
       filter:none !important;
     }
 
-    /* también apagamos el VHS */
-    .vhs-glitch, .vhs-glitch::before, .vhs-glitch::after{
+    .vhs, .vhs::before, .vhs::after{
       animation:none !important;
       opacity:0 !important;
     }
@@ -957,13 +929,12 @@
       <div class="subtitle" id="subtitle" data-text="La casa del terror">La casa del terror</div>
     </div>
 
-    <!-- TV: ya NO es botón (no activa play/pause) -->
     <div class="crt" aria-hidden="true">
       <img id="cover" src="tv.png" alt="Televisor CRT / portada" />
 
-      <!-- ✅ Overlay glitch SOLO en la pantalla -->
+      <!-- ✅ VHS solo en la pantalla -->
       <div class="tv-screen" aria-hidden="true">
-        <div class="vhs-glitch"></div>
+        <div class="vhs"></div>
       </div>
     </div>
 
@@ -1057,6 +1028,14 @@
     <div class="sig">EMISIÓN NO AUTORIZADA · NO MIRES ATRÁS!</div>
   </main>
 
+  <!-- ✅ Filtro VHS (distorsión real) -->
+  <svg width="0" height="0" style="position:absolute">
+    <filter id="vhsDisplace">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.18" numOctaves="2" seed="2" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="18" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </svg>
+
 <script>
   const ICONS = {
     prev: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6v12"/><path d="M18 6l-8 6 8 6z"/></svg>`,
@@ -1123,7 +1102,6 @@
   let isScrubbing = false;
   let usingTouchFallback = false;
 
-  // Anti-race: cada cambio de pista incrementa
   let loadId = 0;
 
   const LS = {
@@ -1133,7 +1111,6 @@
     loop: "cm_loop"
   };
 
-  // ===== PRELOAD NEXT (más instantáneo) =====
   let preloader = null;
   let preloadedIndex = -1;
 
@@ -1167,7 +1144,6 @@
     try{ preloader.load(); } catch {}
   }
 
-  // ===== SCRUBBING SUAVE (RAF) =====
   let pendingSeekPct = null;
   let rafSeekId = 0;
 
@@ -1255,7 +1231,6 @@
     else volumeIcon.innerHTML = ICONS.vol3;
   }
 
-  // 🔥 Glitch atado al volumen (y se calma cuando está en pausa)
   function setGlitchFromVolume(){
     const v = clamp01(audio.volume || 0);
     const playing = hasLoaded && !audio.paused;
@@ -1308,7 +1283,6 @@
   function showPreview(){ progressContainer.classList.add("preview"); }
   function hidePreview(){ progressContainer.classList.remove("preview"); }
 
-  // ===== POINTER EVENTS =====
   function onPointerDown(e){
     e.preventDefault();
     if(!audio.duration) return;
@@ -1338,7 +1312,6 @@
     hidePreview();
   }
 
-  // ===== TOUCH FALLBACK =====
   function touchClientX(ev){
     const t = ev.touches && ev.touches[0] ? ev.touches[0] : (ev.changedTouches ? ev.changedTouches[0] : null);
     return t ? t.clientX : null;
@@ -1377,7 +1350,6 @@
     hidePreview();
   }
 
-  // ===== PLAYER (robusto, sin "resume por canción") =====
   function loadTrack(index){
     currentIndex = index;
 
@@ -1386,7 +1358,6 @@
 
     localStorage.setItem(LS.idx, String(currentIndex));
 
-    // Reset real
     audio.pause();
     try { audio.currentTime = 0; } catch {}
     audio.src = sources[index];
@@ -1395,7 +1366,6 @@
     hasLoaded = true;
     setPlayingClass();
 
-    // ✅ Precarga la siguiente (si no estás en shuffle)
     primePreload(getNextIndexLinear());
   }
 
