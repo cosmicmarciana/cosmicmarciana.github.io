@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>La casa del terror</title>
+<title>jjjjjjLa casa del terror</title>
 
 <!-- Favicons -->
 <link rel="icon" href="favicon.ico">
@@ -1312,14 +1312,14 @@
 
   // ✅ NUEVO: 3 estados (playing / paused / none)
   function setPlayingClass(){
-    const isPlaying = hasLoaded && !audio.paused;
-    const isPaused  = hasLoaded && audio.paused;
+  const isPlaying = !audio.paused && audio.src;
+  const isPaused  = audio.paused && audio.src;
 
-    document.body.classList.toggle("playing", isPlaying);
-    document.body.classList.toggle("paused",  isPaused);
+  document.body.classList.toggle("playing", isPlaying);
+  document.body.classList.toggle("paused",  isPaused);
 
-    setGlitchFromVolume();
-  }
+  setGlitchFromVolume();
+}
 
   function setPlayIcon(){
     playPauseBtn.innerHTML = audio.paused ? ICONS.play : ICONS.pause;
@@ -1675,6 +1675,10 @@
     shuffleBtn.addEventListener("click", toggleShuffle);
     loopBtn.addEventListener("click", cycleLoop);
     shareBtn.addEventListener("click", sharePage);
+    audio.addEventListener("play", setPlayingClass);
+    audio.addEventListener("pause", setPlayingClass);
+    audio.addEventListener("ended", setPlayingClass);
+
 
     // ✅ IMPORTANTE: NO hay togglePlay en la tele (crt)
 
@@ -1859,4 +1863,5 @@
 
 </body>
 </html>
+
 
