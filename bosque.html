@@ -12,6 +12,7 @@
       --muted:#cfcfcf;
       --neon:#00ff00;
     }
+
     *{ box-sizing:border-box; }
 
     body{
@@ -27,6 +28,7 @@
       background:#050303;
     }
 
+    /* ===== FUEGO LO-FI EN BUCLE (solo CSS) ===== */
     .fire{
       position:fixed;
       inset:-20%;
@@ -77,6 +79,7 @@
       opacity:.95;
     }
 
+    /* Viñeteado suave */
     .vignette{
       position:fixed;
       inset:0;
@@ -142,71 +145,17 @@
       user-select:none;
     }
 
-    /* Overlay audio bloqueado */
-    .sound-gate{
-      position: fixed;
-      inset: 0;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 18px;
-      background: rgba(0,0,0,.55);
-      z-index: 999;
-    }
-    .sound-gate.show{ display:flex; }
-
-    .sound-card{
-      width: min(520px, 100%);
-      border-radius: 16px;
-      background: rgba(10,8,8,.96);
-      border: 1px solid rgba(255,255,255,.12);
-      box-shadow: 0 0 34px rgba(0,0,0,.55);
-      padding: 14px 14px 12px;
-      text-align:center;
-    }
-    .sound-title{
-      font-size:12px;
-      letter-spacing:.16em;
-      text-transform:uppercase;
-      color: var(--ink);
-      opacity:.92;
-      margin: 2px 0 10px;
-    }
-    .sound-note{
-      font-size:13px;
-      color: var(--muted);
-      line-height:1.45;
-      margin: 0 0 12px;
-    }
-    .sound-btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      padding: 12px 16px;
-      border-radius: 999px;
-      border:1px solid rgba(0,255,0,.40);
-      background: rgba(0,255,0,.10);
-      color: var(--ink);
-      cursor:pointer;
-      transition:.18s ease;
-      box-shadow: 0 0 14px rgba(0,255,0,.16);
-    }
-    .sound-btn:hover{
-      border-color: rgba(0,255,0,.70);
-      color: var(--neon);
-      box-shadow: 0 0 28px rgba(0,255,0,.30);
-    }
-
     @keyframes ember-float{
       0%,100%{ transform: translateY(0) scale(1); filter: blur(.2px); }
       50%{ transform: translateY(-10px) scale(1.02); filter: blur(.35px); }
     }
+
     @keyframes flame-wobble{
       0%{ transform: translateX(0) skewX(0deg) scaleY(1); }
       50%{ transform: translateX(6px) skewX(-1.2deg) scaleY(1.02); }
       100%{ transform: translateX(0) skewX(0deg) scaleY(1); }
     }
+
     @keyframes flame-rise{
       0%{ background-position: 0 0, 0 0, 0 0, 0 0; }
       100%{ background-position: 0 -140px, 0 -80px, 0 0, 0 0; }
@@ -215,6 +164,7 @@
     @media (max-width:480px){
       .btn{ width:100%; max-width:28ch; }
     }
+
     @media (prefers-reduced-motion: reduce){
       .fire, .fire::before, .fire::after{ animation:none !important; }
     }
@@ -233,60 +183,11 @@
     </p>
 
     <div class="cta" role="group" aria-label="Acciones">
-      <button class="btn" id="mute-btn" type="button">silenciar / activar</button>
       <a class="btn" href="index.html">volver al dial</a>
+      <a class="btn" href="player.html">regresar a la señal</a>
     </div>
 
     <div class="sig">COSMIC MARCIANA 2026 · ZONA DE BOSQUE · EMISIÓN BAJA</div>
   </main>
-
-  <!-- Pon aquí tu tema ambient -->
-  <audio id="ambient" src="bosque-ambient.mp3" loop preload="auto"></audio>
-
-  <div class="sound-gate" id="sound-gate" aria-hidden="true">
-    <div class="sound-card">
-      <div class="sound-title">SEÑAL DE AUDIO BLOQUEADA</div>
-      <p class="sound-note">
-        algunos navegadores no dejan sonar sin un toque.<br>
-        toca una vez para activar el bosque.
-      </p>
-      <button class="sound-btn" id="sound-btn" type="button">🔊 ACTIVAR SONIDO</button>
-    </div>
-  </div>
-
-  <script>
-    (() => {
-      const audio = document.getElementById("ambient");
-      const gate  = document.getElementById("sound-gate");
-      const btn   = document.getElementById("sound-btn");
-      const mute  = document.getElementById("mute-btn");
-
-      if(!audio) return;
-      let started = false;
-
-      async function tryPlay(){
-        try{
-          await audio.play();
-          started = true;
-          gate.classList.remove("show");
-          gate.setAttribute("aria-hidden","true");
-          return true;
-        }catch{
-          gate.classList.add("show");
-          gate.setAttribute("aria-hidden","false");
-          return false;
-        }
-      }
-
-      window.addEventListener("load", () => { tryPlay(); }, { passive:true });
-
-      btn?.addEventListener("click", async () => { await tryPlay(); });
-
-      mute?.addEventListener("click", async () => {
-        if(!started){ await tryPlay(); return; }
-        audio.muted = !audio.muted;
-      });
-    })();
-  </script>
 </body>
 </html>
