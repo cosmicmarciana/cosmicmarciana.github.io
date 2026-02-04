@@ -285,6 +285,7 @@
     isolation:isolate;
     cursor: default; /* ya no es botón */
     border-radius:12px;
+    overflow:hidden; /* ✅ para que el rolling/flash no se salgan */
   }
 
   #cover{
@@ -826,6 +827,103 @@
       filter:none !important;
     }
   }
+
+  /* ============================================================
+     ✅ AÑADIDO: ANIMACIÓN CRT SOBRE PNG (solo cuando suena)
+     - rolling bar (crt::after)
+     - jitter + warmth en #cover
+     - flash sincronía (.sync-flash)
+     ============================================================ */
+
+  /* rolling bar */
+  .crt::after{
+    content:"";
+    position:absolute;
+    left:-20%;
+    right:-20%;
+    top:-30%;
+    height:30%;
+    border-radius:18px;
+    pointer-events:none;
+    opacity:0;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgba(255,255,255,.10),
+      transparent
+    );
+    filter: blur(0.2px);
+    transform: translateZ(0);
+    z-index:3;
+  }
+
+  body.playing .crt::after{
+    opacity: calc(.35 + (.55 * var(--g)));
+    animation: crt-roll calc(2.8s - (1.4s * var(--g))) linear infinite;
+  }
+
+  @keyframes crt-roll{
+    0%{ transform: translateY(-120%); }
+    100%{ transform: translateY(420%); }
+  }
+
+  /* jitter sutil + warmth en la imagen */
+  body.playing #cover{
+    animation:
+      crt-flicker 4.5s infinite,
+      tv-jitter calc(0.55s - (0.35s * var(--g))) infinite steps(2,end),
+      tv-warm 3.2s infinite ease-in-out;
+    will-change: transform, filter;
+  }
+
+  @keyframes tv-jitter{
+    0%{ transform: translate(0,0); }
+    25%{ transform: translate(-.5px,.2px); }
+    50%{ transform: translate(.6px,-.2px); }
+    75%{ transform: translate(-.3px,-.2px); }
+    100%{ transform: translate(0,0); }
+  }
+
+  @keyframes tv-warm{
+    0%,100%{
+      filter: drop-shadow(0 0 22px rgba(0,0,0,.85));
+    }
+    50%{
+      filter: drop-shadow(0 0 26px rgba(0,0,0,.85)) hue-rotate(3deg) saturate(1.05);
+    }
+  }
+
+  /* flash sincronía (capa extra dentro del .crt) */
+  .crt .sync-flash{
+    position:absolute;
+    inset:0;
+    border-radius:12px;
+    pointer-events:none;
+    opacity:0;
+    background: radial-gradient(circle at 50% 45%, rgba(255,255,255,.18), transparent 55%);
+    mix-blend-mode: screen;
+    z-index:4;
+  }
+
+  body.playing .crt .sync-flash{
+    animation: sync-flash calc(5.1s - (2.0s * var(--g))) infinite;
+  }
+
+  @keyframes sync-flash{
+    0%,82%,100%{ opacity:0; }
+    86%{ opacity:.45; }
+    88%{ opacity:0; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    body.playing .crt::after,
+    body.playing #cover,
+    body.playing .crt .sync-flash{
+      animation:none !important;
+    }
+    body.playing .crt::after{ opacity:0; }
+    body.playing .crt .sync-flash{ opacity:0; }
+  }
 </style>
 </head>
 
@@ -842,6 +940,8 @@
     <!-- TV: ya NO es botón (no activa play/pause) -->
     <div class="crt" aria-hidden="true">
       <img id="cover" src="tv.png" alt="Televisor CRT / portada" />
+      <!-- ✅ capa extra para flash sincronía -->
+      <div class="sync-flash" aria-hidden="true"></div>
     </div>
 
     <div class="controls">
@@ -1645,6 +1745,3 @@
 
 </body>
 </html>
-
-
- 
