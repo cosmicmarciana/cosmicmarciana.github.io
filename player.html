@@ -1351,15 +1351,26 @@
 
   // 🔥 Glitch atado al volumen (y se calma cuando está en pausa)
   function setGlitchFromVolume(){
-    const v = clamp01(audio.volume || 0);
-    const playing = hasLoaded && !audio.paused;
+  const v = clamp01(audio.volume || 0);
+  const hasSrc = !!audio.src;
 
-    // base “vivo” aunque esté en pausa, pero muy bajito
-    let g = playing ? Math.pow(0.10 + 0.90 * v, 1.6) : 0.08;
-    if(playing && v < 0.08) g = 0.10;
+  let g;
 
-    document.documentElement.style.setProperty("--g", g.toFixed(3));
+  if(!hasSrc){
+    // STOP → glitch off
+    g = 0;
+  } else if(audio.paused){
+    // PAUSE → glitch congelado, visible
+    g = Math.max(0.18, Math.pow(0.10 + 0.90 * v, 1.2));
+  } else {
+    // PLAY → glitch vivo
+    g = Math.pow(0.10 + 0.90 * v, 1.6);
+    if(v < 0.08) g = 0.12;
   }
+
+  document.documentElement.style.setProperty("--g", g.toFixed(3));
+}
+
 
   function markCurrent(){
     tracks.forEach(t=>t.classList.remove("current"));
@@ -1863,6 +1874,7 @@
 
 </body>
 </html>
+
 
 
 
