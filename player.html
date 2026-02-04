@@ -283,7 +283,7 @@
     width:fit-content;
     margin:12px auto 18px;
     isolation:isolate;
-    cursor: default; /* ya no es botón */
+    cursor: default;
     border-radius:12px;
   }
 
@@ -324,7 +324,6 @@
 
   /* ===========================
      VHS GLITCH SOLO EN LA PANTALLA
-     (para tv1.png 2048x2048)
      =========================== */
   .tv-screen{
     position:absolute;
@@ -354,9 +353,7 @@
   .vhs .chroma,
   .tear{ animation-fill-mode: both; }
 
-  /* ✅ ARMED (hay pista cargada): definimos animaciones SIEMPRE,
-     y luego en playing/paused solo cambiamos play-state.
-     Así al pausar se queda “congelado” en el frame actual (no se resetea). */
+  /* ✅ ARMED: animaciones SIEMPRE presentes (para poder congelar frame actual) */
   body.armed .vhs{
     animation:
       vhs-global-jitter calc(0.45s - (0.28s * var(--g))) infinite steps(2,end),
@@ -364,15 +361,15 @@
     animation-play-state: paused;
   }
 
-  /* PLAY: corriendo */
+  /* PLAY: corre */
   body.playing .vhs{
     opacity: calc(0.18 + (0.82 * var(--g)));
     animation-play-state: running;
   }
 
-  /* PAUSE: visible pero congelado (play-state paused) */
+  /* ✅ PAUSE: igual de visible que en play, pero congelado */
   body.paused .vhs{
-    opacity: calc(0.14 + (0.55 * var(--g)));
+    opacity: calc(0.18 + (0.82 * var(--g)));
     animation-play-state: paused;
   }
 
@@ -414,7 +411,6 @@
     opacity: 1;
   }
 
-  /* ✅ ARMED: animaciones del noise/track siempre presentes */
   body.armed .vhs::before{
     animation: vhs-noise calc(0.12s - (0.08s * var(--g))) infinite steps(2,end);
     animation-play-state: paused;
@@ -424,17 +420,11 @@
     animation-play-state: paused;
   }
 
-  /* PLAY: correr */
   body.playing .vhs::before,
-  body.playing .vhs::after{
-    animation-play-state: running;
-  }
+  body.playing .vhs::after{ animation-play-state: running; }
 
-  /* PAUSE: congelado */
   body.paused .vhs::before,
-  body.paused .vhs::after{
-    animation-play-state: paused;
-  }
+  body.paused .vhs::after{ animation-play-state: paused; }
 
   .vhs .chroma{
     position:absolute;
@@ -443,12 +433,10 @@
     pointer-events:none;
     mix-blend-mode: screen;
   }
-  body.playing .vhs .chroma{
-    opacity: calc(0.06 + (0.24 * var(--g)));
-  }
-  body.paused .vhs .chroma{
-    opacity: calc(0.04 + (0.18 * var(--g)));
-  }
+
+  /* ✅ PAUSE: misma intensidad que en play */
+  body.playing .vhs .chroma{ opacity: calc(0.06 + (0.24 * var(--g))); }
+  body.paused  .vhs .chroma{ opacity: calc(0.06 + (0.24 * var(--g))); }
 
   .vhs .chroma.r{
     background:
@@ -461,7 +449,6 @@
     transform: translateX(calc(1px + (6px * var(--g))));
   }
 
-  /* ✅ ARMED: animaciones chroma siempre presentes */
   body.armed .vhs .chroma.r{
     animation: chroma-r calc(0.35s - (0.22s * var(--g))) infinite steps(2,end);
     animation-play-state: paused;
@@ -472,14 +459,10 @@
   }
 
   body.playing .vhs .chroma.r,
-  body.playing .vhs .chroma.b{
-    animation-play-state: running;
-  }
+  body.playing .vhs .chroma.b{ animation-play-state: running; }
 
   body.paused .vhs .chroma.r,
-  body.paused .vhs .chroma.b{
-    animation-play-state: paused;
-  }
+  body.paused .vhs .chroma.b{ animation-play-state: paused; }
 
   .tear{
     position:absolute;
@@ -499,7 +482,6 @@
     transform: translateX(0);
   }
 
-  /* ✅ ARMED: animación tear siempre presente */
   body.armed .tear{
     animation: vhs-tear calc(0.28s - (0.16s * var(--g))) infinite steps(2,end);
     animation-play-state: paused;
@@ -509,8 +491,10 @@
     opacity: calc(0.08 + (0.40 * var(--g)));
     animation-play-state: running;
   }
+
+  /* ✅ PAUSE: misma intensidad que en play, congelado */
   body.paused .tear{
-    opacity: calc(0.06 + (0.22 * var(--g)));
+    opacity: calc(0.08 + (0.40 * var(--g)));
     animation-play-state: paused;
   }
 
@@ -591,7 +575,6 @@
     color: var(--neon);
   }
 
-  /* play/pause un pelín más compacto */
   #play-pause{
     width:48px;
     height:48px;
@@ -1080,11 +1063,9 @@
       <div class="subtitle" id="subtitle" data-text="La casa del terror">La casa del terror</div>
     </div>
 
-    <!-- TV: ya NO es botón (no activa play/pause) -->
     <div class="crt" aria-hidden="true">
       <img id="cover" src="tv.png" alt="Televisor CRT / portada" />
 
-      <!-- ✅ OVERLAY VHS SOLO EN LA PANTALLA -->
       <div class="tv-screen" aria-hidden="true">
         <div class="vhs">
           <div class="chroma r"></div>
@@ -1252,7 +1233,6 @@
   let isScrubbing = false;
   let usingTouchFallback = false;
 
-  // Anti-race: cada cambio de pista incrementa
   let loadId = 0;
 
   const LS = {
@@ -1262,7 +1242,6 @@
     loop: "cm_loop"
   };
 
-  // ===== PRELOAD NEXT (más instantáneo) =====
   let preloader = null;
   let preloadedIndex = -1;
 
@@ -1296,7 +1275,6 @@
     try{ preloader.load(); } catch {}
   }
 
-  // ===== SCRUBBING SUAVE (RAF) =====
   let pendingSeekPct = null;
   let rafSeekId = 0;
 
@@ -1351,7 +1329,7 @@
     playPauseBtn.innerHTML = ICONS.play;
   }
 
-  /* ✅ Estado: armed / playing / paused (para VHS + subtítulo) */
+  /* ✅ Estado: armed / playing / paused */
   function setPlayingClass(){
     const isArmed   = !!hasLoaded;
     const isPlaying = isArmed && !audio.paused;
@@ -1392,10 +1370,7 @@
     else volumeIcon.innerHTML = ICONS.vol3;
   }
 
-  /* ✅ Glitch atado al volumen:
-     - PLAY: dinámico
-     - PAUSE: visible pero calmado
-     - STOP: apagado */
+  /* ✅ Glitch ligado al volumen (ahora en pausa mantiene la MISMA fuerza que en play) */
   function setGlitchFromVolume(){
     const v = clamp01(audio.volume || 0);
 
@@ -1404,16 +1379,11 @@
       return;
     }
 
-    if(audio.paused){
-      // en pausa: que se vea SIEMPRE
-      const g = Math.max(0.22, Math.pow(0.10 + 0.90 * v, 1.15));
-      document.documentElement.style.setProperty("--g", g.toFixed(3));
-      return;
-    }
-
-    // en play: más agresivo
+    // Misma fórmula que en play, para que al pausar no “baje” el efecto
     let g = Math.pow(0.10 + 0.90 * v, 1.6);
     if(v < 0.08) g = 0.12;
+    g = Math.max(0.22, g); // siempre visible si hay pista cargada
+
     document.documentElement.style.setProperty("--g", g.toFixed(3));
   }
 
@@ -1459,7 +1429,6 @@
   function showPreview(){ progressContainer.classList.add("preview"); }
   function hidePreview(){ progressContainer.classList.remove("preview"); }
 
-  // ===== POINTER EVENTS =====
   function onPointerDown(e){
     e.preventDefault();
     if(!audio.duration) return;
@@ -1489,7 +1458,6 @@
     hidePreview();
   }
 
-  // ===== TOUCH FALLBACK =====
   function touchClientX(ev){
     const t = ev.touches && ev.touches[0] ? ev.touches[0] : (ev.changedTouches ? ev.changedTouches[0] : null);
     return t ? t.clientX : null;
@@ -1528,7 +1496,6 @@
     hidePreview();
   }
 
-  // ===== PLAYER (robusto, sin "resume por canción") =====
   function loadTrack(index){
     currentIndex = index;
 
@@ -1537,7 +1504,6 @@
 
     localStorage.setItem(LS.idx, String(currentIndex));
 
-    // Reset real
     audio.pause();
     try { audio.currentTime = 0; } catch {}
     audio.src = sources[index];
@@ -1546,12 +1512,10 @@
     hasLoaded = true;
     setPlayingClass();
 
-    // ✅ Precarga la siguiente (si no estás en shuffle)
     primePreload(getNextIndexLinear());
   }
 
   async function waitCanPlay(){
-    // readyState >= 3: HAVE_FUTURE_DATA
     if(audio.readyState >= 3) return;
     await new Promise((resolve, reject)=>{
       const onCanPlay = ()=>{ cleanup(); resolve(); };
@@ -1598,7 +1562,7 @@
   }
 
   function stopTrack(){
-    ++loadId; // cancela posibles plays en vuelo
+    ++loadId;
     cancelSeekRAF();
 
     audio.pause();
@@ -1617,8 +1581,8 @@
     destroyPreloader();
 
     resetProgressUI();
-    setPlayIcon();         // esto llamará setPlayingClass() -> --g a 0 y quita armed
-    setGlitchFromVolume(); // cinturón extra
+    setPlayIcon();
+    setGlitchFromVolume();
   }
 
   function getRandomNextIndex(){
@@ -1644,7 +1608,6 @@
     syncButtons();
     setStatus(shuffleOn ? "Shuffle ON" : "Shuffle OFF");
 
-    // ✅ Preload: si apagas shuffle, precarga; si lo enciendes, lo destruimos
     if(!shuffleOn) primePreload(getNextIndexLinear());
     else destroyPreloader();
   }
@@ -1709,14 +1672,12 @@
     resetProgressUI();
     markCurrent();
 
-    // ✅ Preload desde el arranque si shuffle está off
     if(!shuffleOn) primePreload(getNextIndexLinear());
     else destroyPreloader();
 
     setGlitchFromVolume();
   }
 
-  // ✅ cinturón extra: si suelta fuera, cortamos scrubbing sí o sí
   function endScrub(){
     if(!isScrubbing) return;
     isScrubbing = false;
@@ -1733,15 +1694,12 @@
     loopBtn.addEventListener("click", cycleLoop);
     shareBtn.addEventListener("click", sharePage);
 
-    // ✅ IMPORTANTE: NO hay togglePlay en la tele (crt)
-
     playlistEl.addEventListener("click", (e)=>{
       const item = e.target.closest(".track");
       if(!item) return;
       const idx = Number(item.dataset.index);
       if(!Number.isInteger(idx)) return;
 
-      // Si pinchas la misma pista: toggle play/pause
       if(idx === currentIndex && hasLoaded){
         togglePlay();
         return;
@@ -1749,23 +1707,19 @@
       playTrack(idx);
     });
 
-    // Pointer events
     progressContainer.addEventListener("pointerdown", onPointerDown, { passive:false });
     progressContainer.addEventListener("pointermove", onPointerMove, { passive:false });
     progressContainer.addEventListener("pointerup", onPointerUp);
     progressContainer.addEventListener("pointercancel", onPointerUp);
 
-    // Touch fallback
     progressContainer.addEventListener("touchstart", onTouchStart, { passive:false });
     progressContainer.addEventListener("touchmove", onTouchMove, { passive:false });
     progressContainer.addEventListener("touchend", onTouchEnd, { passive:false });
     progressContainer.addEventListener("touchcancel", onTouchEnd, { passive:false });
 
-    // Preview hover (desktop)
     progressContainer.addEventListener("pointerenter", ()=> { if(audio.duration) showPreview(); });
     progressContainer.addEventListener("pointerleave", ()=> { if(!isScrubbing) hidePreview(); });
 
-    // Soltar fuera / cancelar
     document.addEventListener("pointerup", endScrub, { passive:true });
     document.addEventListener("pointercancel", endScrub, { passive:true });
     document.addEventListener("touchend", endScrub, { passive:true });
@@ -1800,7 +1754,6 @@
       setPlayIcon();
     });
 
-    // ✅ para el glitch del subtítulo + VHS cuando suena/pausa
     audio.addEventListener("play", setPlayingClass);
     audio.addEventListener("pause", setPlayingClass);
     audio.addEventListener("ended", setPlayingClass);
@@ -1836,7 +1789,6 @@
       }
     });
 
-    // Teclado
     document.addEventListener("keydown", (e)=>{
       if(e.code === "Space"){
         if(document.activeElement && document.activeElement.tagName === "INPUT") return;
@@ -1847,7 +1799,6 @@
       if(e.code === "ArrowLeft") prevTrack();
     });
 
-    // Si la pestaña se oculta: pausar
     document.addEventListener("visibilitychange", ()=>{
       if(document.hidden){
         if(!audio.paused){
@@ -1916,4 +1867,3 @@
 
 </body>
 </html>
-
