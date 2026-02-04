@@ -341,8 +341,8 @@
 
     .btn{
       display:inline-block;
-      padding:16px 28px;
-      font-size:16px;
+      padding:14px 18px;     /* ⬅️ menos “pancarta” */
+      font-size:15px;        /* ⬅️ un pelín menor */
       border-radius:999px;
       text-decoration:none;
       background:var(--neon);
@@ -351,6 +351,7 @@
       transition:.2s ease;
       white-space:normal;
       line-height:1.25;
+      max-width: 34ch;       /* ⬅️ controla ancho */
     }
 
     .btn:hover{
@@ -358,16 +359,55 @@
       box-shadow:0 0 34px rgba(0,255,0,.45);
     }
 
-    /* ✅ NUEVO: dos botones iguales (elige tu aventura) */
-    .choices{
-      display:flex;
-      justify-content:center;
-      gap:14px;
-      flex-wrap:wrap;
+    /* ===== BOSQUE SECRETO (aparece luego) ===== */
+    .secret{
+      margin-top:10px;
+      opacity:0;
+      transform: translateY(4px);
+      pointer-events:none;
+      transition: .35s ease;
+      user-select:none;
     }
-    .choices .btn{
-      min-width: 320px;
-      text-align:center;
+
+    body.forest-revealed .secret{
+      opacity:.85;
+      transform: translateY(0);
+      pointer-events:auto;
+      user-select:auto;
+    }
+
+    .secret a{
+      position:relative;
+      display:inline-block;
+      font-size:12px;
+      letter-spacing:.20em;
+      text-transform:lowercase;
+      color:var(--muted);
+      text-decoration:none;
+      opacity:.78;
+      animation: whisper-jitter 1.35s infinite steps(2,end);
+    }
+
+    .secret a::before,
+    .secret a::after{
+      content: attr(data-text);
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+    }
+
+    .secret a::before{
+      color: rgba(0,255,0,.65);
+      transform: translate(1px,0);
+      animation: whisper-glitch-1 1.15s infinite linear;
+      opacity:.8;
+    }
+
+    .secret a::after{
+      color: rgba(255,0,0,.55);
+      transform: translate(-1px,0);
+      animation: whisper-glitch-2 1s infinite linear;
+      opacity:.75;
     }
 
     /* ===== ICONOS ===== */
@@ -539,17 +579,15 @@
       .btn{
         width:100%;
         max-width:26ch;
-        padding:16px 18px;
-        font-size:15px;
-      }
-      .choices .btn{
-        min-width: 0;
+        padding:14px 16px;
+        font-size:14.5px;
       }
     }
 
     @media (prefers-reduced-motion: reduce){
       *{ animation:none !important; }
       body.tuning .vhs{ opacity:0 !important; }
+      .secret{ transition:none !important; }
     }
   </style>
 </head>
@@ -579,10 +617,14 @@
 
     <div class="whisper" data-text="transmisión en curso…">transmisión en curso…</div>
 
-    <!-- ✅ NUEVO: dos opciones iguales -->
-    <div class="cta choices" role="group" aria-label="Elige tu camino">
+    <!-- ✅ Principal -->
+    <div class="cta" aria-label="Entrada principal">
       <a class="btn" href="player.html">te atreves a entrar en la casa del terror</a>
-      <a class="btn" href="bosque.html">corres hacia el bosque</a>
+
+      <!-- ✅ Secreto: aparece después / o con “mantener” en la tele -->
+      <div class="secret" id="secret-forest" aria-hidden="true">
+        <a href="bosque.html" data-text="corres hacia el bosque">corres hacia el bosque</a>
+      </div>
     </div>
 
     <div class="links icons">
@@ -619,6 +661,7 @@
   <script>
 (() => {
   const tv = document.querySelector(".crt");
+  const secret = document.getElementById("secret-forest");
   if (!tv) return;
 
   // === AJUSTES RÁPIDOS ===
@@ -626,14 +669,34 @@
   const VOLUME_ON  = 0.5;   // sube/baja (0.25 - 0.5 suele ir bien)
   const HUM_ON     = true;  // hum CRT suave (true/false)
 
+  // Secreto bosque:
+  const REVEAL_AFTER_MS = 7000;   // aparece si te quedas 7s
+  const HOLD_REVEAL_MS  = 2200;   // aparece si mantienes hover 2.2s (desktop)
+  const TOUCH_HOLD_MS   = 600;    // “long press” móvil (best effort)
+
   let ctx, master, noiseSrc, noiseGain, hp, lp, humGain;
   let running = false;
   let unlocked = false;
   let touchMode = false;
 
+  let forestRevealed = false;
+  let holdTimer = null;
+
   function setGlitch(on){
     document.body.classList.toggle("tuning", !!on);
   }
+
+  function revealForest(reason){
+    if(forestRevealed) return;
+    forestRevealed = true;
+    document.body.classList.add("forest-revealed");
+    if(secret){
+      secret.setAttribute("aria-hidden","false");
+    }
+  }
+
+  // Auto-reveal si te quedas un rato
+  window.setTimeout(() => revealForest("idle"), REVEAL_AFTER_MS);
 
   function makeWhiteBuffer(seconds = 2.5){
     const len = Math.floor(ctx.sampleRate * seconds);
@@ -747,16 +810,46 @@
     running ? stop() : start();
   }
 
-  // Desktop: hover (solo si no estamos en touchMode)
-  tv.addEventListener("pointerenter", () => { if(!touchMode) start(); }, { passive:true });
-  tv.addEventListener("pointerleave", () => { if(!touchMode) stop();  }, { passive:true });
+  // ---- Secreto por “mantener” en la tele (desktop)
+  function startHoldTimer(ms){
+    if(forestRevealed) return;
+    clearTimeout(holdTimer);
+    holdTimer = setTimeout(() => revealForest("hold"), ms);
+  }
+  function clearHoldTimer(){
+    clearTimeout(holdTimer);
+    holdTimer = null;
+  }
 
-  // Móvil: TAP ON / TAP OFF
+  // Desktop: hover (solo si no estamos en touchMode)
+  tv.addEventListener("pointerenter", () => {
+    if(!touchMode){
+      start();
+      startHoldTimer(HOLD_REVEAL_MS);
+    }
+  }, { passive:true });
+
+  tv.addEventListener("pointerleave", () => {
+    if(!touchMode){
+      stop();
+      clearHoldTimer();
+    }
+  }, { passive:true });
+
+  // Móvil: TAP ON / TAP OFF (tu comportamiento original)
   tv.addEventListener("touchstart", (e) => {
     touchMode = true;
+
+    // best effort: long press para revelar bosque
+    startHoldTimer(TOUCH_HOLD_MS);
+
     e.preventDefault();
     toggle();
   }, { passive:false });
+
+  tv.addEventListener("touchend", () => {
+    clearHoldTimer();
+  }, { passive:true });
 
   // Si se oculta la pestaña, cortar
   document.addEventListener("visibilitychange", () => {
