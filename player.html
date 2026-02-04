@@ -322,11 +322,11 @@
   .crt:active #cover{ transform: translateY(-1px); }
   .crt:hover #cover{ transform: translateY(-2px); animation: crt-glitch .35s steps(2,end); }
 
-  /* ===== VHS GLITCH SOLO EN LA PANTALLA (NO TOCA EL RESTO) ===== */
+  /* ===== VHS GLITCH SOLO EN LA PANTALLA ===== */
   .tv-screen{
     position:absolute;
 
-    /* ✅ Medidas para tu PNG (tv1.png 2048x2048). Si se cuela 1px: ajusta aquí */
+    /* ✅ Medidas para tu PNG (tv1.png 2048x2048) */
     left: 17.63%;
     top: 22.75%;
     width: 62.99%;
@@ -348,6 +348,15 @@
     transform: translateZ(0);
     mix-blend-mode: screen;
     filter: url(#vhsDisplace) contrast(1.22) saturate(1.25);
+
+    /* ✅ para que al pausar se quede “clavado” en el último frame */
+    animation-fill-mode: both;
+  }
+  .vhs::before,
+  .vhs::after,
+  .vhs .chroma,
+  .tear{
+    animation-fill-mode: both;
   }
 
   body.playing .vhs{
@@ -444,6 +453,18 @@
   }
   .tear.t2{ top: 48%; height: 8%; animation-duration: calc(0.33s - (0.18s * var(--g))); }
   .tear.t3{ top: 72%; height: 12%; animation-duration: calc(0.24s - (0.14s * var(--g))); }
+
+  /* ✅ NUEVO: en PAUSA se ve, pero congelado */
+  body.paused .vhs{
+    opacity: calc(0.14 + (0.35 * var(--g)));
+    animation: none !important;
+  }
+  body.paused .vhs::before,
+  body.paused .vhs::after,
+  body.paused .vhs .chroma,
+  body.paused .tear{
+    animation: none !important;
+  }
 
   @keyframes vhs-track{
     0%   { transform: translateY(-10%); }
@@ -1089,7 +1110,7 @@
     <div class="modal" id="support-modal" aria-hidden="true">
       <div class="modal-card" role="dialog" aria-modal="true" aria-label="Colabora con Cosmic Marciana">
         <button class="modal-close" id="support-close" type="button" aria-label="Cerrar">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
+          <svg viewBox="0" 0 24 24" aria-hidden="true">
             <path d="M6 6l12 12M18 6L6 18"></path>
           </svg>
         </button>
@@ -1114,7 +1135,7 @@
     <div class="sig">EMISIÓN NO AUTORIZADA · NO MIRES ATRÁS!</div>
   </main>
 
-  <!-- ✅ Filtro VHS con seed animado (ruido que late) -->
+  <!-- ✅ Filtro VHS con seed animado -->
   <svg width="0" height="0" style="position:absolute">
     <filter id="vhsDisplace">
       <feTurbulence type="fractalNoise" baseFrequency="0.015 0.22" numOctaves="2" seed="8" result="noise">
@@ -1289,8 +1310,14 @@
     playPauseBtn.innerHTML = ICONS.play;
   }
 
+  // ✅ NUEVO: 3 estados (playing / paused / none)
   function setPlayingClass(){
-    document.body.classList.toggle("playing", !audio.paused && hasLoaded);
+    const isPlaying = hasLoaded && !audio.paused;
+    const isPaused  = hasLoaded && audio.paused;
+
+    document.body.classList.toggle("playing", isPlaying);
+    document.body.classList.toggle("paused",  isPaused);
+
     setGlitchFromVolume();
   }
 
@@ -1327,6 +1354,7 @@
     const v = clamp01(audio.volume || 0);
     const playing = hasLoaded && !audio.paused;
 
+    // base “vivo” aunque esté en pausa, pero muy bajito
     let g = playing ? Math.pow(0.10 + 0.90 * v, 1.6) : 0.08;
     if(playing && v < 0.08) g = 0.10;
 
@@ -1467,6 +1495,7 @@
   }
 
   async function waitCanPlay(){
+    // readyState >= 3: HAVE_FUTURE_DATA
     if(audio.readyState >= 3) return;
     await new Promise((resolve, reject)=>{
       const onCanPlay = ()=>{ cleanup(); resolve(); };
