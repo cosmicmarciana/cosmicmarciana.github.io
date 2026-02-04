@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cosmic Marciana</title>
-
   <link rel="icon" href="favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -112,7 +111,10 @@
       animation: crt-glitch .35s steps(2,end);
     }
 
-    /* ===== VHS SOLO PANTALLA ===== */
+    /* ===========================
+       VHS GLITCH SOLO EN LA PANTALLA (INDEX)
+       Se activa con body.tuning
+       =========================== */
     .tv-screen{
       position:absolute;
       left: 17.95%;
@@ -136,11 +138,17 @@
       filter: contrast(1.30) saturate(1.35);
       animation-fill-mode: both;
     }
+    .vhs::before,
+    .vhs::after,
+    .vhs .chroma,
+    .tear{ animation-fill-mode: both; }
 
+    /* OFF por defecto */
     .vhs, .vhs::before, .vhs::after, .vhs .chroma, .tear{
       animation-play-state: paused;
     }
 
+    /* ON cuando hay ruido blanco (hover/tap) */
     body.tuning .vhs{
       opacity: calc(0.24 + (0.76 * var(--g)));
       animation:
@@ -159,12 +167,17 @@
           rgba(255,255,255, calc(0.05 + 0.07 * var(--g))) 0px,
           rgba(255,255,255, calc(0.05 + 0.07 * var(--g))) 1px,
           rgba(0,0,0,0) 3px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          rgba(255,255,255, calc(0.04 + 0.07 * var(--g))) 0px,
+          rgba(255,255,255, calc(0.04 + 0.07 * var(--g))) 1px,
+          rgba(0,0,0,0) 6px
         );
       opacity: calc(0.28 + (0.72 * var(--g)));
       animation: vhs-noise calc(0.12s - (0.06s * var(--g))) infinite steps(2,end);
+      animation-play-state: paused;
     }
-
-    body.tuning .vhs::before{ animation-play-state: running; }
 
     .vhs::after{
       content:"";
@@ -181,22 +194,105 @@
         rgba(255,255,255,0) 100%
       );
       filter: blur(calc(0.9px + 2.4px * var(--g)));
+      opacity: 1;
       animation: vhs-track calc(1.1s - (0.6s * var(--g))) infinite linear;
+      animation-play-state: paused;
     }
 
-    body.tuning .vhs::after{ animation-play-state: running; }
+    body.tuning .vhs::before,
+    body.tuning .vhs::after{
+      animation-play-state: running;
+    }
 
     .vhs .chroma{
       position:absolute;
       inset:0;
       opacity:0;
+      pointer-events:none;
       mix-blend-mode: screen;
     }
+    body.tuning .vhs .chroma{ opacity: calc(0.08 + (0.22 * var(--g))); }
 
-    body.tuning .vhs .chroma{ opacity: calc(0.08 + 0.22 * var(--g)); }
+    .vhs .chroma.r{
+      background:
+        repeating-linear-gradient(to bottom, rgba(255,0,0, calc(0.03 + 0.08 * var(--g))), rgba(255,0,0, calc(0.03 + 0.08 * var(--g))) 1px, transparent 3px);
+      transform: translateX(calc(-1px - (5px * var(--g))));
+      animation: chroma-r calc(0.35s - (0.20s * var(--g))) infinite steps(2,end);
+      animation-play-state: paused;
+    }
+    .vhs .chroma.b{
+      background:
+        repeating-linear-gradient(to bottom, rgba(0,120,255, calc(0.03 + 0.08 * var(--g))), rgba(0,120,255, calc(0.03 + 0.08 * var(--g))) 1px, transparent 3px);
+      transform: translateX(calc(1px + (6px * var(--g))));
+      animation: chroma-b calc(0.33s - (0.20s * var(--g))) infinite steps(2,end);
+      animation-play-state: paused;
+    }
+    body.tuning .vhs .chroma.r,
+    body.tuning .vhs .chroma.b{
+      animation-play-state: running;
+    }
 
-    .chroma.r{ background: repeating-linear-gradient(to bottom, rgba(255,0,0,.08) 0 1px, transparent 3px); }
-    .chroma.b{ background: repeating-linear-gradient(to bottom, rgba(0,120,255,.08) 0 1px, transparent 3px); }
+    .tear{
+      position:absolute;
+      left:-10%;
+      right:-10%;
+      height: 10%;
+      top: 15%;
+      opacity:0;
+      background: linear-gradient(
+        90deg,
+        rgba(255,255,255,0),
+        rgba(255,255,255, calc(0.08 + 0.20 * var(--g))),
+        rgba(255,255,255,0)
+      );
+      filter: blur(calc(0.6px + 1.4px * var(--g)));
+      mix-blend-mode: screen;
+      transform: translateX(0);
+      animation: vhs-tear calc(0.28s - (0.14s * var(--g))) infinite steps(2,end);
+      animation-play-state: paused;
+    }
+    body.tuning .tear{
+      opacity: calc(0.10 + (0.34 * var(--g)));
+      animation-play-state: running;
+    }
+    .tear.t2{ top: 48%; height: 8%; }
+    .tear.t3{ top: 72%; height: 12%; }
+
+    @keyframes vhs-track{
+      0%   { transform: translateY(-10%); }
+      100% { transform: translateY(780%); }
+    }
+    @keyframes vhs-noise{
+      0%   { transform: translateX(0); filter:none; }
+      50%  { transform: translateX(calc(-1px - (4px * var(--g)))); filter: contrast(1.08); }
+      100% { transform: translateX(0); filter:none; }
+    }
+    @keyframes vhs-global-jitter{
+      0%   { transform: translate(0,0); }
+      25%  { transform: translate(calc(-1px - (4px * var(--g))), 0); }
+      50%  { transform: translate(calc(1px + (5px * var(--g))), calc(-1px - (3px * var(--g)))); }
+      75%  { transform: translate(calc(-1px - (3px * var(--g))), calc(1px + (3px * var(--g)))); }
+      100% { transform: translate(0,0); }
+    }
+    @keyframes vhs-vertical-float{
+      0%,100%{ transform: translateY(0); }
+      50%{ transform: translateY(calc(-1px - (6px * var(--g)))); }
+    }
+    @keyframes vhs-tear{
+      0%   { transform: translateX(calc(-4px - (22px * var(--g)))); }
+      50%  { transform: translateX(calc( 6px + (26px * var(--g)))); }
+      100% { transform: translateX(calc(-3px - (18px * var(--g)))); }
+    }
+    @keyframes chroma-r{
+      0%{ transform: translateX(calc(-1px - (5px * var(--g)))); }
+      50%{ transform: translateX(calc(-2px - (9px * var(--g)))); }
+      100%{ transform: translateX(calc(-1px - (5px * var(--g)))); }
+    }
+    @keyframes chroma-b{
+      0%{ transform: translateX(calc(1px + (6px * var(--g)))); }
+      50%{ transform: translateX(calc(2px + (10px * var(--g)))); }
+      100%{ transform: translateX(calc(1px + (6px * var(--g)))); }
+    }
 
     /* ===== TEXTO ===== */
     .text{
@@ -207,23 +303,41 @@
       color:var(--muted);
     }
 
+    /* ===== WHISPER ===== */
     .whisper{
+      position:relative;
+      display:inline-block;
       font-size:12px;
       opacity:.72;
       letter-spacing:.20em;
+      text-transform:lowercase;
       margin:-6px auto 22px;
       color:var(--muted);
+      user-select:none;
       animation: whisper-jitter 1.35s infinite steps(2,end);
     }
 
-    /* ===== BOTONES (ELIGE TU AVENTURA) ===== */
-    .choices{
-      display:flex;
-      justify-content:center;
-      gap:14px;
-      flex-wrap:wrap;
-      margin-bottom:18px;
+    .whisper::before,
+    .whisper::after{
+      content: attr(data-text);
+      position:absolute;
+      inset:0;
     }
+
+    .whisper::before{
+      color: rgba(0,255,0,.75);
+      transform: translate(1px,0);
+      animation: whisper-glitch-1 1.15s infinite linear;
+    }
+
+    .whisper::after{
+      color: rgba(255,0,0,.65);
+      transform: translate(-1px,0);
+      animation: whisper-glitch-2 1s infinite linear;
+    }
+
+    /* ===== CTA ===== */
+    .cta{ margin-bottom:18px; }
 
     .btn{
       display:inline-block;
@@ -235,8 +349,8 @@
       color:#000;
       box-shadow:0 0 22px rgba(0,255,0,.3);
       transition:.2s ease;
-      min-width:320px;
-      text-align:center;
+      white-space:normal;
+      line-height:1.25;
     }
 
     .btn:hover{
@@ -244,15 +358,52 @@
       box-shadow:0 0 34px rgba(0,255,0,.45);
     }
 
-    @media (max-width:480px){
-      .btn{
-        width:100%;
-        max-width:26ch;
-        min-width:0;
-      }
+    /* ✅ NUEVO: dos botones iguales (elige tu aventura) */
+    .choices{
+      display:flex;
+      justify-content:center;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+    .choices .btn{
+      min-width: 320px;
+      text-align:center;
     }
 
+    /* ===== ICONOS ===== */
+    .links.icons{
+      display:flex;
+      justify-content:center;
+      gap:22px;
+      margin-top:6px;
+    }
+
+    .links.icons a{
+      padding:6px;
+      opacity:.75;
+      transition:.2s ease;
+    }
+
+    .links.icons a:hover{
+      opacity:1;
+      transform:translateY(-1px);
+    }
+
+    .links.icons svg{
+      width:22px;
+      height:22px;
+      fill:none;
+      stroke:var(--ink);
+      stroke-width:1.6;
+    }
+
+    .links.icons a:hover svg{
+      stroke:var(--neon);
+    }
+
+    /* ===== FIRMA CON GLITCH SUAVE ===== */
     .sig{
+      position:relative;
       margin-top:16px;
       font-size:12px;
       opacity:.65;
@@ -261,6 +412,87 @@
       color:var(--muted);
     }
 
+    .sig::before,
+    .sig::after{
+      content: attr(data-text);
+      position:absolute;
+      inset:0;
+      opacity:.5;
+      pointer-events:none;
+    }
+
+    .sig::before{
+      color: rgba(0,255,0,.35);
+      animation: sig-glitch-1 6s infinite;
+    }
+
+    .sig::after{
+      color: rgba(255,0,0,.25);
+      animation: sig-glitch-2 7s infinite;
+    }
+
+    .sig .hit{
+      color:var(--ink);
+      opacity:.9;
+    }
+
+    /* ===== OVERLAY activar sonido (solo si el navegador bloquea) ===== */
+    .sound-gate{
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(0,0,0,.55);
+      z-index: 999;
+    }
+    .sound-gate.show{ display:flex; }
+
+    .sound-card{
+      width: min(520px, 100%);
+      border-radius: 16px;
+      background: rgba(10,8,8,.96);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: 0 0 34px rgba(0,0,0,.55);
+      padding: 14px 14px 12px;
+      text-align:center;
+    }
+    .sound-title{
+      font-size:12px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color: var(--ink);
+      opacity:.92;
+      margin: 2px 0 10px;
+    }
+    .sound-note{
+      font-size:13px;
+      color: var(--muted);
+      line-height:1.45;
+      margin: 0 0 12px;
+    }
+    .sound-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      border:1px solid rgba(0,255,0,.40);
+      background: rgba(0,255,0,.10);
+      color: var(--ink);
+      cursor:pointer;
+      transition:.18s ease;
+      box-shadow: 0 0 14px rgba(0,255,0,.16);
+    }
+    .sound-btn:hover{
+      border-color: rgba(0,255,0,.70);
+      color: var(--neon);
+      box-shadow: 0 0 28px rgba(0,255,0,.30);
+    }
+
+    /* ===== ANIMACIONES ===== */
     @keyframes crt-flicker{
       0%{filter:brightness(1)}
       50%{filter:brightness(.97)}
@@ -278,38 +510,260 @@
       50%{transform:translate(.5px,-.5px)}
       100%{transform:none}
     }
+
+    @keyframes whisper-glitch-1{
+      12%{clip-path:inset(20% 0 60% 0)}
+      14%{clip-path:inset(0)}
+    }
+
+    @keyframes whisper-glitch-2{
+      18%{clip-path:inset(60% 0 10% 0)}
+      20%{clip-path:inset(0)}
+    }
+
+    @keyframes sig-glitch-1{
+      0%,92%{transform:none; clip-path:inset(0)}
+      93%{transform:translateX(1px); clip-path:inset(40% 0 30% 0)}
+      94%{transform:none; clip-path:inset(0)}
+      100%{transform:none}
+    }
+
+    @keyframes sig-glitch-2{
+      0%,88%{transform:none; clip-path:inset(0)}
+      89%{transform:translateX(-1px); clip-path:inset(60% 0 15% 0)}
+      90%{transform:none; clip-path:inset(0)}
+      100%{transform:none}
+    }
+
+    @media (max-width:480px){
+      .btn{
+        width:100%;
+        max-width:26ch;
+        padding:16px 18px;
+        font-size:15px;
+      }
+      .choices .btn{
+        min-width: 0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      *{ animation:none !important; }
+      body.tuning .vhs{ opacity:0 !important; }
+    }
   </style>
 </head>
 
 <body>
   <main class="wrap">
 
-    <div class="crt">
-      <img src="tv.png" alt="Televisor CRT con Cosmic Marciana" class="hero" />
-      <div class="tv-screen">
+    <div class="crt" aria-label="Televisor CRT">
+      <img src="tv.png" alt="Televisor CRT con Cosmic Marciana – La casa del terror" class="hero" />
+
+      <!-- ✅ OVERLAY VHS SOLO EN LA PANTALLA -->
+      <div class="tv-screen" aria-hidden="true">
         <div class="vhs">
           <div class="chroma r"></div>
           <div class="chroma b"></div>
+          <div class="tear t1"></div>
+          <div class="tear t2"></div>
+          <div class="tear t3"></div>
         </div>
       </div>
     </div>
 
     <p class="text">
-      Señales rotas. Pop electrónico.<br>
+      Señales rotas. Pop electrónico.<br />
       Transmisiones desde otra dimensión.
     </p>
 
-    <div class="whisper">transmisión en curso…</div>
+    <div class="whisper" data-text="transmisión en curso…">transmisión en curso…</div>
 
-    <div class="choices">
+    <!-- ✅ NUEVO: dos opciones iguales -->
+    <div class="cta choices" role="group" aria-label="Elige tu camino">
       <a class="btn" href="player.html">te atreves a entrar en la casa del terror</a>
       <a class="btn" href="bosque.html">corres hacia el bosque</a>
     </div>
 
-    <div class="sig">
-      COSMIC MARCIANA 2026 · EMISIÓN NO AUTORIZADA · NO AJUSTAR EL DIAL
+    <div class="links icons">
+      <a href="https://www.instagram.com/cosmicmarciana" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2"/></svg>
+      </a>
+      <a href="https://open.spotify.com/intl-es/artist/0qSO1brlu9jrjrhmMldEVL" target="_blank" rel="noopener noreferrer" aria-label="Spotify">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M7 10.5c3-1 7-.8 10 .6"/><path d="M7.5 13c2.5-.7 6-.5 8.5 .5"/><path d="M8 15.5c2-.5 4.5-.4 6.5 .4"/></svg>
+      </a>
+      <a href="mailto:cosmicmarciana@gmail.com" aria-label="Contacto">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+      </a>
+    </div>
+
+    <div class="sig" data-text="COSMIC MARCIANA 2026 · EMISIÓN NO AUTORIZADA · NO AJUSTAR EL DIAL">
+      COSMIC MARCIANA <span class="hit">2026</span> · EMISIÓN NO AUTORIZADA · NO AJUSTAR EL DIAL
     </div>
 
   </main>
+
+  <!-- Overlay: solo aparece si el navegador BLOQUEA el audio -->
+  <div class="sound-gate" id="sound-gate" aria-hidden="true">
+    <div class="sound-card">
+      <div class="sound-title">SEÑAL DE AUDIO BLOQUEADA</div>
+      <p class="sound-note">
+        Algunos navegadores no dejan sonar la tele sin un toque.<br>
+        Toca una vez para activar la señal.
+      </p>
+      <button class="sound-btn" id="sound-btn" type="button">🔊 ACTIVAR SONIDO</button>
+    </div>
+  </div>
+
+  <!-- ===== VHS/TV TUNING NOISE (WebAudio) + VHS GLITCH SYNC ===== -->
+  <script>
+(() => {
+  const tv = document.querySelector(".crt");
+  if (!tv) return;
+
+  // === AJUSTES RÁPIDOS ===
+  const NOISE_TYPE = "PINK"; // "WHITE" o "PINK"
+  const VOLUME_ON  = 0.5;   // sube/baja (0.25 - 0.5 suele ir bien)
+  const HUM_ON     = true;  // hum CRT suave (true/false)
+
+  let ctx, master, noiseSrc, noiseGain, hp, lp, humGain;
+  let running = false;
+  let unlocked = false;
+  let touchMode = false;
+
+  function setGlitch(on){
+    document.body.classList.toggle("tuning", !!on);
+  }
+
+  function makeWhiteBuffer(seconds = 2.5){
+    const len = Math.floor(ctx.sampleRate * seconds);
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for(let i=0;i<len;i++) d[i] = Math.random()*2 - 1;
+    return buf;
+  }
+
+  // Pink-ish simple: integra el white (suena más “cálido”)
+  function makePinkBuffer(seconds = 2.5){
+    const len = Math.floor(ctx.sampleRate * seconds);
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    let last = 0;
+    for(let i=0;i<len;i++){
+      const white = Math.random()*2 - 1;
+      last = last*0.985 + white*0.015;
+      d[i] = last;
+    }
+    return buf;
+  }
+
+  function build(){
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+    master = ctx.createGain();
+    master.gain.value = 0;
+    master.connect(ctx.destination);
+
+    noiseSrc = ctx.createBufferSource();
+    noiseSrc.buffer = (NOISE_TYPE === "WHITE") ? makeWhiteBuffer() : makePinkBuffer();
+    noiseSrc.loop = true;
+
+    noiseGain = ctx.createGain();
+    noiseGain.gain.value = 1.0;
+
+    hp = ctx.createBiquadFilter();
+    hp.type = "highpass";
+    hp.frequency.value = 70;
+
+    lp = ctx.createBiquadFilter();
+    lp.type = "lowpass";
+    lp.frequency.value = 5200;
+
+    noiseSrc.connect(noiseGain);
+    noiseGain.connect(hp);
+    hp.connect(lp);
+    lp.connect(master);
+
+    if(HUM_ON){
+      const hum50 = ctx.createOscillator();
+      hum50.type = "sine";
+      hum50.frequency.value = 50;
+
+      const hum100 = ctx.createOscillator();
+      hum100.type = "sine";
+      hum100.frequency.value = 100;
+
+      humGain = ctx.createGain();
+      humGain.gain.value = 0.03;
+
+      hum50.connect(humGain);
+      hum100.connect(humGain);
+      humGain.connect(master);
+
+      hum50.start();
+      hum100.start();
+    }
+
+    noiseSrc.start();
+  }
+
+  async function unlock(){
+    if(unlocked) return true;
+    try{
+      if(!ctx) build();
+      if(ctx.state === "suspended") await ctx.resume();
+      unlocked = true;
+      return true;
+    }catch{
+      return false;
+    }
+  }
+
+  function fade(to, ms){
+    if(!ctx || !master) return;
+    const t = ctx.currentTime;
+    master.gain.cancelScheduledValues(t);
+    master.gain.setValueAtTime(master.gain.value, t);
+    master.gain.linearRampToValueAtTime(to, t + ms/1000);
+  }
+
+  async function start(){
+    if(running) return;
+    const ok = await unlock();
+    if(!ok) return;
+    running = true;
+    setGlitch(true);
+    fade(VOLUME_ON, 120);
+  }
+
+  function stop(){
+    if(!running) return;
+    running = false;
+    fade(0, 180);
+    setGlitch(false);
+  }
+
+  function toggle(){
+    running ? stop() : start();
+  }
+
+  // Desktop: hover (solo si no estamos en touchMode)
+  tv.addEventListener("pointerenter", () => { if(!touchMode) start(); }, { passive:true });
+  tv.addEventListener("pointerleave", () => { if(!touchMode) stop();  }, { passive:true });
+
+  // Móvil: TAP ON / TAP OFF
+  tv.addEventListener("touchstart", (e) => {
+    touchMode = true;
+    e.preventDefault();
+    toggle();
+  }, { passive:false });
+
+  // Si se oculta la pestaña, cortar
+  document.addEventListener("visibilitychange", () => {
+    if(document.hidden) stop();
+  });
+})();
+  </script>
+
 </body>
 </html>
