@@ -285,7 +285,7 @@
     isolation:isolate;
     cursor: default; /* ya no es botón */
     border-radius:12px;
-    overflow:hidden; /* ✅ para que el rolling/flash no se salgan */
+    overflow:hidden; /* ✅ clip limpio, sin bordes raros */
   }
 
   #cover{
@@ -301,6 +301,7 @@
     will-change: transform, filter;
   }
 
+  /* scanlines */
   .crt::before{
     content:"";
     position:absolute;
@@ -318,6 +319,57 @@
     opacity:.25;
     z-index:2;
     border-radius:12px;
+  }
+
+  /* ✅ SOLO LUZ DIFUSA (sin “cuadrado”) */
+  .crt::after{
+    content:"";
+    position:absolute;
+    inset:-35%;
+    pointer-events:none;
+    opacity:0;
+    z-index:3;
+
+    /* truco para que nunca se perciba borde rectangular:
+       - gradiente muy abierto
+       - blur grande
+       - nada de cortes */
+    background: radial-gradient(
+      circle at 50% 50%,
+      rgba(255,255,255,.16) 0%,
+      rgba(255,255,255,.10) 18%,
+      rgba(255,255,255,.05) 36%,
+      rgba(255,255,255,.02) 52%,
+      transparent 72%
+    );
+
+    filter: blur(18px);
+    mix-blend-mode: screen;
+    transform: translateY(0) translateZ(0);
+  }
+
+  body.playing .crt::after{
+    opacity: .28; /* visible sin depender de --g */
+    animation: glow-float 3.8s ease-in-out infinite;
+  }
+
+  @keyframes glow-float{
+    0%,100%{ transform: translateY(14%) translateZ(0); }
+    50%{ transform: translateY(-14%) translateZ(0); }
+  }
+
+  /* (opcional) jitter MUY suave para que parezca señal viva */
+  body.playing #cover{
+    animation:
+      crt-flicker 4.5s infinite,
+      tv-jitter 0.55s infinite steps(2,end);
+  }
+  @keyframes tv-jitter{
+    0%{ transform: translate(0,0); }
+    25%{ transform: translate(-.3px,.2px); }
+    50%{ transform: translate(.35px,-.15px); }
+    75%{ transform: translate(-.2px,-.2px); }
+    100%{ transform: translate(0,0); }
   }
 
   .crt:active #cover{ transform: translateY(-1px); }
@@ -826,124 +878,10 @@
       transform:none !important;
       filter:none !important;
     }
+
+    /* ✅ también apagamos la luz en reduce motion */
+    body.playing .crt::after{ animation:none !important; opacity:0 !important; }
   }
-
-  /* ============================================================
-     ✅ AÑADIDO: ANIMACIÓN CRT SOBRE PNG (solo cuando suena)
-     - rolling bar (crt::after)
-     - jitter + warmth en #cover
-     - flash sincronía (.sync-flash)
-     ============================================================ */
-
-  /* rolling bar */
-  .crt::after{
-    content:"";
-    position:absolute;
-    left:-20%;
-    right:-20%;
-    top:-30%;
-    height:30%;
-    border-radius:18px;
-    pointer-events:none;
-    opacity:0;
-    background: linear-gradient(
-      to bottom,
-      transparent,
-      rgba(255,255,255,.10),
-      transparent
-    );
-    filter: blur(0.2px);
-    transform: translateZ(0);
-    z-index:3;
-  }
-
-  body.playing .crt::after{
-    opacity: calc(.35 + (.55 * var(--g)));
-    animation: crt-roll calc(2.8s - (1.4s * var(--g))) linear infinite;
-  }
-
-  @keyframes crt-roll{
-    0%{ transform: translateY(-120%); }
-    100%{ transform: translateY(420%); }
-  }
-
-  /* jitter sutil + warmth en la imagen */
-  body.playing #cover{
-    animation:
-      crt-flicker 4.5s infinite,
-      tv-jitter calc(0.55s - (0.35s * var(--g))) infinite steps(2,end),
-      tv-warm 3.2s infinite ease-in-out;
-    will-change: transform, filter;
-  }
-
-  @keyframes tv-jitter{
-    0%{ transform: translate(0,0); }
-    25%{ transform: translate(-.5px,.2px); }
-    50%{ transform: translate(.6px,-.2px); }
-    75%{ transform: translate(-.3px,-.2px); }
-    100%{ transform: translate(0,0); }
-  }
-
-  @keyframes tv-warm{
-    0%,100%{
-      filter: drop-shadow(0 0 22px rgba(0,0,0,.85));
-    }
-    50%{
-      filter: drop-shadow(0 0 26px rgba(0,0,0,.85)) hue-rotate(3deg) saturate(1.05);
-    }
-  }
-
-  /* flash sincronía (capa extra dentro del .crt) */
-  .crt .sync-flash{
-    position:absolute;
-    inset:0;
-    border-radius:12px;
-    pointer-events:none;
-    opacity:0;
-    background: radial-gradient(circle at 50% 45%, rgba(255,255,255,.18), transparent 55%);
-    mix-blend-mode: screen;
-    z-index:4;
-  }
-
-  body.playing .crt .sync-flash{
-    animation: sync-flash calc(5.1s - (2.0s * var(--g))) infinite;
-  }
-
-  @keyframes sync-flash{
-    0%,82%,100%{ opacity:0; }
-    86%{ opacity:.45; }
-    88%{ opacity:0; }
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    body.playing .crt::after,
-    body.playing #cover,
-    body.playing .crt .sync-flash{
-      animation:none !important;
-    }
-    body.playing .crt::after{ opacity:0; }
-    body.playing .crt .sync-flash{ opacity:0; }
-  }
-  /* TEST: que se vea siempre */
-.crt::after{
-  content:"";
-  position:absolute;
-  inset:-22%;
-  border-radius:999px;
-  pointer-events:none;
-  opacity:.35 !important;
-  background: radial-gradient(circle at 50% 50%,
-    rgba(255,255,255,.16) 0%,
-    rgba(255,255,255,.08) 25%,
-    rgba(255,255,255,.03) 50%,
-    transparent 72%
-  );
-  filter: blur(10px);
-  mix-blend-mode: screen;
-  z-index:999;
-}
-
-
 </style>
 </head>
 
@@ -960,8 +898,6 @@
     <!-- TV: ya NO es botón (no activa play/pause) -->
     <div class="crt" aria-hidden="true">
       <img id="cover" src="tv.png" alt="Televisor CRT / portada" />
-      <!-- ✅ capa extra para flash sincronía -->
-      <div class="sync-flash" aria-hidden="true"></div>
     </div>
 
     <div class="controls">
@@ -1257,11 +1193,7 @@
     const v = clamp01(audio.volume || 0);
     const playing = hasLoaded && !audio.paused;
 
-    // base “vivo” aunque esté en pausa, pero muy bajito
-    // curva para que a partir de ~70% se dispare más
     let g = playing ? Math.pow(0.10 + 0.90 * v, 1.6) : 0.08;
-
-    // extra: si está muy bajito el volumen, que quede casi quieto
     if(playing && v < 0.08) g = 0.10;
 
     document.documentElement.style.setProperty("--g", g.toFixed(3));
@@ -1401,7 +1333,6 @@
   }
 
   async function waitCanPlay(){
-    // readyState >= 3: HAVE_FUTURE_DATA
     if(audio.readyState >= 3) return;
     await new Promise((resolve, reject)=>{
       const onCanPlay = ()=>{ cleanup(); resolve(); };
@@ -1448,7 +1379,7 @@
   }
 
   function stopTrack(){
-    ++loadId; // cancela posibles plays en vuelo
+    ++loadId;
     cancelSeekRAF();
 
     audio.pause();
@@ -1493,7 +1424,6 @@
     syncButtons();
     setStatus(shuffleOn ? "Shuffle ON" : "Shuffle OFF");
 
-    // ✅ Preload: si apagas shuffle, precarga; si lo enciendes, lo destruimos
     if(!shuffleOn) primePreload(getNextIndexLinear());
     else destroyPreloader();
   }
@@ -1558,14 +1488,12 @@
     resetProgressUI();
     markCurrent();
 
-    // ✅ Preload desde el arranque si shuffle está off
     if(!shuffleOn) primePreload(getNextIndexLinear());
     else destroyPreloader();
 
     setGlitchFromVolume();
   }
 
-  // ✅ cinturón extra: si suelta fuera, cortamos scrubbing sí o sí
   function endScrub(){
     if(!isScrubbing) return;
     isScrubbing = false;
@@ -1582,15 +1510,12 @@
     loopBtn.addEventListener("click", cycleLoop);
     shareBtn.addEventListener("click", sharePage);
 
-    // ✅ IMPORTANTE: NO hay togglePlay en la tele (crt)
-
     playlistEl.addEventListener("click", (e)=>{
       const item = e.target.closest(".track");
       if(!item) return;
       const idx = Number(item.dataset.index);
       if(!Number.isInteger(idx)) return;
 
-      // Si pinchas la misma pista: toggle play/pause
       if(idx === currentIndex && hasLoaded){
         togglePlay();
         return;
@@ -1598,23 +1523,19 @@
       playTrack(idx);
     });
 
-    // Pointer events
     progressContainer.addEventListener("pointerdown", onPointerDown, { passive:false });
     progressContainer.addEventListener("pointermove", onPointerMove, { passive:false });
     progressContainer.addEventListener("pointerup", onPointerUp);
     progressContainer.addEventListener("pointercancel", onPointerUp);
 
-    // Touch fallback
     progressContainer.addEventListener("touchstart", onTouchStart, { passive:false });
     progressContainer.addEventListener("touchmove", onTouchMove, { passive:false });
     progressContainer.addEventListener("touchend", onTouchEnd, { passive:false });
     progressContainer.addEventListener("touchcancel", onTouchEnd, { passive:false });
 
-    // Preview hover (desktop)
     progressContainer.addEventListener("pointerenter", ()=> { if(audio.duration) showPreview(); });
     progressContainer.addEventListener("pointerleave", ()=> { if(!isScrubbing) hidePreview(); });
 
-    // Soltar fuera / cancelar
     document.addEventListener("pointerup", endScrub, { passive:true });
     document.addEventListener("pointercancel", endScrub, { passive:true });
     document.addEventListener("touchend", endScrub, { passive:true });
@@ -1649,7 +1570,6 @@
       setPlayIcon();
     });
 
-    // ✅ para el glitch del subtítulo cuando suena y cuando cambia volumen
     audio.addEventListener("play", setPlayingClass);
     audio.addEventListener("pause", setPlayingClass);
     audio.addEventListener("ended", setPlayingClass);
@@ -1685,7 +1605,6 @@
       }
     });
 
-    // Teclado
     document.addEventListener("keydown", (e)=>{
       if(e.code === "Space"){
         if(document.activeElement && document.activeElement.tagName === "INPUT") return;
@@ -1696,7 +1615,6 @@
       if(e.code === "ArrowLeft") prevTrack();
     });
 
-    // Si la pestaña se oculta: pausar
     document.addEventListener("visibilitychange", ()=>{
       if(document.hidden){
         if(!audio.paused){
@@ -1765,5 +1683,3 @@
 
 </body>
 </html>
-
-
