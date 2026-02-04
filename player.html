@@ -772,10 +772,6 @@
     cursor:pointer;
     border:1px solid rgba(255,255,255,.08);
     color: var(--ink);
-
-    /* ✅ necesario para colocar el ojo sin mover layout */
-    position: relative;
-    padding-right: 56px; /* deja sitio al ojo en la derecha */
   }
   .track:hover{
     background: rgba(255,255,255,0.09);
@@ -830,118 +826,6 @@
       filter:none !important;
     }
   }
-
-  /* ============================================================
-     ✅ AÑADIDO: OJO + ANTENA + HALO (setentero, sin texto)
-     ============================================================ */
-
-  /* Halo suave en el track actual (solo cuando suena) */
-  .track.current::after{
-    content:"";
-    position:absolute;
-    inset:-2px;
-    border-radius:12px;
-    border: 1px solid rgba(0,255,0,.22);
-    box-shadow:
-      0 0 18px rgba(0,255,0,.10),
-      0 0 42px rgba(0,255,0,.06);
-    opacity:0;
-    pointer-events:none;
-  }
-  body.playing .track.current::after{
-    opacity:1;
-    animation: halo-pulse 1.4s ease-in-out infinite;
-  }
-  @keyframes halo-pulse{
-    0%,100%{
-      box-shadow:
-        0 0 18px rgba(0,255,0,.10),
-        0 0 42px rgba(0,255,0,.06);
-    }
-    50%{
-      box-shadow:
-        0 0 28px rgba(0,255,0,.18),
-        0 0 64px rgba(0,255,0,.10);
-    }
-  }
-
-  /* Ojo + antena: se coloca a la derecha sin mover el layout */
-  .eye-signal{
-    display:none;
-    position:absolute;
-    right: 12px;
-    top: 50%;
-    width: 28px;
-    height: 14px;
-    border-radius: 999px;
-    border: 1px solid rgba(0,255,0,.35);
-    background: rgba(0,0,0,.30);
-    box-shadow: inset 0 0 6px rgba(0,255,0,.22);
-    transform: translateY(-50%);
-    pointer-events:none;
-  }
-
-  /* pupila */
-  .eye-signal::before{
-    content:"";
-    position:absolute;
-    top:50%;
-    left:50%;
-    width:6px;
-    height:6px;
-    background: rgba(0,255,0,.95);
-    border-radius:50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 10px rgba(0,255,0,.35);
-  }
-
-  /* antena */
-  .eye-signal::after{
-    content:"";
-    position:absolute;
-    top:-8px;
-    left:50%;
-    width:2px;
-    height:8px;
-    background: rgba(0,255,0,.65);
-    transform: translateX(-50%);
-    transform-origin: bottom center;
-    box-shadow: 0 0 8px rgba(0,255,0,.30);
-    border-radius:2px;
-  }
-
-  /* visible solo en el actual */
-  .track.current .eye-signal{ display:block; }
-
-  /* animación solo cuando suena */
-  body.playing .track.current .eye-signal::before{
-    animation: pupil-jitter .9s infinite steps(2,end);
-  }
-  body.playing .track.current .eye-signal::after{
-    animation: antenna-wiggle 1.1s infinite ease-in-out;
-  }
-
-  @keyframes pupil-jitter{
-    0%{ transform: translate(-50%,-50%); }
-    25%{ transform: translate(-45%,-50%); }
-    50%{ transform: translate(-50%,-45%); }
-    75%{ transform: translate(-55%,-50%); }
-    100%{ transform: translate(-50%,-50%); }
-  }
-
-  @keyframes antenna-wiggle{
-    0%,100%{ transform: translateX(-50%) rotate(0deg); }
-    50%{ transform: translateX(-50%) rotate(12deg); }
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .track.current::after,
-    .eye-signal::before,
-    .eye-signal::after{
-      animation:none !important;
-    }
-  }
-
 </style>
 </head>
 
@@ -1107,11 +991,6 @@
 
   const tracks = Array.from(document.querySelectorAll(".track"));
 
-  /* ✅ AÑADIDO: inserta el ojo + antena dentro de cada track */
-  tracks.forEach(t=>{
-    t.insertAdjacentHTML("beforeend", `<span class="eye-signal" aria-hidden="true"></span>`);
-  });
-
   let currentIndex = 0;
   let lastVolume = 1;
   let loopMode = 0; // 0=OFF,1=SONG,2=ALBUM
@@ -1272,9 +1151,6 @@
     tracks.forEach(t=>t.classList.remove("current"));
     const el = tracks[currentIndex];
     if(el) el.classList.add("current");
-
-    /* ✅ opcional: autoscroll suave para que el activo se vea */
-    if(el) el.scrollIntoView({ block:"nearest", behavior:"smooth" });
   }
 
   function resetProgressUI(){
@@ -1769,3 +1645,6 @@
 
 </body>
 </html>
+
+
+ 
