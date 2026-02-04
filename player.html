@@ -924,6 +924,39 @@
     body.playing .crt::after{ opacity:0; }
     body.playing .crt .sync-flash{ opacity:0; }
   }
+  /* ===== LUZ DIFUSA QUE SUBE/BAJA (sin “cuadrado”) ===== */
+.crt::after{
+  content:"";
+  position:absolute;
+  inset:-22%;
+  border-radius: 999px;
+  pointer-events:none;
+  opacity:0;
+
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255,255,255,.14) 0%,
+    rgba(255,255,255,.08) 22%,
+    rgba(255,255,255,.03) 45%,
+    transparent 70%
+  );
+
+  filter: blur(10px);
+  mix-blend-mode: screen;
+  transform: translateY(0) translateZ(0);
+  z-index:3;
+}
+
+body.playing .crt::after{
+  opacity: calc(.12 + (.28 * var(--g)));
+  animation: glow-float calc(3.8s - (1.4s * var(--g))) ease-in-out infinite;
+}
+
+@keyframes glow-float{
+  0%,100%{ transform: translateY(10%) translateZ(0); }
+  50%{ transform: translateY(-10%) translateZ(0); }
+}
+
 </style>
 </head>
 
@@ -1745,3 +1778,4 @@
 
 </body>
 </html>
+
