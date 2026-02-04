@@ -142,6 +142,7 @@
     animation: red-flicker 5.4s infinite;
   }
 
+  /* capas para glitch */
   .subtitle::before,
   .subtitle::after{
     content: attr(data-text);
@@ -166,6 +167,7 @@
     animation: red-glitch-b 4.4s infinite;
   }
 
+  /* ===== PLAYING: glitch “se rompe la señal” y además baja con el volumen ===== */
   body.playing .subtitle{
     transform: translateZ(0);
     text-shadow:
@@ -195,6 +197,7 @@
     filter: brightness(1.05);
   }
 
+  /* --- anims base --- */
   @keyframes red-flicker{
     0%, 55%, 100% { filter: none; transform: translateZ(0); }
     60% { filter: contrast(1.05); }
@@ -220,6 +223,7 @@
     100%{ transform: translate(0,0) skewX(0deg); }
   }
 
+  /* “rotura de señal”: pequeños saltos/tears sin agrandar */
   @keyframes signal-tear{
     0%, 100% { filter: none; }
     18% { filter: contrast(1.1) saturate(1.05); }
@@ -246,6 +250,7 @@
     94% { transform: translate(1px, 0); clip-path: inset(55% 0 0 0); }
   }
 
+  /* más “slice roto” solo en play */
   @keyframes red-glitch-a-play{
     0%   { clip-path: inset(10% 0 82% 0); transform: translate(-4px,0); }
     10%  { clip-path: inset(40% 0 30% 0); transform: translate(-2px,-1px); }
@@ -278,7 +283,7 @@
     width:fit-content;
     margin:12px auto 18px;
     isolation:isolate;
-    cursor: default;
+    cursor: default; /* ya no es botón */
     border-radius:12px;
   }
 
@@ -317,97 +322,6 @@
   .crt:active #cover{ transform: translateY(-1px); }
   .crt:hover #cover{ transform: translateY(-2px); animation: crt-glitch .35s steps(2,end); }
 
-  /* ===== VHS REAL SOLO EN LA PANTALLA ===== */
-  .tv-screen{
-    position:absolute;
-
-    /* ✅ Ventana calculada para tu PNG (tv1.png 2048x2048) */
-    left: 17.63%;
-    top: 22.75%;
-    width: 62.99%;
-    height: 46.83%;
-
-    overflow:hidden;
-    pointer-events:none;
-    z-index:3;
-
-    /* recorte duro (curva CRT) */
-    clip-path: inset(0 round 10% / 14%);
-    transform: translateZ(0);
-    isolation: isolate;
-  }
-
-  .vhs{
-    position:absolute;
-    inset:-12%;
-    opacity:0;
-    mix-blend-mode: screen;
-    transform: translateZ(0);
-    filter: url(#vhsDisplace) contrast(1.08) saturate(1.08);
-  }
-
-  body.playing .vhs{
-    opacity: calc(0.10 + (0.70 * var(--g)));
-    animation: vhsFloat calc(2.4s - (1.4s * var(--g))) infinite ease-in-out;
-  }
-
-  /* scanlines + ruido */
-  .vhs::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:
-      repeating-linear-gradient(
-        to bottom,
-        rgba(255,255,255, calc(0.02 + 0.03 * var(--g))) 0px,
-        rgba(255,255,255, calc(0.02 + 0.03 * var(--g))) 1px,
-        rgba(0,0,0,0) 3px
-      ),
-      repeating-linear-gradient(
-        90deg,
-        rgba(255,255,255, calc(0.01 + 0.03 * var(--g))) 0px,
-        rgba(255,255,255, calc(0.01 + 0.03 * var(--g))) 1px,
-        rgba(0,0,0,0) 5px
-      );
-    opacity: calc(0.18 + (0.55 * var(--g)));
-    animation: vhsNoise calc(0.18s - (0.12s * var(--g))) infinite steps(2,end);
-  }
-
-  /* tracking line horizontal (franja VHS) */
-  .vhs::after{
-    content:"";
-    position:absolute;
-    left:0; right:0;
-    top:-30%;
-    height: 16%;
-    background: linear-gradient(to bottom,
-      rgba(255,255,255,0) 0%,
-      rgba(180,255,180, calc(0.08 + 0.18 * var(--g))) 40%,
-      rgba(255,255,255, calc(0.05 + 0.22 * var(--g))) 50%,
-      rgba(180,255,180, calc(0.08 + 0.18 * var(--g))) 60%,
-      rgba(255,255,255,0) 100%
-    );
-    filter: blur(calc(0.8px + 2px * var(--g)));
-    opacity: 1;
-    animation: vhsTrack calc(1.25s - (0.75s * var(--g))) infinite linear;
-  }
-
-  @keyframes vhsTrack{
-    0%   { transform: translateY(-10%); }
-    100% { transform: translateY(800%); }
-  }
-
-  @keyframes vhsFloat{
-    0%,100% { transform: translateY(0) translateX(0); }
-    50%     { transform: translateY(calc(-1px - (5px * var(--g)))) translateX(calc(-1px - (3px * var(--g)))); }
-  }
-
-  @keyframes vhsNoise{
-    0%   { transform: translateX(0); filter:none; }
-    50%  { transform: translateX(calc(-1px - (3px * var(--g)))); filter: contrast(1.08); }
-    100% { transform: translateX(0); filter:none; }
-  }
-
   /* Controls */
   .controls{
     display:flex;
@@ -441,6 +355,7 @@
     color: var(--neon);
   }
 
+  /* play/pause un pelín más compacto */
   #play-pause{
     width:48px;
     height:48px;
@@ -910,11 +825,6 @@
       transform:none !important;
       filter:none !important;
     }
-
-    .vhs, .vhs::before, .vhs::after{
-      animation:none !important;
-      opacity:0 !important;
-    }
   }
 </style>
 </head>
@@ -929,13 +839,9 @@
       <div class="subtitle" id="subtitle" data-text="La casa del terror">La casa del terror</div>
     </div>
 
+    <!-- TV: ya NO es botón (no activa play/pause) -->
     <div class="crt" aria-hidden="true">
       <img id="cover" src="tv.png" alt="Televisor CRT / portada" />
-
-      <!-- ✅ VHS solo en la pantalla -->
-      <div class="tv-screen" aria-hidden="true">
-        <div class="vhs"></div>
-      </div>
     </div>
 
     <div class="controls">
@@ -1028,14 +934,6 @@
     <div class="sig">EMISIÓN NO AUTORIZADA · NO MIRES ATRÁS!</div>
   </main>
 
-  <!-- ✅ Filtro VHS (distorsión real) -->
-  <svg width="0" height="0" style="position:absolute">
-    <filter id="vhsDisplace">
-      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.18" numOctaves="2" seed="2" result="noise"/>
-      <feDisplacementMap in="SourceGraphic" in2="noise" scale="18" xChannelSelector="R" yChannelSelector="G"/>
-    </filter>
-  </svg>
-
 <script>
   const ICONS = {
     prev: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6v12"/><path d="M18 6l-8 6 8 6z"/></svg>`,
@@ -1102,6 +1000,7 @@
   let isScrubbing = false;
   let usingTouchFallback = false;
 
+  // Anti-race: cada cambio de pista incrementa
   let loadId = 0;
 
   const LS = {
@@ -1111,6 +1010,7 @@
     loop: "cm_loop"
   };
 
+  // ===== PRELOAD NEXT (más instantáneo) =====
   let preloader = null;
   let preloadedIndex = -1;
 
@@ -1144,6 +1044,7 @@
     try{ preloader.load(); } catch {}
   }
 
+  // ===== SCRUBBING SUAVE (RAF) =====
   let pendingSeekPct = null;
   let rafSeekId = 0;
 
@@ -1231,11 +1132,16 @@
     else volumeIcon.innerHTML = ICONS.vol3;
   }
 
+  // 🔥 Glitch atado al volumen (y se calma cuando está en pausa)
   function setGlitchFromVolume(){
     const v = clamp01(audio.volume || 0);
     const playing = hasLoaded && !audio.paused;
 
+    // base “vivo” aunque esté en pausa, pero muy bajito
+    // curva para que a partir de ~70% se dispare más
     let g = playing ? Math.pow(0.10 + 0.90 * v, 1.6) : 0.08;
+
+    // extra: si está muy bajito el volumen, que quede casi quieto
     if(playing && v < 0.08) g = 0.10;
 
     document.documentElement.style.setProperty("--g", g.toFixed(3));
@@ -1283,6 +1189,7 @@
   function showPreview(){ progressContainer.classList.add("preview"); }
   function hidePreview(){ progressContainer.classList.remove("preview"); }
 
+  // ===== POINTER EVENTS =====
   function onPointerDown(e){
     e.preventDefault();
     if(!audio.duration) return;
@@ -1312,6 +1219,7 @@
     hidePreview();
   }
 
+  // ===== TOUCH FALLBACK =====
   function touchClientX(ev){
     const t = ev.touches && ev.touches[0] ? ev.touches[0] : (ev.changedTouches ? ev.changedTouches[0] : null);
     return t ? t.clientX : null;
@@ -1350,6 +1258,7 @@
     hidePreview();
   }
 
+  // ===== PLAYER (robusto, sin "resume por canción") =====
   function loadTrack(index){
     currentIndex = index;
 
@@ -1358,6 +1267,7 @@
 
     localStorage.setItem(LS.idx, String(currentIndex));
 
+    // Reset real
     audio.pause();
     try { audio.currentTime = 0; } catch {}
     audio.src = sources[index];
@@ -1366,10 +1276,12 @@
     hasLoaded = true;
     setPlayingClass();
 
+    // ✅ Precarga la siguiente (si no estás en shuffle)
     primePreload(getNextIndexLinear());
   }
 
   async function waitCanPlay(){
+    // readyState >= 3: HAVE_FUTURE_DATA
     if(audio.readyState >= 3) return;
     await new Promise((resolve, reject)=>{
       const onCanPlay = ()=>{ cleanup(); resolve(); };
@@ -1416,7 +1328,7 @@
   }
 
   function stopTrack(){
-    ++loadId;
+    ++loadId; // cancela posibles plays en vuelo
     cancelSeekRAF();
 
     audio.pause();
@@ -1461,6 +1373,7 @@
     syncButtons();
     setStatus(shuffleOn ? "Shuffle ON" : "Shuffle OFF");
 
+    // ✅ Preload: si apagas shuffle, precarga; si lo enciendes, lo destruimos
     if(!shuffleOn) primePreload(getNextIndexLinear());
     else destroyPreloader();
   }
@@ -1525,12 +1438,14 @@
     resetProgressUI();
     markCurrent();
 
+    // ✅ Preload desde el arranque si shuffle está off
     if(!shuffleOn) primePreload(getNextIndexLinear());
     else destroyPreloader();
 
     setGlitchFromVolume();
   }
 
+  // ✅ cinturón extra: si suelta fuera, cortamos scrubbing sí o sí
   function endScrub(){
     if(!isScrubbing) return;
     isScrubbing = false;
@@ -1547,12 +1462,15 @@
     loopBtn.addEventListener("click", cycleLoop);
     shareBtn.addEventListener("click", sharePage);
 
+    // ✅ IMPORTANTE: NO hay togglePlay en la tele (crt)
+
     playlistEl.addEventListener("click", (e)=>{
       const item = e.target.closest(".track");
       if(!item) return;
       const idx = Number(item.dataset.index);
       if(!Number.isInteger(idx)) return;
 
+      // Si pinchas la misma pista: toggle play/pause
       if(idx === currentIndex && hasLoaded){
         togglePlay();
         return;
@@ -1560,19 +1478,23 @@
       playTrack(idx);
     });
 
+    // Pointer events
     progressContainer.addEventListener("pointerdown", onPointerDown, { passive:false });
     progressContainer.addEventListener("pointermove", onPointerMove, { passive:false });
     progressContainer.addEventListener("pointerup", onPointerUp);
     progressContainer.addEventListener("pointercancel", onPointerUp);
 
+    // Touch fallback
     progressContainer.addEventListener("touchstart", onTouchStart, { passive:false });
     progressContainer.addEventListener("touchmove", onTouchMove, { passive:false });
     progressContainer.addEventListener("touchend", onTouchEnd, { passive:false });
     progressContainer.addEventListener("touchcancel", onTouchEnd, { passive:false });
 
+    // Preview hover (desktop)
     progressContainer.addEventListener("pointerenter", ()=> { if(audio.duration) showPreview(); });
     progressContainer.addEventListener("pointerleave", ()=> { if(!isScrubbing) hidePreview(); });
 
+    // Soltar fuera / cancelar
     document.addEventListener("pointerup", endScrub, { passive:true });
     document.addEventListener("pointercancel", endScrub, { passive:true });
     document.addEventListener("touchend", endScrub, { passive:true });
@@ -1607,6 +1529,7 @@
       setPlayIcon();
     });
 
+    // ✅ para el glitch del subtítulo cuando suena y cuando cambia volumen
     audio.addEventListener("play", setPlayingClass);
     audio.addEventListener("pause", setPlayingClass);
     audio.addEventListener("ended", setPlayingClass);
@@ -1642,6 +1565,7 @@
       }
     });
 
+    // Teclado
     document.addEventListener("keydown", (e)=>{
       if(e.code === "Space"){
         if(document.activeElement && document.activeElement.tagName === "INPUT") return;
@@ -1652,6 +1576,7 @@
       if(e.code === "ArrowLeft") prevTrack();
     });
 
+    // Si la pestaña se oculta: pausar
     document.addEventListener("visibilitychange", ()=>{
       if(document.hidden){
         if(!audio.paused){
@@ -1720,3 +1645,6 @@
 
 </body>
 </html>
+
+
+ 
