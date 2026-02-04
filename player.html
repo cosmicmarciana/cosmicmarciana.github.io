@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>La casa del terror</title>
+<title>hhhhhhLa casa del terror</title>
 
 <!-- Favicons -->
 <link rel="icon" href="favicon.ico">
@@ -1311,22 +1311,9 @@
   }
 
   // ✅ NUEVO: 3 estados (playing / paused / none)
-  function setPlayingClass(){
-  const isPlaying = !audio.paused && audio.src;
-  const isPaused  = audio.paused && audio.src;
+  
 
-  document.body.classList.toggle("playing", isPlaying);
-  document.body.classList.toggle("paused",  isPaused);
-
-  setGlitchFromVolume();
-}
-
-  function setPlayIcon(){
-    playPauseBtn.innerHTML = audio.paused ? ICONS.play : ICONS.pause;
-    playPauseBtn.classList.toggle("pulse", audio.paused);
-    setPlayingClass();
-  }
-
+ 
   function syncButtons(){
     shuffleBtn.classList.toggle("on", shuffleOn);
     loopBtn.classList.toggle("on", loopMode !== 0);
@@ -1352,24 +1339,34 @@
   // 🔥 Glitch atado al volumen (y se calma cuando está en pausa)
   function setGlitchFromVolume(){
   const v = clamp01(audio.volume || 0);
-  const hasSrc = !!audio.src;
+  const hasSrc = !!(audio.getAttribute("src") || audio.src);
 
-  let g;
+  let g = 0;
 
   if(!hasSrc){
-    // STOP → glitch off
+    // STOP → apagado
     g = 0;
   } else if(audio.paused){
-    // PAUSE → glitch congelado, visible
-    g = Math.max(0.18, Math.pow(0.10 + 0.90 * v, 1.2));
+    // PAUSE → visible pero congelado (el CSS lo congela)
+    g = Math.max(0.22, Math.pow(0.10 + 0.90 * v, 1.15));
   } else {
-    // PLAY → glitch vivo
+    // PLAY → vivo
     g = Math.pow(0.10 + 0.90 * v, 1.6);
     if(v < 0.08) g = 0.12;
   }
 
   document.documentElement.style.setProperty("--g", g.toFixed(3));
 }
+
+function setPlayingClass(){
+  const hasSrc = !!(audio.getAttribute("src") || audio.src);
+
+  document.body.classList.toggle("playing", hasSrc && !audio.paused);
+  document.body.classList.toggle("paused",  hasSrc && audio.paused);
+
+  setGlitchFromVolume();
+}
+
 
 
   function markCurrent(){
@@ -1689,6 +1686,11 @@
     audio.addEventListener("play", setPlayingClass);
     audio.addEventListener("pause", setPlayingClass);
     audio.addEventListener("ended", setPlayingClass);
+    audio.addEventListener("play", setPlayingClass);
+audio.addEventListener("pause", setPlayingClass);
+audio.addEventListener("ended", setPlayingClass);
+audio.addEventListener("volumechange", setGlitchFromVolume);
+
 
 
     // ✅ IMPORTANTE: NO hay togglePlay en la tele (crt)
@@ -1874,6 +1876,7 @@
 
 </body>
 </html>
+
 
 
 
