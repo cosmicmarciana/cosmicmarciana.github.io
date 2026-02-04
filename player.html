@@ -757,7 +757,7 @@
     border-color: rgba(0,255,0,.5);
   }
 
-  /* Playlist */
+  /* Playlist (base) */
   .playlist{
     margin:18px auto 0;
     text-align:left;
@@ -825,6 +825,181 @@
       transform:none !important;
       filter:none !important;
     }
+
+    /* también apaga el now playing */
+    .now::before, .now::after,
+    .track.current::after{
+      animation:none !important;
+    }
+  }
+
+  /* ============================================================
+     NUEVO: LAYOUT 2 COLUMNAS + NOW PLAYING (A + B)
+     ============================================================ */
+
+  .layout{
+    width: 100%;
+    max-width: 820px;
+    margin: 0 auto;
+    display:grid;
+    grid-template-columns: 1fr 320px;
+    gap: 16px;
+    align-items:start;
+  }
+
+  .player-col{ min-width: 0; }
+
+  .setlist-col{
+    text-align:left;
+    border-radius: 14px;
+    background: rgba(0,0,0,.22);
+    border: 1px solid rgba(255,255,255,.10);
+    padding: 12px 12px 10px;
+    box-shadow: 0 0 28px rgba(0,0,0,.28);
+  }
+
+  .setlist-title{
+    font-size: 12px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: .9;
+    margin: 4px 6px 10px;
+  }
+
+  .setlist-col .playlist{
+    width:100%;
+    margin:0;
+    max-height: 520px;
+    overflow:auto;
+    padding-right: 6px;
+  }
+
+  .setlist-col .track{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding: 10px 12px;
+    margin:8px 0;
+  }
+
+  /* Opción B: Halo/glow pulsante en la pista actual */
+  .track{
+    position:relative;
+  }
+
+  .track.current::after{
+    content:"";
+    position:absolute;
+    inset:-2px;
+    border-radius: 12px;
+    border: 1px solid rgba(0,255,0,.25);
+    box-shadow:
+      0 0 18px rgba(0,255,0,.10),
+      0 0 42px rgba(0,255,0,.06);
+    opacity:0;
+    transform: scale(0.995);
+    pointer-events:none;
+  }
+
+  body.playing .track.current::after{
+    opacity:1;
+    animation: halo-pulse 1.35s ease-in-out infinite;
+  }
+
+  @keyframes halo-pulse{
+    0%,100%{
+      transform: scale(0.996);
+      box-shadow:
+        0 0 18px rgba(0,255,0,.10),
+        0 0 42px rgba(0,255,0,.06);
+      filter: saturate(1);
+    }
+    50%{
+      transform: scale(1.01);
+      box-shadow:
+        0 0 26px rgba(0,255,0,.18),
+        0 0 64px rgba(0,255,0,.10);
+      filter: saturate(1.15);
+    }
+  }
+
+  /* Opción A: CRT scanlines + shimmer en el “badge” */
+  .track .now{
+    display:none;
+    position:relative;
+    align-items:center;
+    min-width: 118px;
+    height: 18px;
+    border-radius: 999px;
+    border:1px solid rgba(255,255,255,.14);
+    background: rgba(0,0,0,.22);
+    overflow:hidden;
+    user-select:none;
+  }
+
+  .track.current .now{ display:flex; }
+
+  .now .tag{
+    position:relative;
+    z-index:2;
+    font-size: 11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color: var(--muted);
+    padding: 0 10px;
+    opacity:.95;
+    white-space:nowrap;
+  }
+
+  .now::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.05),
+        rgba(255,255,255,.05) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+    opacity:.25;
+    mix-blend-mode: overlay;
+    transform: translateY(0);
+    animation: scan-move 1.6s linear infinite;
+    animation-play-state: paused;
+  }
+
+  .now::after{
+    content:"";
+    position:absolute;
+    inset:-40% -40%;
+    background: linear-gradient(90deg, transparent, rgba(0,255,0,.18), transparent);
+    transform: translateX(-60%);
+    opacity:.6;
+    animation: shimmer 1.9s linear infinite;
+    animation-play-state: paused;
+  }
+
+  @keyframes scan-move{
+    0%{ transform: translateY(0); }
+    100%{ transform: translateY(6px); }
+  }
+  @keyframes shimmer{
+    0%{ transform: translateX(-60%); }
+    100%{ transform: translateX(60%); }
+  }
+
+  body.playing .track.current .now::before,
+  body.playing .track.current .now::after{
+    animation-play-state: running;
+  }
+
+  @media (max-width: 820px){
+    .layout{ grid-template-columns: 1fr; }
+    .setlist-col .playlist{ max-height: 360px; }
   }
 </style>
 </head>
@@ -839,54 +1014,65 @@
       <div class="subtitle" id="subtitle" data-text="La casa del terror">La casa del terror</div>
     </div>
 
-    <!-- TV: ya NO es botón (no activa play/pause) -->
-    <div class="crt" aria-hidden="true">
-      <img id="cover" src="tv.png" alt="Televisor CRT / portada" />
-    </div>
+    <!-- NUEVO: 2 columnas -->
+    <div class="layout">
+      <!-- COLUMNA IZQUIERDA: PLAYER -->
+      <section class="player-col">
+        <!-- TV: ya NO es botón (no activa play/pause) -->
+        <div class="crt" aria-hidden="true">
+          <img id="cover" src="tv.png" alt="Televisor CRT / portada" />
+        </div>
 
-    <div class="controls">
-      <button id="prev-btn" aria-label="Anterior" title="Anterior"></button>
-      <button id="play-pause" aria-label="Play/Pause" title="Play/Pause"></button>
-      <button id="stop-btn" aria-label="Stop" title="Stop"></button>
-      <button id="next-btn" aria-label="Siguiente" title="Siguiente"></button>
-    </div>
+        <div class="controls">
+          <button id="prev-btn" aria-label="Anterior" title="Anterior"></button>
+          <button id="play-pause" aria-label="Play/Pause" title="Play/Pause"></button>
+          <button id="stop-btn" aria-label="Stop" title="Stop"></button>
+          <button id="next-btn" aria-label="Siguiente" title="Siguiente"></button>
+        </div>
 
-    <div class="actions" aria-label="Acciones">
-      <button id="shuffle-btn" class="icon-btn" aria-label="Shuffle" title="Shuffle"></button>
-      <button id="loop-btn" class="icon-btn" aria-label="Loop" title="Loop"></button>
-      <button id="share-btn" class="icon-btn" aria-label="Compartir" title="Compartir"></button>
-    </div>
+        <div class="actions" aria-label="Acciones">
+          <button id="shuffle-btn" class="icon-btn" aria-label="Shuffle" title="Shuffle"></button>
+          <button id="loop-btn" class="icon-btn" aria-label="Loop" title="Loop"></button>
+          <button id="share-btn" class="icon-btn" aria-label="Compartir" title="Compartir"></button>
+        </div>
 
-    <div id="status-line"></div>
+        <div id="status-line"></div>
 
-    <div class="progress-wrapper">
-      <span id="current-time">0:00</span>
-      <div class="progress-container" id="progress-container" aria-label="Barra de reproducción">
-        <div class="progress-bar" id="progress-bar"></div>
-        <div class="progress-thumb" id="progress-thumb"></div>
-        <div class="seek-dot" id="seek-dot"></div>
-        <div class="seek-tip" id="seek-tip">0:00</div>
-      </div>
-      <span id="total-time">0:00</span>
-    </div>
+        <div class="progress-wrapper">
+          <span id="current-time">0:00</span>
+          <div class="progress-container" id="progress-container" aria-label="Barra de reproducción">
+            <div class="progress-bar" id="progress-bar"></div>
+            <div class="progress-thumb" id="progress-thumb"></div>
+            <div class="seek-dot" id="seek-dot"></div>
+            <div class="seek-tip" id="seek-tip">0:00</div>
+          </div>
+          <span id="total-time">0:00</span>
+        </div>
 
-    <div class="volume-wrapper">
-      <span class="volume-icon" id="volume-icon" title="Mute" role="button" tabindex="0"></span>
-      <input type="range" id="volume-slider" min="0" max="100" value="100" />
-    </div>
+        <div class="volume-wrapper">
+          <span class="volume-icon" id="volume-icon" title="Mute" role="button" tabindex="0"></span>
+          <input type="range" id="volume-slider" min="0" max="100" value="100" />
+        </div>
+      </section>
 
-    <div class="playlist" id="playlist">
-      <div class="track" data-index="0">1. Noche sintética</div>
-      <div class="track" data-index="1">2. Volveremos a empezar</div>
-      <div class="track" data-index="2">3. Quién llena los shows</div>
-      <div class="track" data-index="3">4. STOP!</div>
-      <div class="track" data-index="4">5. Reza</div>
-      <div class="track" data-index="5">6. De pie</div>
-      <div class="track" data-index="6">7. Quemarlo todo</div>
-      <div class="track" data-index="7">8. Nadie sabe nada</div>
-      <div class="track" data-index="8">9. Lo que no quiero</div>
-      <div class="track" data-index="9">10. La casa del terror</div>
-      <div class="track" data-index="10">11. Tenemos que hablar</div>
+      <!-- COLUMNA DERECHA: SETLIST -->
+      <aside class="setlist-col">
+        <div class="setlist-title">SETLIST</div>
+
+        <div class="playlist" id="playlist">
+          <div class="track" data-index="0">1. Noche sintética</div>
+          <div class="track" data-index="1">2. Volveremos a empezar</div>
+          <div class="track" data-index="2">3. Quién llena los shows</div>
+          <div class="track" data-index="3">4. STOP!</div>
+          <div class="track" data-index="4">5. Reza</div>
+          <div class="track" data-index="5">6. De pie</div>
+          <div class="track" data-index="6">7. Quemarlo todo</div>
+          <div class="track" data-index="7">8. Nadie sabe nada</div>
+          <div class="track" data-index="8">9. Lo que no quiero</div>
+          <div class="track" data-index="9">10. La casa del terror</div>
+          <div class="track" data-index="10">11. Tenemos que hablar</div>
+        </div>
+      </aside>
     </div>
 
     <div class="support">
@@ -990,6 +1176,15 @@
   const playlistEl = $("playlist");
 
   const tracks = Array.from(document.querySelectorAll(".track"));
+
+  /* ✅ NUEVO: inserta badge “EN EMISIÓN” (CRT scanlines) en cada track */
+  tracks.forEach(t=>{
+    t.insertAdjacentHTML("beforeend", `
+      <span class="now" aria-hidden="true">
+        <span class="tag">EN EMISIÓN</span>
+      </span>
+    `);
+  });
 
   let currentIndex = 0;
   let lastVolume = 1;
@@ -1137,11 +1332,7 @@
     const v = clamp01(audio.volume || 0);
     const playing = hasLoaded && !audio.paused;
 
-    // base “vivo” aunque esté en pausa, pero muy bajito
-    // curva para que a partir de ~70% se dispare más
     let g = playing ? Math.pow(0.10 + 0.90 * v, 1.6) : 0.08;
-
-    // extra: si está muy bajito el volumen, que quede casi quieto
     if(playing && v < 0.08) g = 0.10;
 
     document.documentElement.style.setProperty("--g", g.toFixed(3));
@@ -1151,6 +1342,9 @@
     tracks.forEach(t=>t.classList.remove("current"));
     const el = tracks[currentIndex];
     if(el) el.classList.add("current");
+
+    /* (opcional pro) autoscroll en el setlist */
+    if(el) el.scrollIntoView({ block:"nearest", behavior:"smooth" });
   }
 
   function resetProgressUI(){
@@ -1281,7 +1475,6 @@
   }
 
   async function waitCanPlay(){
-    // readyState >= 3: HAVE_FUTURE_DATA
     if(audio.readyState >= 3) return;
     await new Promise((resolve, reject)=>{
       const onCanPlay = ()=>{ cleanup(); resolve(); };
@@ -1373,7 +1566,6 @@
     syncButtons();
     setStatus(shuffleOn ? "Shuffle ON" : "Shuffle OFF");
 
-    // ✅ Preload: si apagas shuffle, precarga; si lo enciendes, lo destruimos
     if(!shuffleOn) primePreload(getNextIndexLinear());
     else destroyPreloader();
   }
@@ -1438,14 +1630,12 @@
     resetProgressUI();
     markCurrent();
 
-    // ✅ Preload desde el arranque si shuffle está off
     if(!shuffleOn) primePreload(getNextIndexLinear());
     else destroyPreloader();
 
     setGlitchFromVolume();
   }
 
-  // ✅ cinturón extra: si suelta fuera, cortamos scrubbing sí o sí
   function endScrub(){
     if(!isScrubbing) return;
     isScrubbing = false;
@@ -1462,15 +1652,12 @@
     loopBtn.addEventListener("click", cycleLoop);
     shareBtn.addEventListener("click", sharePage);
 
-    // ✅ IMPORTANTE: NO hay togglePlay en la tele (crt)
-
     playlistEl.addEventListener("click", (e)=>{
       const item = e.target.closest(".track");
       if(!item) return;
       const idx = Number(item.dataset.index);
       if(!Number.isInteger(idx)) return;
 
-      // Si pinchas la misma pista: toggle play/pause
       if(idx === currentIndex && hasLoaded){
         togglePlay();
         return;
@@ -1478,23 +1665,19 @@
       playTrack(idx);
     });
 
-    // Pointer events
     progressContainer.addEventListener("pointerdown", onPointerDown, { passive:false });
     progressContainer.addEventListener("pointermove", onPointerMove, { passive:false });
     progressContainer.addEventListener("pointerup", onPointerUp);
     progressContainer.addEventListener("pointercancel", onPointerUp);
 
-    // Touch fallback
     progressContainer.addEventListener("touchstart", onTouchStart, { passive:false });
     progressContainer.addEventListener("touchmove", onTouchMove, { passive:false });
     progressContainer.addEventListener("touchend", onTouchEnd, { passive:false });
     progressContainer.addEventListener("touchcancel", onTouchEnd, { passive:false });
 
-    // Preview hover (desktop)
     progressContainer.addEventListener("pointerenter", ()=> { if(audio.duration) showPreview(); });
     progressContainer.addEventListener("pointerleave", ()=> { if(!isScrubbing) hidePreview(); });
 
-    // Soltar fuera / cancelar
     document.addEventListener("pointerup", endScrub, { passive:true });
     document.addEventListener("pointercancel", endScrub, { passive:true });
     document.addEventListener("touchend", endScrub, { passive:true });
@@ -1529,7 +1712,6 @@
       setPlayIcon();
     });
 
-    // ✅ para el glitch del subtítulo cuando suena y cuando cambia volumen
     audio.addEventListener("play", setPlayingClass);
     audio.addEventListener("pause", setPlayingClass);
     audio.addEventListener("ended", setPlayingClass);
@@ -1565,7 +1747,6 @@
       }
     });
 
-    // Teclado
     document.addEventListener("keydown", (e)=>{
       if(e.code === "Space"){
         if(document.activeElement && document.activeElement.tagName === "INPUT") return;
@@ -1576,7 +1757,6 @@
       if(e.code === "ArrowLeft") prevTrack();
     });
 
-    // Si la pestaña se oculta: pausar
     document.addEventListener("visibilitychange", ()=>{
       if(document.hidden){
         if(!audio.paused){
@@ -1645,4 +1825,3 @@
 
 </body>
 </html>
-
