@@ -23,8 +23,19 @@
     --g: .55;
     --gpx: 10px;
 
-    /* ✅ Glitch VHS (0..1) — NO ligado al volumen */
+    /* ✅ VHS constante (no depende del volumen) */
     --gvhs: .62;
+
+    /* ✅ “frame” congelado en pausa (se setea por JS) */
+    --hx: 0px;
+    --hy: 0px;
+    --hblur: 1px;
+    --hr: -1.2px;
+    --hb:  1.6px;
+    --t1: 16%;
+    --t2: 49%;
+    --t3: 73%;
+    --seed: 0;
   }
 
   *{ box-sizing:border-box; }
@@ -199,6 +210,7 @@
     filter: brightness(1.05);
   }
 
+  /* --- anims base --- */
   @keyframes red-flicker{
     0%, 55%, 100% { filter: none; transform: translateZ(0); }
     60% { filter: contrast(1.05); }
@@ -322,7 +334,7 @@
   .crt:hover #cover{ transform: translateY(-2px); animation: crt-glitch .35s steps(2,end); }
 
   /* ===========================
-     VHS GLITCH SOLO EN LA PANTALLA (usa --gvhs)
+     VHS GLITCH SOLO EN LA PANTALLA
      =========================== */
   .tv-screen{
     position:absolute;
@@ -347,12 +359,8 @@
     filter: contrast(1.20) saturate(1.25);
     animation-fill-mode: both;
   }
-  .vhs::before,
-  .vhs::after,
-  .vhs .chroma,
-  .tear{ animation-fill-mode: both; }
 
-  /* PLAY: agresivo */
+  /* PLAY: animado */
   body.playing .vhs{
     opacity: calc(0.18 + (0.82 * var(--gvhs)));
     animation:
@@ -360,10 +368,16 @@
       vhs-vertical-float calc(1.6s - (0.9s * var(--gvhs))) infinite ease-in-out;
   }
 
-  /* PAUSE: “congelado” + micro-vida (muy sutil) */
+  /* ✅ PAUSE: se QUEDA (congelado por “frame” + micro-vida) */
   body.paused .vhs{
-    opacity: calc(0.16 + (0.55 * var(--gvhs)));
-    animation: vhs-hold 6.2s infinite steps(2,end);
+    opacity: calc(0.20 + (0.65 * var(--gvhs)));
+    /* congela “estado” con vars */
+    transform: translate3d(var(--hx), var(--hy), 0);
+    filter:
+      contrast(1.18) saturate(1.22)
+      blur(var(--hblur));
+    /* micro movimiento MUY pequeño para que no “se muera” */
+    animation: vhs-hold-breathe 5.8s infinite steps(2,end);
   }
 
   .vhs::before{
@@ -406,14 +420,16 @@
     animation: vhs-track calc(1.1s - (0.7s * var(--gvhs))) infinite linear;
   }
 
-  /* PAUSE: no se “apaga”: se queda casi fijo pero respirando */
-  body.paused .vhs::before{
-    animation: vhs-noise-hold 1.65s infinite steps(2,end);
-    opacity: calc(0.18 + (0.55 * var(--gvhs)));
-  }
+  /* ✅ PAUSE: congelamos el TRACK pero dejamos un “tick” cada X segundos */
   body.paused .vhs::after{
-    animation: vhs-track-hold 9.5s infinite linear;
-    opacity: calc(0.65 + (0.35 * var(--gvhs)));
+    animation: vhs-track-hold 8.5s infinite steps(2,end);
+    opacity: 0.95;
+  }
+
+  /* ✅ PAUSE: el noise NO se apaga; se vuelve lento */
+  body.paused .vhs::before{
+    animation: vhs-noise-hold 1.4s infinite steps(2,end);
+    opacity: 0.85;
   }
 
   .vhs .chroma{
@@ -427,7 +443,7 @@
     opacity: calc(0.06 + (0.24 * var(--gvhs)));
   }
   body.paused .vhs .chroma{
-    opacity: calc(0.05 + (0.18 * var(--gvhs)));
+    opacity: calc(0.08 + (0.20 * var(--gvhs)));
   }
 
   .vhs .chroma.r{
@@ -443,12 +459,9 @@
     animation: chroma-b calc(0.33s - (0.22s * var(--gvhs))) infinite steps(2,end);
   }
 
-  body.paused .vhs .chroma.r{
-    animation: chroma-hold-r 7.8s infinite steps(2,end);
-  }
-  body.paused .vhs .chroma.b{
-    animation: chroma-hold-b 8.4s infinite steps(2,end);
-  }
+  /* ✅ PAUSE: cromas “fijos” con un mini drift */
+  body.paused .vhs .chroma.r{ transform: translateX(var(--hr)); animation: chroma-hold-r 7.5s infinite steps(2,end); }
+  body.paused .vhs .chroma.b{ transform: translateX(var(--hb)); animation: chroma-hold-b 8.2s infinite steps(2,end); }
 
   .tear{
     position:absolute;
@@ -471,13 +484,17 @@
     opacity: calc(0.08 + (0.40 * var(--gvhs)));
     animation: vhs-tear calc(0.28s - (0.16s * var(--gvhs))) infinite steps(2,end);
   }
+
+  /* ✅ PAUSE: las tears quedan en posiciones “capturadas” */
   body.paused .tear{
-    opacity: calc(0.06 + (0.22 * var(--gvhs)));
-    animation: tear-hold 10.5s infinite steps(2,end);
+    opacity: 0.34;
+    transform: translateX(calc(var(--hx) * -1));
+    animation: tear-hold 9.5s infinite steps(2,end);
   }
 
-  .tear.t2{ top: 48%; height: 8%; }
-  .tear.t3{ top: 72%; height: 12%; }
+  .tear.t1{ top: var(--t1); }
+  .tear.t2{ top: var(--t2); height: 8%; }
+  .tear.t3{ top: var(--t3); height: 12%; }
 
   @keyframes vhs-track{
     0%   { transform: translateY(-10%); }
@@ -520,41 +537,39 @@
     100%{ transform: translateX(calc(1px + (6px * var(--gvhs)))); }
   }
 
-  /* ===== NUEVAS ANIMACIONES “PAUSE HOLD” (micro-vida) ===== */
-  @keyframes vhs-hold{
-    0%   { transform: translate(0,0); }
-    18%  { transform: translate(-0.4px, 0); }
-    22%  { transform: translate(0.6px, -0.3px); }
-    55%  { transform: translate(-0.5px, 0.3px); }
-    58%  { transform: translate(0.3px, 0); }
-    100% { transform: translate(0,0); }
-  }
-  @keyframes vhs-noise-hold{
-    0%   { transform: translateX(0); filter:none; }
-    33%  { transform: translateX(-0.6px); filter: contrast(1.04); }
-    66%  { transform: translateX(0.5px); filter: none; }
-    100% { transform: translateX(0); filter:none; }
+  /* ===== PAUSE: “se queda congelado” pero con micro-vida ===== */
+  @keyframes vhs-hold-breathe{
+    0%   { transform: translate3d(var(--hx), var(--hy), 0); }
+    22%  { transform: translate3d(calc(var(--hx) + .35px), calc(var(--hy) - .25px), 0); }
+    55%  { transform: translate3d(calc(var(--hx) - .30px), calc(var(--hy) + .20px), 0); }
+    78%  { transform: translate3d(calc(var(--hx) + .15px), calc(var(--hy) + .10px), 0); }
+    100% { transform: translate3d(var(--hx), var(--hy), 0); }
   }
   @keyframes vhs-track-hold{
     0%   { transform: translateY(0%); }
-    100% { transform: translateY(120%); }
+    90%  { transform: translateY(0%); }
+    100% { transform: translateY(18%); }
+  }
+  @keyframes vhs-noise-hold{
+    0%   { transform: translateX(0); filter:none; }
+    40%  { transform: translateX(-.6px); filter: contrast(1.04); }
+    80%  { transform: translateX(.5px); filter:none; }
+    100% { transform: translateX(0); filter:none; }
   }
   @keyframes chroma-hold-r{
-    0%   { transform: translateX(-1.2px); }
-    40%  { transform: translateX(-1.8px); }
-    70%  { transform: translateX(-1.1px); }
-    100% { transform: translateX(-1.2px); }
+    0%   { transform: translateX(var(--hr)); }
+    50%  { transform: translateX(calc(var(--hr) - .35px)); }
+    100% { transform: translateX(var(--hr)); }
   }
   @keyframes chroma-hold-b{
-    0%   { transform: translateX(1.4px); }
-    45%  { transform: translateX(2.0px); }
-    75%  { transform: translateX(1.3px); }
-    100% { transform: translateX(1.4px); }
+    0%   { transform: translateX(var(--hb)); }
+    50%  { transform: translateX(calc(var(--hb) + .40px)); }
+    100% { transform: translateX(var(--hb)); }
   }
   @keyframes tear-hold{
-    0%   { transform: translateX(-1px); }
-    50%  { transform: translateX(1.4px); }
-    100% { transform: translateX(-1px); }
+    0%   { opacity:.28; }
+    85%  { opacity:.28; }
+    100% { opacity:.38; }
   }
 
   /* Controls */
@@ -1290,7 +1305,6 @@
     try{ preloader.load(); } catch {}
   }
 
-  // ===== PRELOAD + DECODE IMÁGENES =====
   const imgCache = new Map();
   let imgSwapToken = 0;
 
@@ -1355,35 +1369,11 @@
     coverImg.src = url;
   }
 
-  let pendingSeekPct = null;
-  let rafSeekId = 0;
-
-  function requestSeek(pct){
-    pendingSeekPct = clamp01(pct);
-    if(rafSeekId) return;
-
-    rafSeekId = requestAnimationFrame(() => {
-      rafSeekId = 0;
-      if(pendingSeekPct == null) return;
-      seekToPct(pendingSeekPct);
-      pendingSeekPct = null;
-    });
-  }
-
-  function cancelSeekRAF(){
-    if(rafSeekId){
-      cancelAnimationFrame(rafSeekId);
-      rafSeekId = 0;
-    }
-    pendingSeekPct = null;
-  }
-
   function formatTime(t){
     const m = Math.floor(t / 60);
     const s = Math.floor(t % 60);
     return m + ":" + ("0" + s).slice(-2);
   }
-
   function clamp01(n){ return Math.max(0, Math.min(1, n)); }
 
   function setStatus(msg){
@@ -1411,8 +1401,39 @@
       document.documentElement.style.setProperty("--gvhs", "0");
       return;
     }
-    const gv = audio.paused ? 0.52 : 0.62; // pausa un pelín menos, pero visible
+    const gv = audio.paused ? 0.58 : 0.62;
     document.documentElement.style.setProperty("--gvhs", gv.toFixed(3));
+  }
+
+  /* ✅ Captura “frame VHS” al pausar (esto es LO que faltaba) */
+  function freezeVhsFrame(){
+    const r = (min, max) => (min + Math.random() * (max - min));
+    const root = document.documentElement;
+
+    root.style.setProperty("--hx", `${r(-1.8, 1.8).toFixed(2)}px`);
+    root.style.setProperty("--hy", `${r(-1.2, 1.2).toFixed(2)}px`);
+    root.style.setProperty("--hblur", `${r(0.0, 0.65).toFixed(2)}px`);
+
+    root.style.setProperty("--hr", `${r(-2.2, -0.6).toFixed(2)}px`);
+    root.style.setProperty("--hb", `${r( 0.8,  2.4).toFixed(2)}px`);
+
+    root.style.setProperty("--t1", `${r(10, 22).toFixed(1)}%`);
+    root.style.setProperty("--t2", `${r(42, 56).toFixed(1)}%`);
+    root.style.setProperty("--t3", `${r(64, 80).toFixed(1)}%`);
+
+    root.style.setProperty("--seed", `${Math.floor(r(0, 9999))}`);
+  }
+
+  function clearVhsFrame(){
+    const root = document.documentElement;
+    root.style.setProperty("--hx", "0px");
+    root.style.setProperty("--hy", "0px");
+    root.style.setProperty("--hblur", "0px");
+    root.style.setProperty("--hr", "-1.2px");
+    root.style.setProperty("--hb", "1.6px");
+    root.style.setProperty("--t1", "16%");
+    root.style.setProperty("--t2", "49%");
+    root.style.setProperty("--t3", "73%");
   }
 
   function setPlayingClass(){
@@ -1421,6 +1442,9 @@
 
     document.body.classList.toggle("playing", isPlaying);
     document.body.classList.toggle("paused",  isPaused);
+
+    if(isPaused) freezeVhsFrame();
+    if(isPlaying) clearVhsFrame();
 
     setVhsGlitchState();
     setGlitchFromVolume();
@@ -1515,6 +1539,27 @@
 
   function showPreview(){ progressContainer.classList.add("preview"); }
   function hidePreview(){ progressContainer.classList.remove("preview"); }
+
+  let pendingSeekPct = null;
+  let rafSeekId = 0;
+  function requestSeek(pct){
+    pendingSeekPct = clamp01(pct);
+    if(rafSeekId) return;
+
+    rafSeekId = requestAnimationFrame(() => {
+      rafSeekId = 0;
+      if(pendingSeekPct == null) return;
+      seekToPct(pendingSeekPct);
+      pendingSeekPct = null;
+    });
+  }
+  function cancelSeekRAF(){
+    if(rafSeekId){
+      cancelAnimationFrame(rafSeekId);
+      rafSeekId = 0;
+    }
+    pendingSeekPct = null;
+  }
 
   function onPointerDown(e){
     e.preventDefault();
@@ -1676,6 +1721,7 @@
 
     document.documentElement.style.setProperty("--g", "0");
     document.documentElement.style.setProperty("--gvhs", "0");
+    clearVhsFrame();
   }
 
   function getRandomNextIndex(){
@@ -1850,6 +1896,7 @@
       setPlayIcon();
     });
 
+    /* ✅ aquí está el cambio real: al pausar capturamos frame */
     audio.addEventListener("play", setPlayingClass);
     audio.addEventListener("pause", setPlayingClass);
     audio.addEventListener("ended", setPlayingClass);
