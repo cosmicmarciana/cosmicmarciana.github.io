@@ -3,170 +3,268 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cosmic Marciana · Into the Trees</title>
+  <title>Cosmic Marciana</title>
+
   <link rel="icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
 
   <style>
     :root{
-      --ink:#f6f2e9;
-      --muted:#f0eadf;
+      --neon:#00ff00;
+      --ink:#eaeaea;
+      --muted:#cfcfcf;
 
-      /* paleta hippie / sesentera */
-      --pink:#ff8fd4;
-      --orange:#ffb347;
-      --yellow:#ffe066;
-      --green:#8affc1;
-      --blue:#7ad7ff;
-      --violet:#b388ff;
+      /* VHS */
+      --g: .55;
+      --gpx: 10px;
     }
 
     *{ box-sizing:border-box; }
 
     body{
       margin:0;
+      font-family:Arial, sans-serif;
+      color:var(--ink);
       min-height:100vh;
       display:flex;
-      align-items:center;
       justify-content:center;
-      padding:28px 14px;
-      overflow:hidden;
-      color:var(--ink);
-      font-family:Arial, sans-serif;
-      background:#000;
-    }
+      padding:32px 14px;
+      overflow-x:hidden;
 
-    /* ===== LIQUID LIGHT SHOW ===== */
-    .liquid{
-      position:fixed;
-      inset:-30%;
-      z-index:0;
-      pointer-events:none;
-      filter: blur(28px) saturate(1.25);
-      animation: slow-rotate 90s infinite linear;
-    }
-
-    .liquid::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:
-        radial-gradient(circle at 20% 30%, var(--pink), transparent 40%),
-        radial-gradient(circle at 70% 25%, var(--orange), transparent 42%),
-        radial-gradient(circle at 30% 70%, var(--green), transparent 45%),
-        radial-gradient(circle at 75% 65%, var(--blue), transparent 44%),
-        radial-gradient(circle at 50% 50%, var(--violet), transparent 48%),
-        radial-gradient(circle at 55% 40%, var(--yellow), transparent 38%);
-      animation: liquid-drift 22s infinite ease-in-out;
-    }
-
-    .liquid::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:
-        radial-gradient(circle at 40% 60%, rgba(255,255,255,.18), transparent 42%),
-        radial-gradient(circle at 60% 45%, rgba(255,255,255,.12), transparent 46%);
-      mix-blend-mode: overlay;
-      animation: liquid-drift-alt 26s infinite ease-in-out;
-    }
-
-    /* grano analógico */
-    .grain{
-      position:fixed;
-      inset:0;
-      z-index:1;
-      pointer-events:none;
       background:
         repeating-radial-gradient(
-          circle,
-          rgba(255,255,255,.04) 0 1px,
-          rgba(0,0,0,0) 1px 3px
+          circle at 30% 40%,
+          rgba(255,255,255,.04) 0,
+          rgba(255,255,255,.04) 1px,
+          transparent 2px,
+          transparent 7px
+        ),
+        repeating-radial-gradient(
+          circle at 70% 60%,
+          rgba(255,255,255,.025) 0,
+          rgba(255,255,255,.025) 1px,
+          transparent 1px,
+          transparent 4px
+        ),
+        linear-gradient(
+          180deg,
+          rgba(255,255,255,.06),
+          rgba(0,0,0,.08)
+        ),
+        linear-gradient(
+          180deg,
+          #1a1412,
+          #0e0a09 50%,
+          #050303
         );
-      opacity:.15;
-      mix-blend-mode: overlay;
     }
 
-    /* viñeta suave */
-    .vignette{
-      position:fixed;
-      inset:0;
-      z-index:2;
-      pointer-events:none;
-      background:
-        radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 45%, rgba(0,0,0,.35) 80%);
-    }
-
-    /* ===== CONTENIDO ===== */
     .wrap{
-      position:relative;
-      z-index:5;
-      text-align:center;
+      width:100%;
       max-width:760px;
+      text-align:center;
+      position: relative;
     }
 
+    /* ===== CRT ===== */
+    .crt{
+      position:relative;
+      width:fit-content;
+      margin:0 auto 22px;
+      isolation:isolate;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .hero{
+      width:100%;
+      max-width:420px;
+      display:block;
+      filter:drop-shadow(0 0 22px rgba(0,0,0,.85));
+      animation: crt-flicker 4.5s infinite;
+      will-change: transform, filter;
+      -webkit-user-drag:none;
+    }
+
+    .crt::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255,255,255,.025),
+          rgba(255,255,255,.025) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+      pointer-events:none;
+      mix-blend-mode:overlay;
+      opacity:.25;
+      z-index:2;
+    }
+
+    .crt:hover .hero{
+      animation: crt-glitch .35s steps(2,end);
+    }
+
+    /* ===== TEXTO ===== */
     .text{
-      font-size:16px;
-      line-height:1.7;
+      font-size:15px;
+      line-height:1.55;
+      margin:0 auto 18px;
+      max-width:50ch;
       color:var(--muted);
-      text-shadow: 0 0 22px rgba(0,0,0,.45);
     }
 
-    .into{
+    /* ===== WHISPER ===== */
+    .whisper{
+      position:relative;
       display:inline-block;
-      font-weight:700;
-      letter-spacing:.22em;
+      font-size:12px;
+      opacity:.72;
+      letter-spacing:.20em;
       text-transform:lowercase;
-      color:var(--ink);
+      margin:-6px auto 6px;
+      color:var(--muted);
+      user-select:none;
+      animation: whisper-jitter 1.35s infinite steps(2,end);
     }
 
-    .sig{
-      margin-top:22px;
-      font-size:11.5px;
-      opacity:.65;
-      letter-spacing:.18em;
-      text-transform:uppercase;
-      color:var(--muted);
+    .whisper::before,
+    .whisper::after{
+      content: attr(data-text);
+      position:absolute;
+      inset:0;
+    }
+
+    .whisper::before{
+      color: rgba(0,255,0,.75);
+      transform: translate(1px,0);
+    }
+
+    .whisper::after{
+      color: rgba(255,0,0,.65);
+      transform: translate(-1px,0);
+    }
+
+    /* ===== ÁRBOL SECRETO ===== */
+    .secret-tree{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      margin:-6px auto 14px;
+      opacity:.22;
+      transform: translateY(1px);
+      transition:.25s ease;
+      text-decoration:none;
+      user-select:none;
+    }
+
+    .secret-tree:hover{
+      opacity:.55;
+      transform: translateY(0);
+    }
+
+    .secret-tree svg{
+      width:14px;
+      height:14px;
+      fill:none;
+      stroke: var(--ink);
+      stroke-width:1.4;
+      filter: drop-shadow(0 0 10px rgba(255,176,0,.10));
+    }
+
+    /* ===== CTA ===== */
+    .cta{ margin-bottom:18px; }
+
+    .btn{
+      display:inline-block;
+      padding:16px 28px;
+      font-size:16px;
+      border-radius:999px;
+      text-decoration:none;
+      background:var(--neon);
+      color:#000;
+      box-shadow:0 0 22px rgba(0,255,0,.3);
+      transition:.2s ease;
+      white-space:normal;
+      line-height:1.25;
+    }
+
+    .btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 0 34px rgba(0,255,0,.45);
     }
 
     /* ===== ANIMACIONES ===== */
-    @keyframes liquid-drift{
-      0%,100%{ transform: translate(0,0) scale(1); }
-      50%{ transform: translate(-6%, 4%) scale(1.08); }
+    @keyframes crt-flicker{
+      0%{filter:brightness(1)}
+      50%{filter:brightness(.97)}
+      100%{filter:brightness(1)}
     }
 
-    @keyframes liquid-drift-alt{
-      0%,100%{ transform: translate(0,0) scale(1); }
-      50%{ transform: translate(5%, -6%) scale(1.1); }
+    @keyframes crt-glitch{
+      0%{transform:none}
+      50%{transform:translateX(1px)}
+      100%{transform:none}
     }
 
-    @keyframes slow-rotate{
-      0%{ transform: rotate(0deg); }
-      100%{ transform: rotate(360deg); }
+    @keyframes whisper-jitter{
+      0%{transform:none}
+      50%{transform:translate(.5px,-.5px)}
+      100%{transform:none}
+    }
+
+    @media (max-width:480px){
+      .btn{
+        width:100%;
+        max-width:26ch;
+        padding:16px 18px;
+        font-size:15px;
+      }
     }
 
     @media (prefers-reduced-motion: reduce){
-      .liquid, .liquid::before, .liquid::after{
-        animation:none !important;
-      }
+      *{ animation:none !important; }
     }
   </style>
 </head>
 
 <body>
-  <div class="liquid" aria-hidden="true"></div>
-  <div class="grain" aria-hidden="true"></div>
-  <div class="vignette" aria-hidden="true"></div>
-
   <main class="wrap">
+
+    <div class="crt" aria-label="Televisor CRT">
+      <img src="tv.png" alt="Televisor CRT con Cosmic Marciana – La casa del terror" class="hero" />
+    </div>
+
     <p class="text">
-      <span class="into">into the trees.</span><br>
-      todo se vuelve suave.<br>
-      no hay prisa.
+      Señales rotas. Pop electrónico.<br />
+      Transmisiones desde otra dimensión.
     </p>
 
-    <div class="sig">
-      COSMIC MARCIANA 2026 · LOVE · PEACE · SIGNAL
+    <div class="whisper" data-text="transmisión en curso…">
+      transmisión en curso…
     </div>
+
+    <!-- 🌲 ÁRBOL ESCONDIDO -->
+    <a class="secret-tree" href="bosque.html" aria-label="into the trees">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2l5 7h-3l4 6h-4l3 5H7l3-5H6l4-6H7l5-7z"/>
+        <path d="M11 14h2v8h-2z"/>
+      </svg>
+    </a>
+
+    <div class="cta">
+      <a class="btn" href="player.html">
+        ¿te atreves a entrar en la casa del terror?
+      </a>
+    </div>
+
   </main>
 </body>
 </html>
