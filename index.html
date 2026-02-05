@@ -16,9 +16,7 @@
       --neon:#00ff00;
       --ink:#eaeaea;
       --muted:#cfcfcf;
-
-      /* VHS */
-      --g: .55;
+      --g:.55;
     }
 
     *{ box-sizing:border-box; }
@@ -32,33 +30,11 @@
       justify-content:center;
       padding:32px 14px;
       overflow-x:hidden;
-
       background:
-        repeating-radial-gradient(
-          circle at 30% 40%,
-          rgba(255,255,255,.04) 0,
-          rgba(255,255,255,.04) 1px,
-          transparent 2px,
-          transparent 7px
-        ),
-        repeating-radial-gradient(
-          circle at 70% 60%,
-          rgba(255,255,255,.025) 0,
-          rgba(255,255,255,.025) 1px,
-          transparent 1px,
-          transparent 4px
-        ),
-        linear-gradient(
-          180deg,
-          rgba(255,255,255,.06),
-          rgba(0,0,0,.08)
-        ),
-        linear-gradient(
-          180deg,
-          #1a1412,
-          #0e0a09 50%,
-          #050303
-        );
+        repeating-radial-gradient(circle at 30% 40%, rgba(255,255,255,.04) 0 1px, transparent 2px 7px),
+        repeating-radial-gradient(circle at 70% 60%, rgba(255,255,255,.025) 0 1px, transparent 1px 4px),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.08)),
+        linear-gradient(180deg, #1a1412, #0e0a09 50%, #050303);
     }
 
     .wrap{
@@ -77,7 +53,6 @@
       user-select:none;
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
-      z-index:2;
     }
 
     .hero{
@@ -93,40 +68,30 @@
       content:"";
       position:absolute;
       inset:0;
-      background:
-        repeating-linear-gradient(
-          to bottom,
-          rgba(255,255,255,.025),
-          rgba(255,255,255,.025) 1px,
-          transparent 1px,
-          transparent 3px
-        );
+      background:repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.025),
+        rgba(255,255,255,.025) 1px,
+        transparent 1px,
+        transparent 3px
+      );
       pointer-events:none;
       mix-blend-mode:overlay;
       opacity:.25;
       z-index:2;
     }
 
-    .crt:hover .hero{
-      animation: crt-glitch .35s steps(2,end);
-    }
-
-    /* ===== SETA SECRETA (FUERA DE LA TV) ===== */
+    /* ===== SETA SECRETA (PEGATINA EN LA TV) ===== */
     .secret-shroom{
       position:absolute;
-      right: calc(50% - 210px);
-      top: calc(50% - 70px);
-
+      right:10%;
+      bottom:10.5%;
       display:inline-flex;
-      align-items:center;
-      justify-content:center;
-
       opacity:.25;
       transform: rotate(-6deg);
       transition:.25s ease;
-      text-decoration:none;
-      user-select:none;
       z-index:5;
+      text-decoration:none;
     }
 
     .secret-shroom:hover{
@@ -135,26 +100,41 @@
     }
 
     .secret-shroom svg{
-      width:30px;
-      height:30px;
+      width:28px;
+      height:28px;
       fill:none;
-      stroke: var(--ink);
+      stroke:var(--ink);
       stroke-width:2.2;
       stroke-linecap:round;
       stroke-linejoin:round;
       filter:
-        drop-shadow(0 0 6px rgba(255,176,0,.22))
-        drop-shadow(0 0 14px rgba(255,74,0,.14));
+        drop-shadow(0 0 6px rgba(255,176,0,.18))
+        drop-shadow(0 0 12px rgba(255,74,0,.10));
     }
 
-    .secret-shroom:hover svg{
-      filter:
-        drop-shadow(0 0 10px rgba(255,176,0,.35))
-        drop-shadow(0 0 20px rgba(255,74,0,.22))
-        drop-shadow(0 0 12px rgba(0,255,0,.18));
+    /* ===== VHS SCREEN ===== */
+    .tv-screen{
+      position:absolute;
+      left:17.95%;
+      top:23.1%;
+      width:62.1%;
+      height:46.05%;
+      overflow:hidden;
+      pointer-events:none;
+      z-index:3;
+      border-radius:10px;
     }
 
-    /* ===== TEXTO ===== */
+    .vhs{
+      position:absolute;
+      inset:-11%;
+      opacity:0;
+      mix-blend-mode:screen;
+    }
+
+    body.tuning .vhs{ opacity:.5; }
+
+    /* ===== TEXT ===== */
     .text{
       font-size:15px;
       line-height:1.55;
@@ -166,13 +146,12 @@
     .whisper{
       font-size:12px;
       opacity:.72;
-      letter-spacing:.20em;
+      letter-spacing:.2em;
       text-transform:lowercase;
-      color:var(--muted);
       margin-bottom:22px;
+      color:var(--muted);
     }
 
-    /* ===== CTA ===== */
     .btn{
       display:inline-block;
       padding:16px 28px;
@@ -190,58 +169,75 @@
       box-shadow:0 0 34px rgba(0,255,0,.45);
     }
 
-    /* ===== ANIM ===== */
     @keyframes crt-flicker{
-      0%{filter:brightness(1)}
+      0%,100%{filter:brightness(1)}
       50%{filter:brightness(.97)}
-      100%{filter:brightness(1)}
-    }
-
-    @keyframes crt-glitch{
-      0%{transform:none}
-      50%{transform:translateX(1px)}
-      100%{transform:none}
-    }
-
-    @media (max-width:520px){
-      .secret-shroom{
-        right: 18px;
-        top: 110px;
-      }
     }
   </style>
 </head>
 
 <body>
-  <main class="wrap">
+<main class="wrap">
 
-    <!-- 🍄 SETA SECRETA (CLICABLE EN MÓVIL) -->
+  <div class="crt" aria-label="Televisor CRT">
+
+    <img src="tv.png" alt="Televisor CRT con Cosmic Marciana" class="hero" />
+
+    <!-- 🍄 SETA SECRETA -->
     <a class="secret-shroom" href="bosque.html" aria-label="entre los árboles">
       <svg viewBox="0 0 64 64" aria-hidden="true">
         <path d="M8 30C10 15 22 7 32 7s22 8 24 23H8z"/>
-        <path d="M14 28c6-6 30-6 36 0" />
-        <path d="M18 23c6-5 22-5 28 0" />
+        <path d="M14 28c6-6 30-6 36 0"/>
+        <path d="M18 23c6-5 22-5 28 0"/>
         <circle cx="22" cy="20" r="2.2"/>
         <circle cx="32" cy="17.5" r="1.8"/>
-        <circle cx="42" cy="20.5" r="2.0"/>
+        <circle cx="42" cy="20.5" r="2"/>
         <path d="M24 30v16c0 7 4 11 8 11s8-4 8-11V30"/>
         <path d="M20 57h24"/>
       </svg>
     </a>
 
-    <div class="crt" aria-label="Televisor CRT">
-      <img src="tv.png" alt="Televisor CRT con Cosmic Marciana – La casa del terror" class="hero" />
+    <div class="tv-screen">
+      <div class="vhs"></div>
     </div>
 
-    <p class="text">
-      Señales rotas. Pop electrónico.<br>
-      Transmisiones desde otra dimensión.
-    </p>
+  </div>
 
-    <div class="whisper">transmisión en curso…</div>
+  <p class="text">
+    Señales rotas. Pop electrónico.<br>
+    Transmisiones desde otra dimensión.
+  </p>
 
-    <a class="btn" href="player.html">¿Te atreves a entrar en la casa del terror?</a>
+  <div class="whisper">transmisión en curso…</div>
 
-  </main>
+  <a class="btn" href="player.html">¿Te atreves a entrar en la casa del terror?</a>
+
+</main>
+
+<script>
+(() => {
+  const tv = document.querySelector(".crt");
+  let touchMode = false;
+  let running = false;
+
+  function setGlitch(on){
+    document.body.classList.toggle("tuning", on);
+  }
+
+  function toggle(){
+    running = !running;
+    setGlitch(running);
+  }
+
+  tv.addEventListener("touchstart", (e) => {
+    if (e.target.closest(".secret-shroom")) return;
+    touchMode = true;
+    e.preventDefault();
+    toggle();
+  }, { passive:false });
+
+})();
+</script>
+
 </body>
 </html>
