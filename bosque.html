@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Entre los árboles</title>
+  <title>Cosmic Marciana · Into the Trees</title>
   <link rel="icon" href="favicon.ico">
 
   <style>
@@ -109,6 +109,7 @@
       line-height:1.7;
       color:var(--muted);
       text-shadow: 0 0 22px rgba(0,0,0,.45);
+      margin:0;
     }
 
     .into{
@@ -128,6 +129,43 @@
       color:var(--muted);
     }
 
+    /* ===== SALIDA (SUSURRO) ===== */
+    .exit{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform: translateX(-50%);
+      z-index:6;
+      opacity:.35;
+      transition:.25s ease;
+      user-select:none;
+    }
+
+    .exit:hover{ opacity:.75; }
+
+    .exit a{
+      color:var(--muted);
+      text-decoration:none;
+      font-size:11px;
+      letter-spacing:.22em;
+      text-transform:lowercase;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.16);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      box-shadow: 0 0 20px rgba(0,0,0,.18);
+      transition:.25s ease;
+      display:inline-block;
+    }
+
+    .exit a:hover{
+      border-color: rgba(255,255,255,.35);
+      box-shadow: 0 0 26px rgba(0,0,0,.28);
+      transform: translateY(-1px);
+    }
+
     /* ===== ANIMACIONES ===== */
     @keyframes liquid-drift{
       0%,100%{ transform: translate(0,0) scale(1); }
@@ -145,9 +183,7 @@
     }
 
     @media (prefers-reduced-motion: reduce){
-      .liquid, .liquid::before, .liquid::after{
-        animation:none !important;
-      }
+      .liquid, .liquid::before, .liquid::after{ animation:none !important; }
     }
   </style>
 </head>
@@ -159,7 +195,7 @@
 
   <main class="wrap">
     <p class="text">
-      <span class="into">entre los árboles.</span><br>
+      <span class="into">into the trees.</span><br>
       todo se vuelve suave.<br>
       no hay prisa.
     </p>
@@ -168,6 +204,10 @@
       COSMIC MARCIANA 2026 · LOVE · PEACE · SIGNAL
     </div>
   </main>
+
+  <!-- botón de vuelta (sutil) -->
+  <div class="exit" aria-label="volver">
+    <a href="index.html">back to the dial</a>
+  </div>
 </body>
 </html>
-
