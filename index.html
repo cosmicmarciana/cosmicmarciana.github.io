@@ -16,7 +16,10 @@
       --neon:#00ff00;
       --ink:#eaeaea;
       --muted:#cfcfcf;
-      --g:.55;
+
+      /* VHS */
+      --g: .55;
+      --gpx: 10px;
     }
 
     *{ box-sizing:border-box; }
@@ -30,17 +33,40 @@
       justify-content:center;
       padding:32px 14px;
       overflow-x:hidden;
+
       background:
-        repeating-radial-gradient(circle at 30% 40%, rgba(255,255,255,.04) 0 1px, transparent 2px 7px),
-        repeating-radial-gradient(circle at 70% 60%, rgba(255,255,255,.025) 0 1px, transparent 1px 4px),
-        linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.08)),
-        linear-gradient(180deg, #1a1412, #0e0a09 50%, #050303);
+        repeating-radial-gradient(
+          circle at 30% 40%,
+          rgba(255,255,255,.04) 0,
+          rgba(255,255,255,.04) 1px,
+          transparent 2px,
+          transparent 7px
+        ),
+        repeating-radial-gradient(
+          circle at 70% 60%,
+          rgba(255,255,255,.025) 0,
+          rgba(255,255,255,.025) 1px,
+          transparent 1px,
+          transparent 4px
+        ),
+        linear-gradient(
+          180deg,
+          rgba(255,255,255,.06),
+          rgba(0,0,0,.08)
+        ),
+        linear-gradient(
+          180deg,
+          #1a1412,
+          #0e0a09 50%,
+          #050303
+        );
     }
 
     .wrap{
       width:100%;
       max-width:760px;
       text-align:center;
+      position: relative;
     }
 
     /* ===== CRT ===== */
@@ -60,17 +86,26 @@
       display:block;
       filter:drop-shadow(0 0 22px rgba(0,0,0,.85));
       animation: crt-flicker 4.5s infinite;
+      will-change: transform, filter;
+      -webkit-user-drag:none;
     }
 
     .crt::before{
       content:"";
       position:absolute;
       inset:0;
-      background:repeating-linear-gradient(to bottom, rgba(255,255,255,.025) 0 1px, transparent 1px 3px);
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255,255,255,.025),
+          rgba(255,255,255,.025) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+      pointer-events:none;
       mix-blend-mode:overlay;
       opacity:.25;
       z-index:2;
-      pointer-events:none;
     }
 
     .crt:hover .hero{
@@ -94,7 +129,7 @@
       opacity:.72;
       letter-spacing:.20em;
       text-transform:lowercase;
-      margin:-6px auto 10px;
+      margin:-6px auto 6px;
       color:var(--muted);
       user-select:none;
       animation: whisper-jitter 1.35s infinite steps(2,end);
@@ -108,66 +143,56 @@
     }
 
     .whisper::before{
-      color: rgba(0,255,0,.65);
+      color: rgba(0,255,0,.75);
       transform: translate(1px,0);
     }
 
     .whisper::after{
-      color: rgba(255,0,0,.55);
+      color: rgba(255,0,0,.65);
       transform: translate(-1px,0);
     }
 
-    /* ===== BOSQUE COMO ERROR ===== */
-    .forest-glitch{
-      display:inline-block;
-      margin-top:2px;
-      font-size:11px;
-      letter-spacing:.22em;
-      text-transform:lowercase;
-      opacity:.45;
-      animation: whisper-jitter 1.6s infinite steps(2,end);
-    }
-
-    .forest-glitch a{
-      color:var(--muted);
+    /* ===== ÁRBOL SECRETO ===== */
+    .secret-tree{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      margin:-6px auto 14px;
+      opacity:.22;
+      transform: translateY(1px);
+      transition:.25s ease;
       text-decoration:none;
-      position:relative;
+      user-select:none;
     }
 
-    .forest-glitch a::before,
-    .forest-glitch a::after{
-      content: attr(data-text);
-      position:absolute;
-      inset:0;
-      pointer-events:none;
+    .secret-tree:hover{
+      opacity:.55;
+      transform: translateY(0);
     }
 
-    .forest-glitch a::before{
-      color: rgba(0,255,0,.55);
-      transform: translate(1px,0);
-      opacity:.6;
-    }
-
-    .forest-glitch a::after{
-      color: rgba(255,0,0,.45);
-      transform: translate(-1px,0);
-      opacity:.6;
+    .secret-tree svg{
+      width:14px;
+      height:14px;
+      fill:none;
+      stroke: var(--ink);
+      stroke-width:1.4;
+      filter: drop-shadow(0 0 10px rgba(255,176,0,.10));
     }
 
     /* ===== CTA ===== */
-    .cta{ margin:18px 0 0; }
+    .cta{ margin-bottom:18px; }
 
     .btn{
       display:inline-block;
-      padding:14px 18px;
-      font-size:15px;
+      padding:16px 28px;
+      font-size:16px;
       border-radius:999px;
       text-decoration:none;
       background:var(--neon);
       color:#000;
       box-shadow:0 0 22px rgba(0,255,0,.3);
       transition:.2s ease;
-      max-width:34ch;
+      white-space:normal;
       line-height:1.25;
     }
 
@@ -176,6 +201,7 @@
       box-shadow:0 0 34px rgba(0,255,0,.45);
     }
 
+    /* ===== ANIMACIONES ===== */
     @keyframes crt-flicker{
       0%{filter:brightness(1)}
       50%{filter:brightness(.97)}
@@ -198,8 +224,13 @@
       .btn{
         width:100%;
         max-width:26ch;
-        font-size:14.5px;
+        padding:16px 18px;
+        font-size:15px;
       }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      *{ animation:none !important; }
     }
   </style>
 </head>
@@ -207,12 +238,12 @@
 <body>
   <main class="wrap">
 
-    <div class="crt">
-      <img src="tv.png" alt="Televisor CRT con Cosmic Marciana" class="hero" />
+    <div class="crt" aria-label="Televisor CRT">
+      <img src="tv.png" alt="Televisor CRT con Cosmic Marciana – La casa del terror" class="hero" />
     </div>
 
     <p class="text">
-      Señales rotas. Pop electrónico.<br>
+      Señales rotas. Pop electrónico.<br />
       Transmisiones desde otra dimensión.
     </p>
 
@@ -220,16 +251,17 @@
       transmisión en curso…
     </div>
 
-    <!-- 👁️ Interferencia -->
-    <div class="forest-glitch">
-      <a href="bosque.html" data-text="corres hacia el bosque">
-        corres hacia el bosque
-      </a>
-    </div>
+    <!-- 🌲 ÁRBOL ESCONDIDO -->
+    <a class="secret-tree" href="bosque.html" aria-label="into the trees">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2l5 7h-3l4 6h-4l3 5H7l3-5H6l4-6H7l5-7z"/>
+        <path d="M11 14h2v8h-2z"/>
+      </svg>
+    </a>
 
     <div class="cta">
       <a class="btn" href="player.html">
-        te atreves a entrar en la casa del terror
+        ¿te atreves a entrar en la casa del terror?
       </a>
     </div>
 
