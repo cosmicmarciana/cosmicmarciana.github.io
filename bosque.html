@@ -8,16 +8,16 @@
 
   <style>
     :root{
-      --ink:#eaeaea;
-      --muted:#cfcfcf;
+      --ink:#f6f2e9;
+      --muted:#f0eadf;
 
-      /* 70s twilight + naranja mecánica (controlado) */
-      --bg0:#040206;
-      --bg1:#14081f;
-      --bg2:#1a0c2f;
-      --amber:#ffb000;
-      --orange:#ff4a00;
-      --mars:#00ff66;
+      /* paleta hippie / sesentera */
+      --pink:#ff8fd4;
+      --orange:#ffb347;
+      --yellow:#ffe066;
+      --green:#8affc1;
+      --blue:#7ad7ff;
+      --violet:#b388ff;
     }
 
     *{ box-sizing:border-box; }
@@ -32,204 +32,141 @@
       overflow:hidden;
       color:var(--ink);
       font-family:Arial, sans-serif;
-      background: radial-gradient(circle at 40% 30%, var(--bg2), var(--bg0) 68%);
+      background:#000;
     }
 
-    /* ===== “SEÑAL ROTA” (capas) ===== */
-    .field{
+    /* ===== LIQUID LIGHT SHOW ===== */
+    .liquid{
       position:fixed;
-      inset:-12%;
+      inset:-30%;
       z-index:0;
       pointer-events:none;
-      transform: translateZ(0);
-      filter: contrast(1.08) saturate(1.05);
+      filter: blur(28px) saturate(1.25);
+      animation: slow-rotate 90s infinite linear;
     }
 
-    /* base: manchas twilight + halo ámbar */
-    .field::before{
+    .liquid::before{
       content:"";
       position:absolute;
       inset:0;
       background:
-        radial-gradient(900px 650px at 65% 70%, rgba(255,74,0,.12), transparent 62%),
-        radial-gradient(1100px 750px at 30% 30%, rgba(255,176,0,.10), transparent 62%),
-        radial-gradient(900px 700px at 55% 45%, rgba(0,255,102,.06), transparent 66%),
-        linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.10)),
-        linear-gradient(180deg, var(--bg1), var(--bg0) 60%, #020103);
-      animation: drift 9.5s infinite ease-in-out;
+        radial-gradient(circle at 20% 30%, var(--pink), transparent 40%),
+        radial-gradient(circle at 70% 25%, var(--orange), transparent 42%),
+        radial-gradient(circle at 30% 70%, var(--green), transparent 45%),
+        radial-gradient(circle at 75% 65%, var(--blue), transparent 44%),
+        radial-gradient(circle at 50% 50%, var(--violet), transparent 48%),
+        radial-gradient(circle at 55% 40%, var(--yellow), transparent 38%);
+      animation: liquid-drift 22s infinite ease-in-out;
     }
 
-    /* bandas verticales tipo “tuning / tracking” */
-    .bands{
+    .liquid::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 40% 60%, rgba(255,255,255,.18), transparent 42%),
+        radial-gradient(circle at 60% 45%, rgba(255,255,255,.12), transparent 46%);
+      mix-blend-mode: overlay;
+      animation: liquid-drift-alt 26s infinite ease-in-out;
+    }
+
+    /* grano analógico */
+    .grain{
       position:fixed;
       inset:0;
       z-index:1;
       pointer-events:none;
-      opacity:.65;
-      mix-blend-mode: screen;
       background:
-        repeating-linear-gradient(
-          90deg,
-          rgba(255,176,0,.06) 0px,
-          rgba(255,176,0,.06) 1px,
-          rgba(0,0,0,0) 7px,
-          rgba(255,74,0,.04) 9px,
-          rgba(0,0,0,0) 16px
+        repeating-radial-gradient(
+          circle,
+          rgba(255,255,255,.04) 0 1px,
+          rgba(0,0,0,0) 1px 3px
         );
-      animation: bands-shift 3.2s infinite steps(2,end);
-      filter: blur(.2px);
-    }
-
-    /* “roll” horizontal: barra que sube como CRT desajustada */
-    .roll{
-      position:fixed;
-      left:-10%;
-      right:-10%;
-      top:-30%;
-      height:22%;
-      z-index:2;
-      pointer-events:none;
-      background: linear-gradient(
-        to bottom,
-        rgba(0,0,0,0),
-        rgba(255,176,0,.10),
-        rgba(255,74,0,.14),
-        rgba(255,176,0,.10),
-        rgba(0,0,0,0)
-      );
-      filter: blur(8px);
-      opacity:.85;
-      mix-blend-mode: screen;
-      animation: roll-up 2.9s infinite linear;
-    }
-
-    /* scanlines + grano */
-    .scan{
-      position:fixed;
-      inset:0;
-      z-index:3;
-      pointer-events:none;
-      background:
-        repeating-linear-gradient(
-          to bottom,
-          rgba(255,255,255,.040) 0px,
-          rgba(255,255,255,.040) 1px,
-          rgba(0,0,0,0) 3px
-        ),
-        repeating-linear-gradient(
-          90deg,
-          rgba(255,255,255,.02) 0px,
-          rgba(255,255,255,.02) 1px,
-          rgba(0,0,0,0) 6px
-        );
+      opacity:.15;
       mix-blend-mode: overlay;
-      opacity:.20;
-      animation: scan-drift 2.6s infinite linear;
     }
 
-    /* viñeta cine */
+    /* viñeta suave */
     .vignette{
       position:fixed;
       inset:0;
-      z-index:9;
+      z-index:2;
       pointer-events:none;
       background:
-        radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 38%, rgba(0,0,0,.55) 78%, rgba(0,0,0,.88) 100%),
-        linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.18) 35%, rgba(0,0,0,.72));
+        radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 45%, rgba(0,0,0,.35) 80%);
     }
 
-    /* ===== TEXTO ===== */
+    /* ===== CONTENIDO ===== */
     .wrap{
-      width:100%;
-      max-width:760px;
-      text-align:center;
       position:relative;
-      z-index:10;
+      z-index:5;
+      text-align:center;
+      max-width:760px;
     }
 
     .text{
-      font-size:15px;
-      line-height:1.65;
-      margin:0 auto 0;
-      max-width:52ch;
+      font-size:16px;
+      line-height:1.7;
       color:var(--muted);
-      text-shadow: 0 0 14px rgba(0,0,0,.60);
+      text-shadow: 0 0 22px rgba(0,0,0,.45);
     }
 
     .into{
       display:inline-block;
-      color:var(--ink);
-      letter-spacing:.20em;
-      text-transform:lowercase;
       font-weight:700;
-      opacity:.95;
-      text-shadow:
-        1px 0 rgba(255,74,0,.22),
-        -1px 0 rgba(0,255,102,.12);
-      animation: microglitch 4.4s infinite steps(2,end);
+      letter-spacing:.22em;
+      text-transform:lowercase;
+      color:var(--ink);
     }
 
     .sig{
-      margin-top:18px;
-      font-size:11px;
-      opacity:.55;
-      letter-spacing:.16em;
+      margin-top:22px;
+      font-size:11.5px;
+      opacity:.65;
+      letter-spacing:.18em;
       text-transform:uppercase;
       color:var(--muted);
-      user-select:none;
     }
 
-    /* ===== ANIM ===== */
-    @keyframes drift{
+    /* ===== ANIMACIONES ===== */
+    @keyframes liquid-drift{
       0%,100%{ transform: translate(0,0) scale(1); }
-      50%{ transform: translate(-8px, 10px) scale(1.015); }
+      50%{ transform: translate(-6%, 4%) scale(1.08); }
     }
 
-    @keyframes bands-shift{
-      0%{ transform: translateX(0); }
-      50%{ transform: translateX(-8px); }
-      100%{ transform: translateX(0); }
+    @keyframes liquid-drift-alt{
+      0%,100%{ transform: translate(0,0) scale(1); }
+      50%{ transform: translate(5%, -6%) scale(1.1); }
     }
 
-    @keyframes roll-up{
-      0%{ transform: translateY(0); }
-      100%{ transform: translateY(780%); }
-    }
-
-    @keyframes scan-drift{
-      0%{ transform: translateY(0); }
-      100%{ transform: translateY(-18px); }
-    }
-
-    @keyframes microglitch{
-      0%,92%{ transform:none; }
-      93%{ transform:translateX(1px); }
-      94%{ transform:none; }
-      97%{ transform:translateX(-1px); }
-      100%{ transform:none; }
+    @keyframes slow-rotate{
+      0%{ transform: rotate(0deg); }
+      100%{ transform: rotate(360deg); }
     }
 
     @media (prefers-reduced-motion: reduce){
-      .field::before, .bands, .roll, .scan, .into{ animation:none !important; }
+      .liquid, .liquid::before, .liquid::after{
+        animation:none !important;
+      }
     }
   </style>
 </head>
 
 <body>
-  <div class="field" aria-hidden="true"></div>
-  <div class="bands" aria-hidden="true"></div>
-  <div class="roll" aria-hidden="true"></div>
-  <div class="scan" aria-hidden="true"></div>
+  <div class="liquid" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
   <div class="vignette" aria-hidden="true"></div>
 
   <main class="wrap">
     <p class="text">
       <span class="into">into the trees.</span><br>
-      la emisión se deshilacha.<br>
-      nadie está llamando.
+      todo se vuelve suave.<br>
+      no hay prisa.
     </p>
 
-    <div class="sig">COSMIC MARCIANA 2026 · ZONA DE BAJA SEÑAL</div>
+    <div class="sig">
+      COSMIC MARCIANA 2026 · LOVE · PEACE · SIGNAL
+    </div>
   </main>
 </body>
 </html>
