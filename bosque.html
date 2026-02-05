@@ -129,7 +129,7 @@
       color:var(--muted);
     }
 
-    /* ===== SALIDA (SUSURRO) ===== */
+    /* ===== SALIDA ===== */
     .exit{
       position:fixed;
       left:50%;
@@ -205,16 +205,37 @@
     </div>
   </main>
 
-  <!-- botón de vuelta (sutil) -->
   <div class="exit" aria-label="volver">
     <a href="index.html">regresar</a>
   </div>
+
+  <!-- AUDIO PROVISIONAL -->
+  <audio id="bg-audio" loop>
+    <source src="audio/provisional.mp3" type="audio/mpeg">
+    Tu navegador no soporta audio HTML5.
+  </audio>
+
+  <script>
+    const audio = document.getElementById('bg-audio');
+    let started = false;
+
+    function startAudio(){
+      if(!started){
+        audio.volume = 0;
+        audio.play().catch(()=>{});
+        started = true;
+
+        let v = 0;
+        const fade = setInterval(()=>{
+          v += 0.02;
+          audio.volume = Math.min(v, 0.5);
+          if(v >= 0.5) clearInterval(fade);
+        }, 120);
+      }
+    }
+
+    document.addEventListener('click', startAudio);
+    document.addEventListener('touchstart', startAudio);
+  </script>
 </body>
 </html>
-
-
-
-
-
-
-
