@@ -111,6 +111,47 @@
       animation: crt-glitch .35s steps(2,end);
     }
 
+    /* ===== SETA SECRETA (PEGATINA EN LA TV) ===== */
+    .secret-shroom{
+      position:absolute;
+      right: 10%;
+      bottom: 10.5%;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      opacity:.22;
+      transform: rotate(-6deg);
+      transition:.25s ease;
+      text-decoration:none;
+      user-select:none;
+      z-index:5;
+    }
+
+    .secret-shroom:hover{
+      opacity:.75;
+      transform: rotate(-4deg) translateY(-1px);
+    }
+
+    .secret-shroom svg{
+      width:28px;
+      height:28px;
+      fill:none;
+      stroke: var(--ink);
+      stroke-width:2.2;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+      filter:
+        drop-shadow(0 0 6px rgba(255,176,0,.18))
+        drop-shadow(0 0 12px rgba(255,74,0,.10));
+    }
+
+    .secret-shroom:hover svg{
+      filter:
+        drop-shadow(0 0 8px rgba(255,176,0,.28))
+        drop-shadow(0 0 16px rgba(255,74,0,.14))
+        drop-shadow(0 0 10px rgba(0,255,0,.10));
+    }
+
     /* ===========================
        VHS GLITCH SOLO EN LA PANTALLA (INDEX)
        Se activa con body.tuning
@@ -311,7 +352,7 @@
       opacity:.72;
       letter-spacing:.20em;
       text-transform:lowercase;
-      margin:-6px auto 10px;
+      margin:-6px auto 22px;
       color:var(--muted);
       user-select:none;
       animation: whisper-jitter 1.35s infinite steps(2,end);
@@ -334,35 +375,6 @@
       color: rgba(255,0,0,.65);
       transform: translate(-1px,0);
       animation: whisper-glitch-2 1s infinite linear;
-    }
-
-    /* ===== SETA SECRETA ===== */
-    .secret-shroom{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      margin:-8px auto 16px;
-      opacity:.30;
-      transform: translateY(1px);
-      transition:.25s ease;
-      text-decoration:none;
-      user-select:none;
-    }
-
-    .secret-shroom:hover{
-      opacity:.70;
-      transform: translateY(0);
-    }
-
-    .secret-shroom svg{
-      width:20px;   /* ⬅️ más grande */
-      height:20px;
-      fill:none;
-      stroke: var(--ink);
-      stroke-width:1.45;
-      stroke-linecap:round;
-      stroke-linejoin:round;
-      filter: drop-shadow(0 0 12px rgba(255,176,0,.10));
     }
 
     /* ===== CTA ===== */
@@ -574,6 +586,20 @@
     <div class="crt" aria-label="Televisor CRT">
       <img src="tv.png" alt="Televisor CRT con Cosmic Marciana – La casa del terror" class="hero" />
 
+      <!-- 🍄 SETA PEGATINA SECRETA -->
+      <a class="secret-shroom" href="bosque.html" aria-label="into the trees">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <path d="M8 30C10 15 22 7 32 7s22 8 24 23H8z"/>
+          <path d="M14 28c6-6 30-6 36 0" />
+          <path d="M18 23c6-5 22-5 28 0" />
+          <circle cx="22" cy="20" r="2.2"/>
+          <circle cx="32" cy="17.5" r="1.8"/>
+          <circle cx="42" cy="20.5" r="2.0"/>
+          <path d="M24 30v16c0 7 4 11 8 11s8-4 8-11V30"/>
+          <path d="M20 57h24"/>
+        </svg>
+      </a>
+
       <!-- ✅ OVERLAY VHS SOLO EN LA PANTALLA -->
       <div class="tv-screen" aria-hidden="true">
         <div class="vhs">
@@ -592,22 +618,6 @@
     </p>
 
     <div class="whisper" data-text="transmisión en curso…">transmisión en curso…</div>
-
-    <!-- 🍄 SETA ESCONDIDA (70s) -->
-    <a class="secret-shroom" href="bosque.html" aria-label="into the trees">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <!-- sombrero -->
-        <path d="M4 11c0-4 3.6-7 8-7s8 3 8 7H4z"/>
-        <!-- motitas -->
-        <circle cx="9" cy="8.2" r="0.9"/>
-        <circle cx="12.5" cy="7.4" r="0.7"/>
-        <circle cx="15.5" cy="8.6" r="0.8"/>
-        <!-- pie -->
-        <path d="M9.2 11v5.6c0 1.9 1.4 3.4 2.8 3.4h0c1.4 0 2.8-1.5 2.8-3.4V11"/>
-        <!-- base -->
-        <path d="M8.2 20h7.6"/>
-      </svg>
-    </a>
 
     <div class="cta">
       <a class="btn" href="player.html">¿Te atreves a entrar en la casa del terror?</a>
