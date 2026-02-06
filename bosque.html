@@ -11,7 +11,6 @@
       --ink:#f6f2e9;
       --muted:#f0eadf;
 
-      /* paleta hippie / sesentera */
       --pink:#ff8fd4;
       --orange:#ffb347;
       --yellow:#ffe066;
@@ -35,7 +34,6 @@
       background:#000;
     }
 
-    /* ===== LIQUID LIGHT SHOW ===== */
     .liquid{
       position:fixed;
       inset:-30%;
@@ -70,7 +68,6 @@
       animation: liquid-drift-alt 26s infinite ease-in-out;
     }
 
-    /* grano analógico */
     .grain{
       position:fixed;
       inset:0;
@@ -86,7 +83,6 @@
       mix-blend-mode: overlay;
     }
 
-    /* viñeta suave */
     .vignette{
       position:fixed;
       inset:0;
@@ -96,7 +92,6 @@
         radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 45%, rgba(0,0,0,.35) 80%);
     }
 
-    /* ===== CONTENIDO ===== */
     .wrap{
       position:relative;
       z-index:5;
@@ -129,7 +124,6 @@
       color:var(--muted);
     }
 
-    /* ===== SALIDA ===== */
     .exit{
       position:fixed;
       left:50%;
@@ -166,7 +160,33 @@
       transform: translateY(-1px);
     }
 
-    /* ===== ANIMACIONES ===== */
+    .breath-control{
+      position:fixed;
+      top:18px;
+      right:18px;
+      z-index:7;
+    }
+
+    #breath-btn{
+      background:rgba(0,0,0,.2);
+      border:1px solid rgba(255,255,255,.25);
+      color:var(--muted);
+      font-size:11px;
+      letter-spacing:.22em;
+      text-transform:lowercase;
+      padding:10px 16px;
+      border-radius:999px;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      cursor:pointer;
+      transition:.3s ease;
+    }
+
+    #breath-btn:hover{
+      border-color: rgba(255,255,255,.45);
+      transform: translateY(-1px);
+    }
+
     @keyframes liquid-drift{
       0%,100%{ transform: translate(0,0) scale(1); }
       50%{ transform: translate(-6%, 4%) scale(1.08); }
@@ -205,38 +225,61 @@
     </div>
   </main>
 
-  <div class="exit" aria-label="volver">
+  <div class="exit">
     <a href="index.html">regresar</a>
   </div>
 
-  <!-- AUDIO PROVISIONAL -->
+  <div class="breath-control">
+    <button id="breath-btn">respira</button>
+  </div>
+
   <audio id="bg-audio" loop>
-    <source src="provisional.mp3" type="audio/mpeg">
-    Tu navegador no soporta audio HTML5.
+    <source src="audio/provisional.mp3" type="audio/mpeg">
   </audio>
 
   <script>
     const audio = document.getElementById('bg-audio');
-    let started = false;
+    const btn = document.getElementById('breath-btn');
+    let playing = false;
 
-    function startAudio(){
-      if(!started){
+    btn.addEventListener('click', () => {
+      if(!playing){
         audio.volume = 0;
         audio.play().catch(()=>{});
-        started = true;
-
-        let v = 0;
-        const fade = setInterval(()=>{
-          v += 0.02;
-          audio.volume = Math.min(v, 0.5);
-          if(v >= 0.5) clearInterval(fade);
-        }, 120);
+        fadeIn(audio, 0.5, 1500);
+        btn.textContent = "en silencio";
+        playing = true;
+      } else {
+        fadeOut(audio, 1000);
+        btn.textContent = "respira";
+        playing = false;
       }
+    });
+
+    function fadeIn(audio, targetVolume, duration){
+      const step = 50;
+      const increment = targetVolume / (duration / step);
+      const fade = setInterval(()=>{
+        if(audio.volume < targetVolume){
+          audio.volume = Math.min(audio.volume + increment, targetVolume);
+        } else {
+          clearInterval(fade);
+        }
+      }, step);
     }
 
-    document.addEventListener('click', startAudio);
-    document.addEventListener('touchstart', startAudio);
+    function fadeOut(audio, duration){
+      const step = 50;
+      const decrement = audio.volume / (duration / step);
+      const fade = setInterval(()=>{
+        if(audio.volume > 0){
+          audio.volume = Math.max(audio.volume - decrement, 0);
+        } else {
+          audio.pause();
+          clearInterval(fade);
+        }
+      }, step);
+    }
   </script>
 </body>
 </html>
-
