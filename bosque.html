@@ -39,8 +39,10 @@ body{
   inset:-30%;
   z-index:0;
   pointer-events:none;
-  filter: blur(28px) saturate(1.25);
+  /* filtro base (lo tocaremos con audio-reactive) */
+  filter: blur(28px) saturate(1.25) brightness(1);
   animation: slow-rotate 90s infinite linear;
+  will-change: filter, transform;
 }
 
 .liquid::before{
@@ -178,13 +180,8 @@ body{
 /* ===== FIRMA NERD ADAPTATIVA ===== */
 .sig{
   white-space: nowrap;
-
-  /* tamaño fluido adaptable */
   font-size: clamp(9px, 2.2vw, 11.5px);
-
-  /* espaciado adaptable */
   letter-spacing: clamp(.08em, .3vw, .18em);
-
   opacity:.65;
   text-transform:uppercase;
   color:var(--muted);
@@ -210,15 +207,14 @@ body{
   .liquid, .liquid::before, .liquid::after{ animation:none !important; }
   #breath-btn{ animation:none !important; }
 }
-
 </style>
 </head>
 
 <body>
 
-<div class="liquid"></div>
-<div class="grain"></div>
-<div class="vignette"></div>
+<div class="liquid" id="liquid"></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
 
 <main class="wrap">
   <p class="text">
@@ -231,9 +227,7 @@ body{
 
 <div class="bottom">
   <a href="index.html">← regresar</a>
-  <div class="sig">
-    COSMIC MARCIANA 2026 · AMOR · PAZ · SEÑAL
-  </div>
+  <div class="sig">COSMIC MARCIANA 2026 · AMOR · PAZ · SEÑAL</div>
 </div>
 
 <audio id="bg-audio" loop>
@@ -243,22 +237,86 @@ body{
 <script>
 const audio = document.getElementById('bg-audio');
 const btn = document.getElementById('breath-btn');
+const liquid = document.getElementById('liquid');
+
 let playing = false;
 
-btn.addEventListener('click', () => {
-  if(!playing){
-    audio.volume = 0;
-    audio.play().catch(()=>{});
-    fadeIn(audio, 0.5, 1500);
-    btn.textContent = "silencio";
-    playing = true;
-  } else {
-    fadeOut(audio, 1000);
-    btn.textContent = "respira";
-    playing = false;
-  }
-});
+/* ===== Audio reactive (visible sin cantarse) ===== */
+let audioCtx, analyser, sourceNode, data;
+let reactiveReady = false;
+let rafId = null;
 
+// valores base para volver cuando está en silencio
+const base = { blur: 28, sat: 1.25, bri: 1.0 };
+
+function initAudioReactive(){
+  if(reactiveReady) return;
+  reactiveReady = true;
+
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 1024;
+
+  // muy importante para ambient: suaviza bastante para que no tiemble
+  analyser.smoothingTimeConstant = 0.92;
+
+  sourceNode = audioCtx.createMediaElementSource(audio);
+  sourceNode.connect(analyser);
+  analyser.connect(audioCtx.destination);
+
+  data = new Uint8Array(analyser.frequencyBinCount);
+}
+
+// energía general (más robusta que solo “bass” si el ambient es suave)
+function getEnergy(){
+  analyser.getByteFrequencyData(data);
+
+  let sum = 0;
+  // usamos una franja baja-media (se nota, pero no “canta”)
+  const start = 2;
+  const end = Math.min(80, data.length);
+  for(let i=start; i<end; i++) sum += data[i];
+
+  const avg = sum / (end - start);     // 0..255
+  return avg / 255;                    // 0..1
+}
+
+function reactiveLoop(){
+  if(!analyser) return;
+
+  const e = getEnergy();
+
+  // curva suave (levantamos un poco para que sea visible incluso en ambient)
+  const n = Math.min(1, Math.pow(e, 0.75));
+
+  // Ajustes "visibles sin cantarse":
+  // - blur: aumenta y baja como niebla
+  // - saturación: sube un poco
+  // - brillo: sube muy poco
+  const blur = base.blur + n * 22;          // 28..50
+  const sat  = base.sat  + n * 0.95;        // 1.25..2.2
+  const bri  = base.bri  + n * 0.22;        // 1.0..1.22
+
+  liquid.style.filter = `blur(${blur}px) saturate(${sat}) brightness(${bri})`;
+
+  rafId = requestAnimationFrame(reactiveLoop);
+}
+
+function startReactive(){
+  if(rafId) return;
+  reactiveLoop();
+}
+
+function stopReactive(){
+  if(rafId){
+    cancelAnimationFrame(rafId);
+    rafId = null;
+  }
+  // vuelve suave al estado base
+  liquid.style.filter = `blur(${base.blur}px) saturate(${base.sat}) brightness(${base.bri})`;
+}
+
+/* ===== fades ===== */
 function fadeIn(audio, targetVolume, duration){
   const step = 50;
   const increment = targetVolume / (duration / step);
@@ -281,6 +339,31 @@ function fadeOut(audio, duration){
     }
   }, step);
 }
+
+/* ===== botón ===== */
+btn.addEventListener('click', async () => {
+  if(!playing){
+    audio.volume = 0;
+
+    // setup audio reactive (requiere gesto del usuario)
+    initAudioReactive();
+    if(audioCtx && audioCtx.state === "suspended") await audioCtx.resume();
+
+    audio.play().catch(()=>{});
+    fadeIn(audio, 0.5, 1500);
+
+    startReactive();
+
+    btn.textContent = "silencio";
+    playing = true;
+  } else {
+    fadeOut(audio, 1000);
+    stopReactive();
+
+    btn.textContent = "respira";
+    playing = false;
+  }
+});
 </script>
 
 </body>
