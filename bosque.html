@@ -34,7 +34,7 @@
       background:#000;
     }
 
-    /* ===== LIQUID LIGHT SHOW ===== */
+    /* ===== FONDOS ===== */
     .liquid{
       position:fixed;
       inset:-30%;
@@ -44,48 +44,21 @@
       animation: slow-rotate 90s infinite linear;
     }
 
-    .liquid::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:
-        radial-gradient(circle at 20% 30%, var(--pink), transparent 40%),
-        radial-gradient(circle at 70% 25%, var(--orange), transparent 42%),
-        radial-gradient(circle at 30% 70%, var(--green), transparent 45%),
-        radial-gradient(circle at 75% 65%, var(--blue), transparent 44%),
-        radial-gradient(circle at 50% 50%, var(--violet), transparent 48%),
-        radial-gradient(circle at 55% 40%, var(--yellow), transparent 38%);
-      animation: liquid-drift 22s infinite ease-in-out;
-    }
-
-    .liquid::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:
-        radial-gradient(circle at 40% 60%, rgba(255,255,255,.18), transparent 42%),
-        radial-gradient(circle at 60% 45%, rgba(255,255,255,.12), transparent 46%);
-      mix-blend-mode: overlay;
-      animation: liquid-drift-alt 26s infinite ease-in-out;
-    }
-
-    /* grano analógico */
     .grain{
       position:fixed;
       inset:0;
       z-index:1;
       pointer-events:none;
+      opacity:.15;
+      mix-blend-mode: overlay;
       background:
         repeating-radial-gradient(
           circle,
           rgba(255,255,255,.04) 0 1px,
           rgba(0,0,0,0) 1px 3px
         );
-      opacity:.15;
-      mix-blend-mode: overlay;
     }
 
-    /* viñeta suave */
     .vignette{
       position:fixed;
       inset:0;
@@ -95,7 +68,7 @@
         radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 45%, rgba(0,0,0,.35) 80%);
     }
 
-    /* ===== CONTENIDO ===== */
+    /* ===== CONTENIDO CENTRAL ===== */
     .wrap{
       position:relative;
       z-index:5;
@@ -107,67 +80,76 @@
       font-size:16px;
       line-height:1.7;
       color:var(--muted);
-      text-shadow: 0 0 22px rgba(0,0,0,.45);
       margin:0;
+      text-shadow: 0 0 22px rgba(0,0,0,.45);
     }
 
     .into{
-      display:inline-block;
       font-weight:700;
       letter-spacing:.22em;
       text-transform:lowercase;
       color:var(--ink);
     }
 
-    /* ===== BOTONES CENTRADOS EN COLUMNA ===== */
-    .actions{
+    /* botón respira */
+    #breath-btn{
       margin-top:18px;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:12px;
-    }
-
-    #breath-btn,
-    .exit a{
-      color:var(--muted);
-      text-decoration:none;
       font-size:11px;
       letter-spacing:.22em;
       text-transform:lowercase;
       padding:10px 16px;
       border-radius:999px;
-      border:1px solid rgba(255,255,255,.18);
+      border:1px solid rgba(255,255,255,.25);
       background: rgba(0,0,0,.16);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      box-shadow: 0 0 20px rgba(0,0,0,.18);
-      transition:.25s ease;
-      display:inline-block;
+      color:var(--muted);
       cursor:pointer;
+      backdrop-filter: blur(6px);
+      transition:.3s ease;
+      animation: breathing 6s ease-in-out infinite;
     }
 
-    #breath-btn:hover,
-    .exit a:hover{
-      border-color: rgba(255,255,255,.35);
-      box-shadow: 0 0 26px rgba(0,0,0,.28);
+    #breath-btn:hover{
+      border-color: rgba(255,255,255,.45);
       transform: translateY(-1px);
     }
 
-    /* respiración lenta del botón */
+    /* respiración */
     @keyframes breathing {
       0% { transform: scale(1); opacity: 0.7; }
       50% { transform: scale(1.08); opacity: 1; }
       100% { transform: scale(1); opacity: 0.7; }
     }
 
-    #breath-btn{
-      animation: breathing 6s ease-in-out infinite;
+    /* ===== BLOQUE INFERIOR ===== */
+    .bottom{
+      position:fixed;
+      bottom:18px;
+      left:50%;
+      transform:translateX(-50%);
+      z-index:6;
+      text-align:center;
     }
 
-    /* firma al final debajo de todo */
+    .bottom a{
+      display:inline-block;
+      margin-bottom:10px;
+      font-size:11px;
+      letter-spacing:.22em;
+      text-transform:lowercase;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.16);
+      color:var(--muted);
+      text-decoration:none;
+      transition:.25s ease;
+    }
+
+    .bottom a:hover{
+      border-color: rgba(255,255,255,.35);
+    }
+
     .sig{
-      margin-top:14px;
       font-size:11.5px;
       opacity:.65;
       letter-spacing:.18em;
@@ -175,52 +157,32 @@
       color:var(--muted);
     }
 
-    /* ===== ANIMACIONES ===== */
-    @keyframes liquid-drift{
-      0%,100%{ transform: translate(0,0) scale(1); }
-      50%{ transform: translate(-6%, 4%) scale(1.08); }
-    }
-
-    @keyframes liquid-drift-alt{
-      0%,100%{ transform: translate(0,0) scale(1); }
-      50%{ transform: translate(5%, -6%) scale(1.1); }
-    }
-
-    @keyframes slow-rotate{
-      0%{ transform: rotate(0deg); }
-      100%{ transform: rotate(360deg); }
-    }
-
-    @media (prefers-reduced-motion: reduce){
-      .liquid, .liquid::before, .liquid::after{ animation:none !important; }
-      #breath-btn{ animation:none !important; }
-    }
   </style>
 </head>
 
 <body>
-  <div class="liquid" aria-hidden="true"></div>
-  <div class="grain" aria-hidden="true"></div>
-  <div class="vignette" aria-hidden="true"></div>
 
+  <div class="liquid"></div>
+  <div class="grain"></div>
+  <div class="vignette"></div>
+
+  <!-- CENTRO -->
   <main class="wrap">
     <p class="text">
       <span class="into">entre los árboles</span><br>
       el mundo se para
     </p>
 
-    <div class="actions">
-      <button id="breath-btn">respira</button>
-
-      <div class="exit">
-        <a href="index.html">regresar</a>
-      </div>
-
-      <div class="sig">
-        COSMIC MARCIANA 2026 · AMOR · PAZ · SEÑAL
-      </div>
-    </div>
+    <button id="breath-btn">respira</button>
   </main>
+
+  <!-- ABAJO DEL TODO -->
+  <div class="bottom">
+    <a href="index.html">regresar</a>
+    <div class="sig">
+      COSMIC MARCIANA 2026 · AMOR · PAZ · SEÑAL
+    </div>
+  </div>
 
   <audio id="bg-audio" loop>
     <source src="respira.mp3" type="audio/mpeg">
@@ -251,9 +213,7 @@
       const fade = setInterval(()=>{
         if(audio.volume < targetVolume){
           audio.volume = Math.min(audio.volume + increment, targetVolume);
-        } else {
-          clearInterval(fade);
-        }
+        } else clearInterval(fade);
       }, step);
     }
 
@@ -263,12 +223,13 @@
       const fade = setInterval(()=>{
         if(audio.volume > 0){
           audio.volume = Math.max(audio.volume - decrement, 0);
-        } else {
+        } else{
           audio.pause();
           clearInterval(fade);
         }
       }, step);
     }
   </script>
+
 </body>
 </html>
