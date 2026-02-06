@@ -68,7 +68,6 @@ body{
   animation: liquid-drift-alt 26s infinite ease-in-out;
 }
 
-/* grano */
 .grain{
   position:fixed;
   inset:0;
@@ -84,7 +83,6 @@ body{
     );
 }
 
-/* viñeta */
 .vignette{
   position:fixed;
   inset:0;
@@ -140,7 +138,6 @@ body{
   transform: translateY(-1px);
 }
 
-/* respiración */
 @keyframes breathing {
   0% { transform: scale(1); opacity: 0.7; }
   50% { transform: scale(1.08); opacity: 1; }
@@ -150,38 +147,61 @@ body{
 /* ===== BLOQUE INFERIOR ===== */
 .bottom{
   position:fixed;
-  bottom:20px;
+  bottom:22px;
   left:50%;
   transform:translateX(-50%);
   z-index:6;
   text-align:center;
 }
 
+/* flecha minimal */
 .bottom a{
   display:inline-block;
-  margin-bottom:10px;
+  margin-bottom:12px;
   font-size:11px;
   letter-spacing:.22em;
   text-transform:lowercase;
-  padding:10px 14px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.18);
-  background: rgba(0,0,0,.16);
-  color:var(--muted);
+  color:rgba(240,234,223,.75);
   text-decoration:none;
+  padding:6px 8px;
   transition:.25s ease;
 }
 
 .bottom a:hover{
-  border-color: rgba(255,255,255,.35);
+  color:rgba(240,234,223,1);
+  transform: translateY(-1px);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 1px;
 }
 
+/* firma */
 .sig{
   font-size:11.5px;
   opacity:.65;
   letter-spacing:.18em;
   text-transform:uppercase;
   color:var(--muted);
+}
+
+/* desktop: una línea */
+.sig span{
+  white-space:nowrap;
+}
+
+/* móvil: dividir en dos líneas */
+@media (max-width: 520px){
+  .sig{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    letter-spacing:.14em;
+  }
+
+  .dot{
+    display:none;
+  }
 }
 
 /* animaciones fondo */
@@ -224,14 +244,17 @@ body{
 </main>
 
 <div class="bottom">
-  <a href="index.html">regresar</a>
+  <a href="index.html">← regresar</a>
+
   <div class="sig">
-    COSMIC MARCIANA 2026 · AMOR · PAZ · SEÑAL
+    <span class="line1">COSMIC MARCIANA 2026</span>
+    <span class="dot"> · </span>
+    <span class="line2">AMOR · PAZ · SEÑAL</span>
   </div>
 </div>
 
 <audio id="bg-audio" loop>
-  <source src="respira2.mp3" type="audio/mpeg">
+  <source src="respira.mp3" type="audio/mpeg">
 </audio>
 
 <script>
@@ -279,4 +302,3 @@ function fadeOut(audio, duration){
 
 </body>
 </html>
-
