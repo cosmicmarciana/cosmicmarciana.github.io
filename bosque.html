@@ -157,7 +157,7 @@ body{
 /* flecha minimal */
 .bottom a{
   display:inline-block;
-  margin-bottom:12px;
+  margin-bottom:14px;
   font-size:11px;
   letter-spacing:.22em;
   text-transform:lowercase;
@@ -175,33 +175,19 @@ body{
   text-decoration-thickness: 1px;
 }
 
-/* firma */
+/* ===== FIRMA NERD ADAPTATIVA ===== */
 .sig{
-  font-size:11.5px;
+  white-space: nowrap;
+
+  /* tamaño fluido adaptable */
+  font-size: clamp(9px, 2.2vw, 11.5px);
+
+  /* espaciado adaptable */
+  letter-spacing: clamp(.08em, .3vw, .18em);
+
   opacity:.65;
-  letter-spacing:.18em;
   text-transform:uppercase;
   color:var(--muted);
-}
-
-/* desktop: una línea */
-.sig span{
-  white-space:nowrap;
-}
-
-/* móvil: dividir en dos líneas */
-@media (max-width: 520px){
-  .sig{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:4px;
-    letter-spacing:.14em;
-  }
-
-  .dot{
-    display:none;
-  }
 }
 
 /* animaciones fondo */
@@ -245,11 +231,8 @@ body{
 
 <div class="bottom">
   <a href="index.html">← regresar</a>
-
   <div class="sig">
-    <span class="line1">COSMIC MARCIANA 2026</span>
-    <span class="dot"> · </span>
-    <span class="line2">AMOR · PAZ · SEÑAL</span>
+    COSMIC MARCIANA 2026 · AMOR · PAZ · SEÑAL
   </div>
 </div>
 
