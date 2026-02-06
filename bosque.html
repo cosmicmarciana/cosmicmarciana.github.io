@@ -34,6 +34,7 @@
       background:#000;
     }
 
+    /* ===== LIQUID LIGHT SHOW ===== */
     .liquid{
       position:fixed;
       inset:-30%;
@@ -68,6 +69,7 @@
       animation: liquid-drift-alt 26s infinite ease-in-out;
     }
 
+    /* grano analógico */
     .grain{
       position:fixed;
       inset:0;
@@ -83,6 +85,7 @@
       mix-blend-mode: overlay;
     }
 
+    /* viñeta suave */
     .vignette{
       position:fixed;
       inset:0;
@@ -92,6 +95,7 @@
         radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 45%, rgba(0,0,0,.35) 80%);
     }
 
+    /* ===== CONTENIDO ===== */
     .wrap{
       position:relative;
       z-index:5;
@@ -115,35 +119,23 @@
       color:var(--ink);
     }
 
-    .sig{
-      margin-top:22px;
-      font-size:11.5px;
-      opacity:.65;
-      letter-spacing:.18em;
-      text-transform:uppercase;
-      color:var(--muted);
+    /* ===== BOTONES CENTRADOS EN COLUMNA ===== */
+    .actions{
+      margin-top:18px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:12px;
     }
 
-    .exit{
-      position:fixed;
-      left:50%;
-      bottom:18px;
-      transform: translateX(-50%);
-      z-index:6;
-      opacity:.35;
-      transition:.25s ease;
-      user-select:none;
-    }
-
-    .exit:hover{ opacity:.75; }
-
+    #breath-btn,
     .exit a{
       color:var(--muted);
       text-decoration:none;
       font-size:11px;
       letter-spacing:.22em;
       text-transform:lowercase;
-      padding:10px 14px;
+      padding:10px 16px;
       border-radius:999px;
       border:1px solid rgba(255,255,255,.18);
       background: rgba(0,0,0,.16);
@@ -152,42 +144,38 @@
       box-shadow: 0 0 20px rgba(0,0,0,.18);
       transition:.25s ease;
       display:inline-block;
+      cursor:pointer;
     }
 
+    #breath-btn:hover,
     .exit a:hover{
       border-color: rgba(255,255,255,.35);
       box-shadow: 0 0 26px rgba(0,0,0,.28);
       transform: translateY(-1px);
     }
 
-    .breath-control{
-  position:fixed;
-  top:18px;
-  left:50%;
-  transform: translateX(-50%);
-  z-index:7;
-}
+    /* respiración lenta del botón */
+    @keyframes breathing {
+      0% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.08); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.7; }
+    }
 
     #breath-btn{
-      background:rgba(0,0,0,.2);
-      border:1px solid rgba(255,255,255,.25);
+      animation: breathing 6s ease-in-out infinite;
+    }
+
+    /* firma al final debajo de todo */
+    .sig{
+      margin-top:14px;
+      font-size:11.5px;
+      opacity:.65;
+      letter-spacing:.18em;
+      text-transform:uppercase;
       color:var(--muted);
-      font-size:11px;
-      letter-spacing:.22em;
-      text-transform:lowercase;
-      padding:10px 16px;
-      border-radius:999px;
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      cursor:pointer;
-      transition:.3s ease;
     }
 
-    #breath-btn:hover{
-      border-color: rgba(255,255,255,.45);
-      transform: translateY(-1px);
-    }
-
+    /* ===== ANIMACIONES ===== */
     @keyframes liquid-drift{
       0%,100%{ transform: translate(0,0) scale(1); }
       50%{ transform: translate(-6%, 4%) scale(1.08); }
@@ -205,31 +193,8 @@
 
     @media (prefers-reduced-motion: reduce){
       .liquid, .liquid::before, .liquid::after{ animation:none !important; }
+      #breath-btn{ animation:none !important; }
     }
-    @keyframes breathing {
-  0% {
-    transform: translateX(-50%) scale(1);
-    opacity: 0.7;
-  }
-  50% {
-    transform: translateX(-50%) scale(1.08);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(-50%) scale(1);
-    opacity: 0.7;
-  }
-}
-
-.breath-control {
-  position: fixed;
-  top: 18px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 7;
-  animation: breathing 6s ease-in-out infinite;
-}
-
   </style>
 </head>
 
@@ -241,22 +206,21 @@
   <main class="wrap">
     <p class="text">
       <span class="into">entre los árboles</span><br>
-      el mundo se para<br>
-      
+      el mundo se para
     </p>
 
-    <div class="sig">
-      COSMIC MARCIANA 2026 · AMOR · PAZ · SEÑAL
+    <div class="actions">
+      <button id="breath-btn">respira</button>
+
+      <div class="exit">
+        <a href="index.html">regresar</a>
+      </div>
+
+      <div class="sig">
+        COSMIC MARCIANA 2026 · AMOR · PAZ · SEÑAL
+      </div>
     </div>
   </main>
-
-  <div class="exit">
-    <a href="index.html">regresar</a>
-  </div>
-
-  <div class="breath-control">
-    <button id="breath-btn">respira</button>
-  </div>
 
   <audio id="bg-audio" loop>
     <source src="respira.mp3" type="audio/mpeg">
@@ -308,8 +272,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
