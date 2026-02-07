@@ -1041,6 +1041,106 @@
     color: var(--neon);
   }
 
+  /* ============================
+     ✅ VU METER ANALÓGICO 1978
+     (SOLO track.current)
+     ============================ */
+  .track{
+    position: relative;
+    overflow: hidden;
+  }
+
+  .track.current{
+    padding-right: 110px; /* espacio para el VU */
+  }
+
+  /* Caja del VU */
+  .track.current::before{
+    content:"";
+    position:absolute;
+    right:12px;
+    top:50%;
+    width:78px;
+    height:28px;
+    transform: translateY(-50%);
+    border-radius: 14px;
+    background: linear-gradient(180deg,#1a1206,#0f0a03);
+    border:1px solid rgba(255,180,60,.35);
+    box-shadow:
+      inset 0 0 6px rgba(255,200,120,.08),
+      0 0 18px rgba(255,140,0,.15);
+    pointer-events:none;
+
+    background-image:
+      repeating-linear-gradient(
+        90deg,
+        rgba(0,0,0,0) 0px,
+        rgba(0,0,0,0) 8px,
+        rgba(255,180,60,.45) 8px,
+        rgba(255,180,60,.45) 9px
+      );
+    background-blend-mode: screen;
+  }
+
+  /* Aguja (solo visible/anima en playing/paused) */
+  body.playing .track.current::after,
+  body.paused  .track.current::after{
+    content:"";
+    position:absolute;
+    right:12px;
+    top:50%;
+    width:78px;
+    height:28px;
+    transform: translateY(-50%);
+    pointer-events:none;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent 0%,
+        transparent 46%,
+        #ffe0a0 48%,
+        #ff9a00 50%,
+        #ff2a00 52%,
+        transparent 54%,
+        transparent 100%
+      );
+
+    transform-origin: calc(100% - 68px) 50%;
+    filter: drop-shadow(0 0 8px rgba(255,140,0,.55));
+    opacity:.95;
+  }
+
+  /* Movimiento pesado (más lento) */
+  body.playing .track.current::after{
+    animation: vu78 calc(.95s - (.40s * var(--g))) cubic-bezier(.4,0,.2,1) infinite;
+  }
+
+  /* En pausa respira lento */
+  body.paused .track.current::after{
+    animation: vu78 1.9s ease-in-out infinite;
+    opacity:.85;
+  }
+
+  @keyframes vu78{
+    0%   { transform: translateY(-50%) rotate(calc(-28deg + (6deg * var(--g)))); }
+    25%  { transform: translateY(-50%) rotate(calc(-6deg + (8deg * var(--g)))); }
+    50%  { transform: translateY(-50%) rotate(calc(18deg + (12deg * var(--g)))); }
+    70%  { transform: translateY(-50%) rotate(calc(-4deg + (6deg * var(--g)))); }
+    85%  { transform: translateY(-50%) rotate(calc(22deg + (14deg * var(--g)))); }
+    100% { transform: translateY(-50%) rotate(calc(12deg + (8deg * var(--g)))); }
+  }
+
+  @media (max-width:480px){
+    .track.current{ padding-right: 96px; }
+    .track.current::before,
+    .track.current::after{
+      width:66px;
+      height:22px;
+    }
+  }
+  /* ============================ */
+
   .sig{
     margin-top:16px;
     font-size:12px;
@@ -1087,6 +1187,12 @@
       animation:none !important;
       opacity:0 !important;
     }
+
+    /* VU: sin animación si reduce motion */
+    body.playing .track.current::after,
+    body.paused  .track.current::after{
+      animation:none !important;
+    }
   }
 </style>
 </head>
@@ -1102,7 +1208,7 @@
     </div>
 
     <div class="crt" aria-hidden="true">
-      <img id="cover" src="tv.webp" alt="Televisor CRT / portada" />
+      <img id="cover" src="tv.png" alt="Televisor CRT / portada" />
 
       <div class="tv-screen" aria-hidden="true">
         <div class="vhs">
@@ -1221,10 +1327,10 @@
     mute:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 9l5 6"/><path d="M21 9l-5 6"/></svg>`
   };
 
-  const tvBase = "tv.webp";
+  const tvBase = "tv.png";
   const tvByTrack = [
-    "tv1.webp","tv2.webp","tv3.webp","tv4.webp","tv5.webp","tv6.webp",
-    "tv7.webp","tv8.webp","tv9.webp","tv10.webp","tv11.webp"
+    "tv1.png","tv2.png","tv3.png","tv4.png","tv5.png","tv6.png",
+    "tv7.png","tv8.png","tv9.png","tv10.png","tv11.png"
   ];
 
   const sources = [
@@ -1945,11 +2051,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
-
