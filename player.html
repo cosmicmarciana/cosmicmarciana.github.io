@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>La casa del terror</title>
 
-<!-- Favicons -->
 <link rel="icon" href="favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -19,14 +18,11 @@
     --muted:#cfcfcf;
     --blood:#ff2b2b;
 
-    /* ✅ Glitch del TEXTO (0..1) — SÍ ligado al volumen */
     --g: .55;
     --gpx: 10px;
 
-    /* ✅ VHS glitch — NO ligado al volumen */
     --gvhs: .78;
 
-    /* ✅ Frame congelado en PAUSE (lo setea JS al pausar) */
     --hx: 0px;
     --hy: 0px;
     --hblur: 0.2px;
@@ -67,6 +63,7 @@
       calc(32px + env(safe-area-inset-bottom))
       calc(14px + env(safe-area-inset-left));
     overflow-x:hidden;
+
     background:
       repeating-radial-gradient(circle at 30% 40%, rgba(255,255,255,.04) 0, rgba(255,255,255,.04) 1px, transparent 2px, transparent 7px),
       repeating-radial-gradient(circle at 70% 60%, rgba(255,255,255,.025) 0, rgba(255,255,255,.025) 1px, transparent 1px, transparent 4px),
@@ -74,7 +71,6 @@
       linear-gradient(180deg, #1a1412, #0e0a09 50%, #050303);
   }
 
-  /* ✅ cuando abre el modo psicodélico, bloqueamos scroll */
   body.psy-open{
     overflow:hidden;
     height:100vh;
@@ -104,7 +100,6 @@
     opacity: .95;
   }
 
-  /* ===== Subtítulo rojo con glitch ===== */
   .subtitle-wrap{ width: 100%; display:block; margin: 0 0 6px 0; }
 
   .subtitle{
@@ -151,7 +146,6 @@
     animation: red-glitch-b 4.4s infinite;
   }
 
-  /* ===== PLAYING: glitch del texto ligado a --g (volumen) ===== */
   body.playing .subtitle{
     transform: translateZ(0);
     text-shadow:
@@ -251,7 +245,6 @@
     100% { clip-path: inset(75% 0 5% 0); transform: translate(5px,0); }
   }
 
-  /* TV CRT */
   .crt{
     position:relative;
     width:fit-content;
@@ -290,7 +283,6 @@
   .crt:active #cover{ transform: translateY(-1px); }
   .crt:hover #cover{ transform: translateY(-2px); animation: crt-glitch .35s steps(2,end); }
 
-  /* VHS overlay en pantalla */
   .tv-screen{
     position:absolute;
     left: 17.63%;
@@ -414,7 +406,6 @@
   @keyframes chroma-hold-b{ 0%{ transform: translateX(var(--hb)); } 50%{ transform: translateX(calc(var(--hb) + .65px)); } 100%{ transform: translateX(var(--hb)); } }
   @keyframes tear-hold{ 0%{ opacity:.52;} 84%{ opacity:.52;} 100%{ opacity:.66;} }
 
-  /* Controls */
   .controls{
     display:flex; justify-content:center; align-items:center; gap:12px;
     margin: 10px 0 10px; flex-wrap:wrap;
@@ -432,7 +423,6 @@
     transition:.18s ease;
     line-height:1;
   }
-
   button:hover{ transform: translateY(-1px); border-color: rgba(0,255,0,.45); color: var(--neon); }
 
   #play-pause{
@@ -491,7 +481,6 @@
     letter-spacing:.06em;
   }
 
-  /* Progress */
   .progress-wrapper{
     display:flex;
     align-items:center;
@@ -580,7 +569,6 @@
     text-align:center;
   }
 
-  /* Volume */
   .volume-wrapper{
     margin-top:16px;
     display:flex;
@@ -601,7 +589,6 @@
   .volume-icon:hover{ color: var(--neon); border-color: rgba(0,255,0,.35); transform: translateY(-1px); }
   #volume-slider{ width:160px; height:4px; cursor:pointer; accent-color: var(--neon); }
 
-  /* Support */
   .support{ margin: 18px auto 10px; width: min(720px, 100%); text-align:center; }
 
   .support-btn{
@@ -617,7 +604,6 @@
     animation: neon-only 4.8s ease-in-out infinite;
     box-shadow: 0 0 14px rgba(0,255,0,.16);
   }
-
   @keyframes neon-only{
     0%, 70%, 100%{ box-shadow: 0 0 14px rgba(0,255,0,.16); border-color: rgba(0,255,0,.40); }
     80%{ box-shadow: 0 0 32px rgba(0,255,0,.34); border-color: rgba(0,255,0,.75); }
@@ -632,7 +618,6 @@
   .support-btn:active{ transform:none !important; }
 
   .support-note{ margin-top:10px; font-size:12px; color: var(--muted); opacity:.9; letter-spacing:.03em; }
-
   .download-link{
     display:inline-flex; align-items:center; justify-content:center; gap:8px;
     margin-top:10px;
@@ -647,7 +632,6 @@
   .download-link:hover{ color: var(--neon); border-color: rgba(0,255,0,.35); box-shadow: 0 0 18px rgba(0,255,0,.16); }
   .download-note{ margin-top:8px; font-size:12px; color: var(--muted); opacity:.9; }
 
-  /* Modal */
   .modal{
     position: fixed;
     inset: 0;
@@ -659,7 +643,6 @@
     z-index: 999;
   }
   .modal.open{ display:flex; }
-
   .modal-card{
     width: min(560px, 100%);
     border-radius: 16px;
@@ -670,7 +653,6 @@
     text-align:left;
     position: relative;
   }
-
   .modal-close{
     position:absolute;
     top:10px;
@@ -690,11 +672,7 @@
     pointer-events:auto;
     touch-action: manipulation;
   }
-  .modal-close:hover{
-    transform:none !important;
-    border-color: rgba(0,255,0,.45) !important;
-    color: var(--neon) !important;
-  }
+  .modal-close:hover{ border-color: rgba(0,255,0,.45) !important; color: var(--neon) !important; }
   .modal-close svg{
     width:18px; height:18px;
     display:block;
@@ -704,7 +682,6 @@
     stroke-linecap:round;
     pointer-events:none !important;
   }
-
   .modal-title{
     font-size:14px;
     letter-spacing:.16em;
@@ -755,7 +732,6 @@
   }
   .copy-btn:hover{ color: var(--neon); border-color: rgba(0,255,0,.5); }
 
-  /* Playlist */
   .playlist{ margin:18px auto 0; text-align:left; width:min(720px, 100%); }
   .track{
     padding:10px 14px;
@@ -767,16 +743,8 @@
     border:1px solid rgba(255,255,255,.08);
     color: var(--ink);
   }
-  .track:hover{
-    background: rgba(255,255,255,0.09);
-    transform: translateY(-1px);
-    border-color: rgba(0,255,0,.25);
-  }
-  .track.current{
-    background: rgba(0,255,0,0.10);
-    border-color: rgba(0,255,0,.45);
-    color: var(--neon);
-  }
+  .track:hover{ background: rgba(255,255,255,0.09); transform: translateY(-1px); border-color: rgba(0,255,0,.25); }
+  .track.current{ background: rgba(0,255,0,0.10); border-color: rgba(0,255,0,.45); color: var(--neon); }
 
   .sig{ margin-top:16px; font-size:12px; opacity:.6; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
 
@@ -796,12 +764,7 @@
     #volume-slider{ width: 140px; }
   }
 
-  /* ===========================
-     ✅ MODO PSICODÉLICO (BUENO):
-     WebGL shader (kaleidoscopio + lava setentera)
-     Overlay opaco: NO se ve la web debajo.
-     =========================== */
-
+  /* ===== PSY MODE ===== */
   .psy-btn{
     width:auto;
     height:44px;
@@ -831,7 +794,7 @@
     inset: 0;
     z-index: 2500;
     display:none;
-    background:#000; /* opaco total */
+    background:#000;
     overflow:hidden;
     padding:
       calc(16px + env(safe-area-inset-top))
@@ -841,7 +804,6 @@
   }
   .psy-overlay.open{ display:block; }
 
-  /* canvas ocupa todo; shader pinta a pantalla completa */
   .psy-canvas{
     position:absolute;
     inset:0;
@@ -942,16 +904,6 @@
     .psy-now .title{ font-size:16px; }
     .psy-controls button{ width:60px; height:60px; }
   }
-
-  @media (prefers-reduced-motion: reduce){
-    #cover{ animation:none !important; }
-    .crt:hover #cover{ animation:none !important; }
-    .progress-bar{ animation:none !important; }
-    #play-pause.pulse{ animation:none !important; }
-    .support-btn{ animation:none !important; }
-    .subtitle, .subtitle::before, .subtitle::after{ animation:none !important; transform:none !important; filter:none !important; }
-    .vhs, .vhs::before, .vhs::after, .chroma, .tear{ animation:none !important; opacity:0 !important; }
-  }
 </style>
 </head>
 
@@ -967,7 +919,6 @@
 
     <div class="crt" aria-hidden="true">
       <img id="cover" src="tv.webp" alt="Televisor CRT / portada" />
-
       <div class="tv-screen" aria-hidden="true">
         <div class="vhs">
           <div class="chroma r"></div>
@@ -1073,7 +1024,7 @@
     <div class="sig">EMISIÓN NO AUTORIZADA · NO MIRES ATRÁS!</div>
   </main>
 
-  <!-- ✅ OVERLAY PSICODÉLICO OPACO -->
+  <!-- OVERLAY PSICODÉLICO -->
   <div class="psy-overlay" id="psy-overlay" aria-hidden="true">
     <canvas id="psy-canvas" class="psy-canvas" aria-hidden="true"></canvas>
 
@@ -1163,7 +1114,6 @@
 
   const tracks = Array.from(document.querySelectorAll(".track"));
 
-  /* ===== PSY MODE ===== */
   const psyBtn = $("psy-btn");
   const psyOverlay = $("psy-overlay");
   const psyCanvas = $("psy-canvas");
@@ -1176,7 +1126,7 @@
 
   let currentIndex = 0;
   let lastVolume = 1;
-  let loopMode = 0; // 0=OFF,1=SONG,2=ALBUM
+  let loopMode = 0;
   let shuffleOn = false;
   let hasLoaded = false;
 
@@ -1190,8 +1140,80 @@
     idx: "cm_idx",
     shuffle: "cm_shuffle",
     loop: "cm_loop",
-    time: "cm_time" // ✅ continuar automático donde lo dejaste
+    time: "cm_time"
   };
+
+  // ✅ AUDIO ANALYSER (ritmo real)
+  let audioCtx = null;
+  let analyser = null;
+  let analyserData = null;
+  let mediaSrcNode = null;
+  let ampSmooth = 0;
+
+  function ensureAnalyser(){
+    try{
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if(!AC) return false;
+
+      if(!audioCtx) audioCtx = new AC();
+      if(audioCtx.state === "suspended") audioCtx.resume().catch(()=>{});
+
+      if(!analyser){
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 1024;
+        analyser.smoothingTimeConstant = 0.75;
+        analyserData = new Uint8Array(analyser.frequencyBinCount);
+      }
+
+      if(!mediaSrcNode){
+        // OJO: solo se puede crear una vez por <audio>
+        mediaSrcNode = audioCtx.createMediaElementSource(audio);
+        mediaSrcNode.connect(analyser);
+        analyser.connect(audioCtx.destination);
+      }
+
+      return true;
+    }catch{
+      return false;
+    }
+  }
+
+  function getBeatAmp(){
+    // si no hay analyser, fallback a volumen (no ritmo, pero no se rompe)
+    if(!analyser || !analyserData){
+      return Math.max(0, Math.min(1, audio.volume || 0));
+    }
+
+    analyser.getByteFrequencyData(analyserData);
+
+    // “bajos” = primeros bins
+    const bassBins = 18;
+    let bass = 0;
+    for(let i=0;i<bassBins;i++) bass += analyserData[i];
+    bass /= (bassBins * 255);
+
+    // energía global (rms aprox)
+    let sum = 0;
+    for(let i=0;i<analyserData.length;i++){
+      const v = analyserData[i] / 255;
+      sum += v*v;
+    }
+    const rms = Math.sqrt(sum / analyserData.length);
+
+    // mezcla: bajos mandan, rms da vida
+    let amp = (bass * 0.75) + (rms * 0.25);
+
+    // compresión (más “bombeo”)
+    amp = Math.pow(Math.max(0, amp), 0.55);
+
+    // suavizado para que no tiemble feo
+    ampSmooth = ampSmooth * 0.82 + amp * 0.18;
+
+    // si está en pausa, baja un poco
+    if(audio.paused) ampSmooth *= 0.92;
+
+    return Math.max(0, Math.min(1, ampSmooth));
+  }
 
   // ===== PRELOAD NEXT =====
   let preloader = null;
@@ -1393,7 +1415,6 @@
   function showPreview(){ progressContainer.classList.add("preview"); }
   function hidePreview(){ progressContainer.classList.remove("preview"); }
 
-  // ===== SCRUBBING SUAVE (RAF) =====
   let pendingSeekPct = null;
   let rafSeekId = 0;
 
@@ -1417,7 +1438,6 @@
     pendingSeekPct = null;
   }
 
-  // ===== POINTER EVENTS =====
   function onPointerDown(e){
     e.preventDefault();
     if(!audio.duration) return;
@@ -1447,7 +1467,6 @@
     hidePreview();
   }
 
-  // ===== TOUCH FALLBACK =====
   function touchClientX(ev){
     const t = ev.touches && ev.touches[0] ? ev.touches[0] : (ev.changedTouches ? ev.changedTouches[0] : null);
     return t ? t.clientX : null;
@@ -1497,7 +1516,6 @@
     try{ localStorage.removeItem(LS.time); }catch{}
   }
 
-  // ===== PLAYER =====
   function loadTrack(index){
     currentIndex = index;
 
@@ -1532,8 +1550,10 @@
   }
 
   async function playCurrent(){
-    if(!hasLoaded) loadTrack(currentIndex);
+    // ✅ importante: analyser necesita gesto de usuario (iOS)
+    ensureAnalyser();
 
+    if(!hasLoaded) loadTrack(currentIndex);
     const myId = ++loadId;
 
     try{
@@ -1556,6 +1576,7 @@
   }
 
   function togglePlay(){
+    ensureAnalyser();
     if(audio.paused) playCurrent();
     else{
       audio.pause();
@@ -1566,8 +1587,6 @@
   function stopTrack(){
     ++loadId;
     cancelSeekRAF();
-
-    /* ✅ STOP: borra el tiempo guardado */
     clearSavedTime();
 
     audio.pause();
@@ -1692,10 +1711,7 @@
     hidePreview();
   }
 
-  /* ============================================================
-     ✅ PSY VISUALS — WebGL FRAGMENT SHADER (kaleidoscope + lava)
-     ============================================================ */
-
+  /* ===== WebGL Psy visuals ===== */
   let gl = null;
   let glProg = null;
   let glBuf = null;
@@ -1706,26 +1722,20 @@
 
   const VERT = `
     attribute vec2 aPos;
-    void main(){
-      gl_Position = vec4(aPos, 0.0, 1.0);
-    }
+    void main(){ gl_Position = vec4(aPos, 0.0, 1.0); }
   `;
 
-  // Kaleidoscopio (fold polar) + lava (fbm + warp) + look setentero (palette cálida + grano + scanlines)
   const FRAG = `
     precision highp float;
     uniform vec2 uRes;
     uniform float uTime;
-    uniform float uAmp; // 0..1 (volumen)
+    uniform float uAmp;
 
-    // hash
     float hash21(vec2 p){
       p = fract(p*vec2(123.34, 456.21));
       p += dot(p, p+34.345);
       return fract(p.x*p.y);
     }
-
-    // noise
     float noise(vec2 p){
       vec2 i = floor(p);
       vec2 f = fract(p);
@@ -1736,7 +1746,6 @@
       vec2 u = f*f*(3.0-2.0*f);
       return mix(a,b,u.x) + (c-a)*u.y*(1.0-u.x) + (d-b)*u.x*u.y;
     }
-
     float fbm(vec2 p){
       float v = 0.0;
       float a = 0.5;
@@ -1747,24 +1756,19 @@
       }
       return v;
     }
-
     vec3 palette70(float t){
-      // setentero: naranja, rojo, magenta, verde ácido
       vec3 a = vec3(0.45, 0.18, 0.08);
       vec3 b = vec3(0.55, 0.45, 0.35);
       vec3 c = vec3(1.00, 0.90, 0.85);
       vec3 d = vec3(0.05, 0.45, 0.75);
       return a + b*cos(6.28318*(c*t + d));
     }
-
     vec2 kalei(vec2 uv, float slices){
       float r = length(uv);
       float a = atan(uv.y, uv.x);
-
       float k = 6.28318530718 / slices;
       a = mod(a, k);
       a = abs(a - k*0.5);
-
       return vec2(cos(a), sin(a)) * r;
     }
 
@@ -1772,54 +1776,45 @@
       vec2 frag = gl_FragCoord.xy;
       vec2 uv = (frag - 0.5*uRes) / min(uRes.x, uRes.y);
 
-      // Kaleidoscopio con más densidad cuando hay volumen
-      float slices = mix(10.0, 18.0, smoothstep(0.0, 1.0, uAmp));
+      float slices = mix(10.0, 20.0, smoothstep(0.0, 1.0, uAmp));
       uv = kalei(uv, slices);
 
-      // movimiento orgánico (lava)
-      float t = uTime * mix(0.35, 0.55, uAmp);
-      vec2 p = uv * 2.2;
+      float speed = mix(0.25, 0.85, uAmp);
+      float t = uTime * speed;
 
-      // warp “lavalamp”
+      vec2 p = uv * mix(2.0, 2.7, uAmp);
+
       vec2 q = vec2(
-        fbm(p + vec2(0.0, t*0.8)),
-        fbm(p + vec2(3.1, t*0.6))
+        fbm(p + vec2(0.0, t*0.9)),
+        fbm(p + vec2(3.1, t*0.7))
       );
       vec2 r = vec2(
-        fbm(p + 2.0*q + vec2(1.7, 9.2) + t*0.35),
-        fbm(p + 2.0*q + vec2(8.3, 2.8) + t*0.30)
+        fbm(p + 2.0*q + vec2(1.7, 9.2) + t*0.45),
+        fbm(p + 2.0*q + vec2(8.3, 2.8) + t*0.35)
       );
 
       float f = fbm(p + 3.0*r);
 
-      // “blobs” lava: threshold suave
       float blobs = smoothstep(0.35, 0.72, f);
       float rim   = smoothstep(0.62, 0.92, f) - smoothstep(0.92, 1.00, f);
 
-      // color setentero, con modulaciones
-      float ct = f*1.2 + 0.25*sin(t*0.9) + 0.15*cos(uv.x*2.0);
+      float ct = f*1.3 + 0.35*sin(t*1.0) + 0.15*cos(uv.x*2.0);
       vec3 col = palette70(ct);
 
-      // brillo tipo aceite/lava
-      col *= mix(0.45, 1.25, blobs);
-      col += rim * vec3(1.0, 0.75, 0.25) * (0.6 + 0.6*uAmp);
+      col *= mix(0.40, 1.35, blobs);
+      col += rim * vec3(1.0, 0.75, 0.25) * (0.55 + 0.85*uAmp);
 
-      // viñeta
       float vig = smoothstep(1.15, 0.15, length(uv));
       col *= vig;
 
-      // scanlines + grano
       float scan = 0.92 + 0.08*sin(frag.y*0.9);
       float grain = (hash21(frag + uTime*120.0) - 0.5) * 0.10;
       col *= scan;
       col += grain;
 
-      // extra “glow”
-      col += pow(blobs, 3.0) * vec3(0.18, 0.35, 0.12) * (0.35 + 0.65*uAmp);
+      col += pow(blobs, 3.0) * vec3(0.18, 0.35, 0.12) * (0.30 + 0.90*uAmp);
 
-      // clamp
       col = clamp(col, 0.0, 1.0);
-
       gl_FragColor = vec4(col, 1.0);
     }
   `;
@@ -1838,7 +1833,7 @@
 
   function initWebGL(){
     if(!psyCanvas) return false;
-    gl = psyCanvas.getContext("webgl", { alpha:false, antialias:true, premultipliedAlpha:false, preserveDrawingBuffer:false });
+    gl = psyCanvas.getContext("webgl", { alpha:false, antialias:true, premultipliedAlpha:false });
     if(!gl) return false;
 
     const vs = createShader(gl.VERTEX_SHADER, VERT);
@@ -1849,7 +1844,6 @@
     gl.attachShader(glProg, vs);
     gl.attachShader(glProg, fs);
     gl.linkProgram(glProg);
-
     if(!gl.getProgramParameter(glProg, gl.LINK_STATUS)){
       console.warn("Link error:", gl.getProgramInfoLog(glProg));
       return false;
@@ -1857,7 +1851,6 @@
 
     gl.useProgram(glProg);
 
-    // fullscreen quad
     glBuf = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, glBuf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
@@ -1897,20 +1890,22 @@
     psyRAF = requestAnimationFrame(psyRender);
 
     const t = (performance.now() - psyStart) * 0.001;
-    const amp = clamp01(audio.volume || 0);
+
+    // ✅ aquí: ritmo real
+    const amp = getBeatAmp();
 
     gl.uniform1f(uTime, t);
     gl.uniform1f(uAmp, amp);
-
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
 
   function startPsy(){
     if(psyRunning) return;
+
+    ensureAnalyser(); // ✅ para que haya datos del ritmo
     if(!gl){
       const ok = initWebGL();
       if(!ok){
-        // si el móvil no soporta webgl, al menos negro y aviso breve
         setStatus("Tu dispositivo no soporta visuales (WebGL).");
         return;
       }
@@ -1927,14 +1922,11 @@
     psyRAF = 0;
   }
 
-  /* ===========================
-     PSY overlay controls
-     =========================== */
   function openPsy(){
+    ensureAnalyser();
     psyOverlay.classList.add("open");
     psyOverlay.setAttribute("aria-hidden","false");
     document.body.classList.add("psy-open");
-
     setPsyTitle();
     setPsyPlayIcon();
     startPsy();
@@ -1945,7 +1937,6 @@
     psyOverlay.classList.remove("open");
     psyOverlay.setAttribute("aria-hidden","true");
     document.body.classList.remove("psy-open");
-
     if(document.fullscreenElement){
       document.exitFullscreen().catch(()=>{});
     }
@@ -1962,11 +1953,9 @@
       else await document.exitFullscreen();
     }catch{}
     updateFullscreenIcon();
-    // al cambiar fullscreen, re-ajusta viewport
     setTimeout(()=>{ if(gl) resizePsyCanvas(); }, 50);
   }
 
-  /* ✅ CONTINUAR AUTOMÁTICO */
   function applyResumeTimeIfAny(){
     const t = Number(localStorage.getItem(LS.time));
     if(!Number.isFinite(t) || t <= 0) return;
@@ -1996,7 +1985,6 @@
     loopBtn.addEventListener("click", cycleLoop);
     shareBtn.addEventListener("click", sharePage);
 
-    // PSY
     psyBtn.addEventListener("click", openPsy);
     psyClose.addEventListener("click", closePsy);
     psyFullscreen.addEventListener("click", toggleFullscreen);
