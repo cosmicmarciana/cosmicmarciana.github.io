@@ -85,20 +85,9 @@
         transparent 1px,
         transparent 4px
       ),
-      linear-gradient(
-        180deg,
-        rgba(255,255,255,.06),
-        rgba(0,0,0,.08)
-      ),
-      linear-gradient(
-        180deg,
-        #1a1412,
-        #0e0a09 50%,
-        #050303
-      );
+      linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.08)),
+      linear-gradient(180deg, #1a1412, #0e0a09 50%, #050303);
   }
-
-  body.psy-open{ overflow:hidden; touch-action:none; }
 
   .wrap{ width:100%; max-width:820px; text-align:center; }
 
@@ -124,7 +113,7 @@
   }
 
   /* ===== Subtítulo rojo con glitch ===== */
-  .subtitle-wrap{ width:100%; display:block; margin:0 0 6px 0; }
+  .subtitle-wrap{ width:100%; display:block; margin: 0 0 6px 0; }
 
   .subtitle{
     position:relative;
@@ -141,7 +130,9 @@
     opacity: .95;
     line-height: 1.05;
     transform: translateZ(0);
-    text-shadow: 0 0 14px rgba(255,43,43,.15), 0 0 2px rgba(255,43,43,.25);
+    text-shadow:
+      0 0 14px rgba(255,43,43,.15),
+      0 0 2px rgba(255,43,43,.25);
     user-select:none;
     animation: red-flicker 5.4s infinite;
   }
@@ -316,7 +307,9 @@
   .crt:active #cover{ transform: translateY(-1px); }
   .crt:hover #cover{ transform: translateY(-2px); animation: crt-glitch .35s steps(2,end); }
 
-  /* VHS SCREEN */
+  /* ===========================
+     VHS GLITCH SOLO EN LA PANTALLA
+     =========================== */
   .tv-screen{
     position:absolute;
     left: 17.63%;
@@ -351,7 +344,9 @@
   body.paused .vhs{
     opacity: calc(0.28 + (0.72 * var(--gvhs)));
     transform: translate3d(var(--hx), var(--hy), 0);
-    filter: contrast(1.23) saturate(1.26) blur(var(--hblur));
+    filter:
+      contrast(1.23) saturate(1.26)
+      blur(var(--hblur));
     animation:
       vhs-hold-breathe 5.2s infinite steps(2,end),
       vhs-hold-tick 7.8s infinite steps(2,end);
@@ -362,8 +357,18 @@
     position:absolute;
     inset:0;
     background:
-      repeating-linear-gradient(to bottom, rgba(255,255,255,0.07) 0px, rgba(255,255,255,0.07) 1px, rgba(0,0,0,0) 3px),
-      repeating-linear-gradient(90deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, rgba(0,0,0,0) 6px);
+      repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.07) 0px,
+        rgba(255,255,255,0.07) 1px,
+        rgba(0,0,0,0) 3px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        rgba(255,255,255,0.05) 0px,
+        rgba(255,255,255,0.05) 1px,
+        rgba(0,0,0,0) 6px
+      );
     opacity: 0.95;
     animation: vhs-noise 0.12s infinite steps(2,end);
   }
@@ -387,20 +392,34 @@
     animation: vhs-track 1.05s infinite linear;
   }
 
-  body.paused .vhs::before{ animation: vhs-noise-hold 1.25s infinite steps(2,end); opacity: 0.92; }
-  body.paused .vhs::after{ animation: vhs-track-hold 8.2s infinite steps(2,end); opacity: 0.95; }
+  body.paused .vhs::before{
+    animation: vhs-noise-hold 1.25s infinite steps(2,end);
+    opacity: 0.92;
+  }
+  body.paused .vhs::after{
+    animation: vhs-track-hold 8.2s infinite steps(2,end);
+    opacity: 0.95;
+  }
 
-  .vhs .chroma{ position:absolute; inset:0; opacity:0; pointer-events:none; mix-blend-mode: screen; }
+  .vhs .chroma{
+    position:absolute;
+    inset:0;
+    opacity:0;
+    pointer-events:none;
+    mix-blend-mode: screen;
+  }
   body.playing .vhs .chroma{ opacity: 0.22; }
   body.paused  .vhs .chroma{ opacity: 0.26; }
 
   .vhs .chroma.r{
-    background: repeating-linear-gradient(to bottom, rgba(255,0,0,0.11), rgba(255,0,0,0.11) 1px, transparent 3px);
+    background:
+      repeating-linear-gradient(to bottom, rgba(255,0,0,0.11), rgba(255,0,0,0.11) 1px, transparent 3px);
     transform: translateX(-3.4px);
     animation: chroma-r 0.28s infinite steps(2,end);
   }
   .vhs .chroma.b{
-    background: repeating-linear-gradient(to bottom, rgba(0,120,255,0.11), rgba(0,120,255,0.11) 1px, transparent 3px);
+    background:
+      repeating-linear-gradient(to bottom, rgba(0,120,255,0.11), rgba(0,120,255,0.11) 1px, transparent 3px);
     transform: translateX(3.8px);
     animation: chroma-b 0.26s infinite steps(2,end);
   }
@@ -415,41 +434,68 @@
     height: 10%;
     top: 15%;
     opacity:0;
-    background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.38), rgba(255,255,255,0));
+    background: linear-gradient(
+      90deg,
+      rgba(255,255,255,0),
+      rgba(255,255,255,0.38),
+      rgba(255,255,255,0)
+    );
     filter: blur(1.2px);
     mix-blend-mode: screen;
     transform: translateX(0);
   }
-  body.playing .tear{ opacity: 0.50; animation: vhs-tear 0.22s infinite steps(2,end); }
-  body.paused .tear{ opacity: 0.55; transform: translateX(calc(var(--hx) * -1)); animation: tear-hold 9s infinite steps(2,end); }
+  body.playing .tear{
+    opacity: 0.50;
+    animation: vhs-tear 0.22s infinite steps(2,end);
+  }
+  body.paused .tear{
+    opacity: 0.55;
+    transform: translateX(calc(var(--hx) * -1));
+    animation: tear-hold 9s infinite steps(2,end);
+  }
 
   .tear.t1{ top: var(--t1); }
   .tear.t2{ top: var(--t2); height: 8%; }
   .tear.t3{ top: var(--t3); height: 12%; }
 
-  @keyframes vhs-track{ 0%{ transform: translateY(-10%);} 100%{ transform: translateY(780%);} }
-  @keyframes vhs-noise{ 0%{ transform: translateX(0); filter:none;} 50%{ transform: translateX(-1.2px); filter: contrast(1.12);} 100%{ transform: translateX(0); filter:none;} }
-  @keyframes vhs-global-jitter{ 0%{ transform: translate(0,0);} 25%{ transform: translate(-2px,0);} 50%{ transform: translate(2px,-1px);} 75%{ transform: translate(-1px,1px);} 100%{ transform: translate(0,0);} }
-  @keyframes vhs-vertical-float{ 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-2px);} }
-  @keyframes vhs-tear{ 0%{ transform: translateX(-18px);} 50%{ transform: translateX(22px);} 100%{ transform: translateX(-14px);} }
-  @keyframes chroma-r{ 0%{ transform: translateX(-3px);} 50%{ transform: translateX(-5px);} 100%{ transform: translateX(-3px);} }
-  @keyframes chroma-b{ 0%{ transform: translateX(3px);} 50%{ transform: translateX(6px);} 100%{ transform: translateX(3px);} }
+  @keyframes vhs-track{ 0%{ transform: translateY(-10%); } 100%{ transform: translateY(780%); } }
+  @keyframes vhs-noise{ 0%{ transform: translateX(0); filter:none; } 50%{ transform: translateX(-1.2px); filter: contrast(1.12); } 100%{ transform: translateX(0); filter:none; } }
+  @keyframes vhs-global-jitter{ 0%{ transform: translate(0,0); } 25%{ transform: translate(-2px, 0); } 50%{ transform: translate( 2px,-1px); } 75%{ transform: translate(-1px, 1px); } 100%{ transform: translate(0,0); } }
+  @keyframes vhs-vertical-float{ 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-2px); } }
+  @keyframes vhs-tear{ 0%{ transform: translateX(-18px); } 50%{ transform: translateX( 22px); } 100%{ transform: translateX(-14px); } }
+  @keyframes chroma-r{ 0%{ transform: translateX(-3px); } 50%{ transform: translateX(-5px); } 100%{ transform: translateX(-3px); } }
+  @keyframes chroma-b{ 0%{ transform: translateX(3px); } 50%{ transform: translateX(6px); } 100%{ transform: translateX(3px); } }
   @keyframes vhs-hold-breathe{
-    0%{ transform: translate3d(var(--hx), var(--hy), 0); }
-    35%{ transform: translate3d(calc(var(--hx) + .55px), calc(var(--hy) - .35px), 0); }
-    70%{ transform: translate3d(calc(var(--hx) - .45px), calc(var(--hy) + .25px), 0); }
-    100%{ transform: translate3d(var(--hx), var(--hy), 0); }
+    0%   { transform: translate3d(var(--hx), var(--hy), 0); }
+    35%  { transform: translate3d(calc(var(--hx) + .55px), calc(var(--hy) - .35px), 0); }
+    70%  { transform: translate3d(calc(var(--hx) - .45px), calc(var(--hy) + .25px), 0); }
+    100% { transform: translate3d(var(--hx), var(--hy), 0); }
   }
   @keyframes vhs-hold-tick{
-    0%,86%,100%{ filter: contrast(1.23) saturate(1.26) blur(var(--hblur)); }
-    90%{ filter: contrast(1.30) saturate(1.35) blur(calc(var(--hblur) + .25px)); }
-    92%{ filter: contrast(1.23) saturate(1.26) blur(var(--hblur)); }
+    0%   { filter: contrast(1.23) saturate(1.26) blur(var(--hblur)); }
+    86%  { filter: contrast(1.23) saturate(1.26) blur(var(--hblur)); }
+    90%  { filter: contrast(1.30) saturate(1.35) blur(calc(var(--hblur) + .25px)); }
+    92%  { filter: contrast(1.23) saturate(1.26) blur(var(--hblur)); }
+    100% { filter: contrast(1.23) saturate(1.26) blur(var(--hblur)); }
   }
-  @keyframes vhs-track-hold{ 0%,88%{ transform: translateY(0%);} 100%{ transform: translateY(26%);} }
-  @keyframes vhs-noise-hold{ 0%{ transform: translateX(0); filter:none;} 40%{ transform: translateX(-.8px); filter: contrast(1.06);} 80%{ transform: translateX(.7px); filter:none;} 100%{ transform: translateX(0); filter:none;} }
-  @keyframes chroma-hold-r{ 0%,100%{ transform: translateX(var(--hr)); } 50%{ transform: translateX(calc(var(--hr) - .55px)); } }
-  @keyframes chroma-hold-b{ 0%,100%{ transform: translateX(var(--hb)); } 50%{ transform: translateX(calc(var(--hb) + .65px)); } }
-  @keyframes tear-hold{ 0%,84%{ opacity:.52; } 100%{ opacity:.66; } }
+  @keyframes vhs-track-hold{ 0%{ transform: translateY(0%); } 88%{ transform: translateY(0%); } 100%{ transform: translateY(26%); } }
+  @keyframes vhs-noise-hold{
+    0%   { transform: translateX(0); filter:none; }
+    40%  { transform: translateX(-.8px); filter: contrast(1.06); }
+    80%  { transform: translateX(.7px); filter:none; }
+    100% { transform: translateX(0); filter:none; }
+  }
+  @keyframes chroma-hold-r{
+    0%   { transform: translateX(var(--hr)); }
+    50%  { transform: translateX(calc(var(--hr) - .55px)); }
+    100% { transform: translateX(var(--hr)); }
+  }
+  @keyframes chroma-hold-b{
+    0%   { transform: translateX(var(--hb)); }
+    50%  { transform: translateX(calc(var(--hb) + .65px)); }
+    100% { transform: translateX(var(--hb)); }
+  }
+  @keyframes tear-hold{ 0%{ opacity:.52; } 84%{ opacity:.52; } 100%{ opacity:.66; } }
 
   /* Controls */
   .controls{
@@ -495,7 +541,6 @@
   #play-pause:hover{ color:#000; box-shadow:0 0 34px rgba(0,255,0,.45); }
 
   #play-pause.pulse{ animation: pulse 1.35s ease-in-out infinite; }
-
   @keyframes pulse{
     0%,100%{ transform: translateY(0) scale(1); box-shadow:0 0 22px rgba(0,255,0,.28); }
     50%{ transform: translateY(-1px) scale(1.04); box-shadow:0 0 38px rgba(0,255,0,.45); }
@@ -656,11 +701,24 @@
     cursor:pointer;
     transition:.18s ease;
   }
-  .volume-icon:hover{ color: var(--neon); border-color: rgba(0,255,0,.35); transform: translateY(-1px); }
-  #volume-slider{ width:160px; height:4px; cursor:pointer; accent-color: var(--neon); }
+  .volume-icon:hover{
+    color: var(--neon);
+    border-color: rgba(0,255,0,.35);
+    transform: translateY(-1px);
+  }
+  #volume-slider{
+    width:160px;
+    height:4px;
+    cursor:pointer;
+    accent-color: var(--neon);
+  }
 
   /* ===== SUPPORT (CAFÉ) ===== */
-  .support{ margin: 18px auto 10px; width: min(720px, 100%); text-align:center; }
+  .support{
+    margin: 18px auto 10px;
+    width: min(720px, 100%);
+    text-align:center;
+  }
 
   .support-btn{
     display:inline-flex;
@@ -675,20 +733,41 @@
     transition:.18s ease;
     height:auto;
     width:auto;
+
     animation: neon-only 4.8s ease-in-out infinite;
     box-shadow: 0 0 14px rgba(0,255,0,.16);
   }
 
   @keyframes neon-only{
-    0%, 70%, 100%{ box-shadow: 0 0 14px rgba(0,255,0,.16); border-color: rgba(0,255,0,.40); }
-    80%{ box-shadow: 0 0 32px rgba(0,255,0,.34); border-color: rgba(0,255,0,.75); }
-    90%{ box-shadow: 0 0 18px rgba(0,255,0,.22); border-color: rgba(0,255,0,.50); }
+    0%, 70%, 100%{
+      box-shadow: 0 0 14px rgba(0,255,0,.16);
+      border-color: rgba(0,255,0,.40);
+    }
+    80%{
+      box-shadow: 0 0 32px rgba(0,255,0,.34);
+      border-color: rgba(0,255,0,.75);
+    }
+    90%{
+      box-shadow: 0 0 18px rgba(0,255,0,.22);
+      border-color: rgba(0,255,0,.50);
+    }
   }
 
-  .support-btn:hover{ transform:none !important; border-color: rgba(0,255,0,.70); color: var(--neon); box-shadow: 0 0 28px rgba(0,255,0,.30); }
+  .support-btn:hover{
+    transform:none !important;
+    border-color: rgba(0,255,0,.70);
+    color: var(--neon);
+    box-shadow: 0 0 28px rgba(0,255,0,.30);
+  }
   .support-btn:active{ transform:none !important; }
 
-  .support-note{ margin-top:10px; font-size:12px; color: var(--muted); opacity:.9; letter-spacing:.03em; }
+  .support-note{
+    margin-top:10px;
+    font-size:12px;
+    color: var(--muted);
+    opacity:.9;
+    letter-spacing:.03em;
+  }
 
   .download-link{
     display:inline-flex;
@@ -704,9 +783,18 @@
     text-decoration:none;
     transition:.18s ease;
   }
-  .download-link:hover{ color: var(--neon); border-color: rgba(0,255,0,.35); box-shadow: 0 0 18px rgba(0,255,0,.16); }
+  .download-link:hover{
+    color: var(--neon);
+    border-color: rgba(0,255,0,.35);
+    box-shadow: 0 0 18px rgba(0,255,0,.16);
+  }
 
-  .download-note{ margin-top:8px; font-size:12px; color: var(--muted); opacity:.9; }
+  .download-note{
+    margin-top:8px;
+    font-size:12px;
+    color: var(--muted);
+    opacity:.9;
+  }
 
   /* ===== MODAL ===== */
   .modal{
@@ -753,14 +841,37 @@
     pointer-events:auto;
     touch-action: manipulation;
   }
-  .modal-close:hover{ transform:none !important; border-color: rgba(0,255,0,.45) !important; color: var(--neon) !important; }
+  .modal-close:hover{
+    transform:none !important;
+    border-color: rgba(0,255,0,.45) !important;
+    color: var(--neon) !important;
+  }
   .modal-close svg{
-    width:18px; height:18px; display:block; fill:none; stroke:currentColor;
-    stroke-width:2.2; stroke-linecap:round; pointer-events:none !important;
+    width:18px;
+    height:18px;
+    display:block;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:2.2;
+    stroke-linecap:round;
+    pointer-events:none !important;
   }
 
-  .modal-title{ font-size:14px; letter-spacing:.16em; text-transform:uppercase; color: var(--ink); opacity:.95; margin: 4px 0 8px; }
-  .modal-text{ font-size:13px; color: var(--muted); line-height:1.45; margin-bottom:12px; }
+  .modal-title{
+    font-size:14px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color: var(--ink);
+    opacity:.95;
+    margin: 4px 0 8px;
+  }
+
+  .modal-text{
+    font-size:13px;
+    color: var(--muted);
+    line-height:1.45;
+    margin-bottom:12px;
+  }
 
   .support-row{
     display:flex;
@@ -772,8 +883,20 @@
     background: rgba(255,255,255,.05);
     border:1px solid rgba(255,255,255,.08);
   }
-  .support-label{ font-size:12px; color: var(--muted); letter-spacing:.10em; text-transform:uppercase; }
-  .support-value{ font-size:13px; color: var(--ink); flex:1; text-align:center; }
+
+  .support-label{
+    font-size:12px;
+    color: var(--muted);
+    letter-spacing:.10em;
+    text-transform:uppercase;
+  }
+
+  .support-value{
+    font-size:13px;
+    color: var(--ink);
+    flex:1;
+    text-align:center;
+  }
 
   .copy-btn{
     padding: 10px 12px;
@@ -787,10 +910,17 @@
     width:auto;
     height:auto;
   }
-  .copy-btn:hover{ color: var(--neon); border-color: rgba(0,255,0,.5); }
+  .copy-btn:hover{
+    color: var(--neon);
+    border-color: rgba(0,255,0,.5);
+  }
 
   /* Playlist */
-  .playlist{ margin:18px auto 0; text-align:left; width:min(720px, 100%); }
+  .playlist{
+    margin:18px auto 0;
+    text-align:left;
+    width:min(720px, 100%);
+  }
   .track{
     padding:10px 14px;
     border-radius:10px;
@@ -801,13 +931,38 @@
     border:1px solid rgba(255,255,255,.08);
     color: var(--ink);
   }
-  .track:hover{ background: rgba(255,255,255,0.09); transform: translateY(-1px); border-color: rgba(0,255,0,.25); }
-  .track.current{ background: rgba(0,255,0,0.10); border-color: rgba(0,255,0,.45); color: var(--neon); }
+  .track:hover{
+    background: rgba(255,255,255,0.09);
+    transform: translateY(-1px);
+    border-color: rgba(0,255,0,.25);
+  }
+  .track.current{
+    background: rgba(0,255,0,0.10);
+    border-color: rgba(0,255,0,.45);
+    color: var(--neon);
+  }
 
-  .sig{ margin-top:16px; font-size:12px; opacity:.6; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+  .sig{
+    margin-top:16px;
+    font-size:12px;
+    opacity:.6;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
 
-  @keyframes crt-flicker{ 0%{filter:brightness(1) contrast(1)} 50%{filter:brightness(.97) contrast(1)} 100%{filter:brightness(1) contrast(1)} }
-  @keyframes crt-glitch{ 0%{transform:translate(0); filter:none} 25%{transform:translate(-1px,0); filter:hue-rotate(-6deg)} 50%{transform:translate(1px,0); filter:hue-rotate(6deg)} 75%{transform:translate(-1px,0); filter:contrast(1.1)} 100%{transform:translate(0); filter:none} }
+  @keyframes crt-flicker{
+    0%{filter:brightness(1) contrast(1)}
+    50%{filter:brightness(.97) contrast(1)}
+    100%{filter:brightness(1) contrast(1)}
+  }
+  @keyframes crt-glitch{
+    0%{transform:translate(0); filter:none}
+    25%{transform:translate(-1px,0); filter:hue-rotate(-6deg)}
+    50%{transform:translate(1px,0); filter:hue-rotate(6deg)}
+    75%{transform:translate(-1px,0); filter:contrast(1.1)}
+    100%{transform:translate(0); filter:none}
+  }
 
   @media (max-width:480px){
     h1{ font-size:18px; }
@@ -822,13 +977,24 @@
     .progress-bar{ animation:none !important; }
     #play-pause.pulse{ animation:none !important; }
     .support-btn{ animation:none !important; }
-    .subtitle, .subtitle::before, .subtitle::after{ animation:none !important; transform:none !important; filter:none !important; }
-    .vhs, .vhs::before, .vhs::after, .chroma, .tear{ animation:none !important; opacity:0 !important; }
+
+    .subtitle, .subtitle::before, .subtitle::after{
+      animation:none !important;
+      transform:none !important;
+      filter:none !important;
+    }
+
+    .vhs, .vhs::before, .vhs::after, .chroma, .tear{
+      animation:none !important;
+      opacity:0 !important;
+    }
   }
 
   /* ===========================
      MODO PSICODÉLICO (OVERLAY)
      =========================== */
+  body.psy-open{ overflow:hidden; }
+
   .psy-btn{
     width:auto; height:auto;
     padding: 10px 14px;
@@ -878,18 +1044,23 @@
     gap:10px;
     pointer-events:none;
   }
-  .psy-ui .left, .psy-ui .right{ display:flex; gap:10px; align-items:center; pointer-events:auto; }
+  .psy-ui .left, .psy-ui .right{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    pointer-events:auto;
+  }
 
   .psy-chip{
     padding: 10px 12px;
     border-radius: 999px;
-    background: rgba(0,0,0,.45);
+    background: rgba(0,0,0,.50);
     border: 1px solid rgba(255,255,255,.14);
     color: var(--muted);
     font-size: 12px;
-    letter-spacing:.06em;
+    letter-spacing:.04em;
     backdrop-filter: blur(6px);
-    max-width: 70vw;
+    max-width: 74vw;
     white-space: nowrap;
     overflow:hidden;
     text-overflow: ellipsis;
@@ -910,18 +1081,7 @@
     box-shadow: 0 0 18px rgba(0,255,0,.16);
   }
 
-  .psy-full{
-    width:auto !important;
-    height:auto !important;
-    padding: 10px 12px !important;
-    border-radius: 999px !important;
-    background: rgba(0,255,0,.10) !important;
-    border: 1px solid rgba(0,255,0,.28) !important;
-    color: var(--ink) !important;
-  }
-  .psy-full:hover{ border-color: rgba(0,255,0,.55) !important; color: var(--neon) !important; }
-
-  /* ✅ Barra inferior de controles */
+  /* ✅ Barra inferior (botones pequeños) */
   .psy-bar{
     position:absolute;
     left: 14px;
@@ -929,46 +1089,36 @@
     bottom: calc(14px + env(safe-area-inset-bottom));
     display:flex;
     justify-content:center;
-    gap:12px;
+    gap:10px;
     pointer-events:none;
   }
 
   .psy-bar .psy-ctrl{
     pointer-events:auto;
-    width:56px;
-    height:56px;
+    width:44px;
+    height:44px;
     border-radius:999px;
-    border:1px solid rgba(0,255,0,.25);
+    border:1px solid rgba(0,255,0,.22);
     background: rgba(0,0,0,.35);
     color: var(--ink);
-    box-shadow: 0 0 18px rgba(0,0,0,.35);
+    box-shadow: 0 0 16px rgba(0,0,0,.35);
     backdrop-filter: blur(6px);
   }
-  .psy-bar .psy-ctrl:hover{ border-color: rgba(0,255,0,.55); color: var(--neon); }
+  .psy-bar .psy-ctrl:hover{
+    border-color: rgba(0,255,0,.55);
+    color: var(--neon);
+  }
 
   .psy-bar .psy-main{
-    width:64px;
-    height:64px;
+    width:50px;
+    height:50px;
     background: rgba(0,255,0,.14);
     border-color: rgba(0,255,0,.35);
-    box-shadow: 0 0 26px rgba(0,255,0,.14);
+    box-shadow: 0 0 22px rgba(0,255,0,.14);
   }
-  .psy-bar .psy-main:hover{ border-color: rgba(0,255,0,.75); box-shadow: 0 0 38px rgba(0,255,0,.22); }
-  .psy-bar .psy-main.pulse{ animation: pulse 1.35s ease-in-out infinite; }
-
-  .psy-hint{
-    position:absolute;
-    bottom: calc(96px + env(safe-area-inset-bottom));
-    left: 0; right: 0;
-    text-align:center;
-    font-size:12px;
-    color: rgba(234,234,234,.7);
-    letter-spacing:.06em;
-    text-transform: uppercase;
-    pointer-events:none;
-    mix-blend-mode: screen;
-    opacity:.8;
-    text-shadow: 0 0 18px rgba(0,255,0,.14);
+  .psy-bar .psy-main:hover{
+    border-color: rgba(0,255,0,.75);
+    box-shadow: 0 0 34px rgba(0,255,0,.20);
   }
 </style>
 </head>
@@ -985,7 +1135,6 @@
 
     <div class="crt" aria-hidden="true">
       <img id="cover" src="tv.webp" alt="Televisor CRT / portada" />
-
       <div class="tv-screen" aria-hidden="true">
         <div class="vhs">
           <div class="chroma r"></div>
@@ -1096,20 +1245,15 @@
 
       <div class="psy-ui">
         <div class="left">
-          <div class="psy-chip" id="psy-now">MODO PSICODÉLICO</div>
+          <div class="psy-chip" id="psy-now">está sonando:</div>
         </div>
         <div class="right">
-          <button class="psy-full" id="psy-full" type="button" title="Pantalla completa">⛶</button>
           <button class="psy-close" id="psy-close" type="button" title="Cerrar">✕</button>
         </div>
       </div>
 
-      <div class="psy-hint">ESC salir · SPACE play/pause · ⛶ fullscreen</div>
-
-      <!-- ✅ Controles abajo: ⏮ ⏹ ⏯ ⏭ -->
       <div class="psy-bar" aria-label="Controles modo psicodélico">
         <button class="psy-ctrl" id="psy-prev" type="button" title="Anterior"></button>
-        <button class="psy-ctrl" id="psy-stop" type="button" title="Stop"></button>
         <button class="psy-ctrl psy-main" id="psy-play" type="button" title="Play/Pause"></button>
         <button class="psy-ctrl" id="psy-next" type="button" title="Siguiente"></button>
       </div>
@@ -1135,8 +1279,15 @@
   };
 
   const tvBase = "tv.webp";
-  const tvByTrack = ["tv1.webp","tv2.webp","tv3.webp","tv4.webp","tv5.webp","tv6.webp","tv7.webp","tv8.webp","tv9.webp","tv10.webp","tv11.webp"];
-  const sources = ["lospobres.mp3","vae.mp3","shows.mp3","STOP.mp3","reza.mp3","depie.mp3","quemarlo.mp3","nadie.mp3","loque.mp3","lacasa.mp3","tenemos.mp3"];
+  const tvByTrack = [
+    "tv1.webp","tv2.webp","tv3.webp","tv4.webp","tv5.webp","tv6.webp",
+    "tv7.webp","tv8.webp","tv9.webp","tv10.webp","tv11.webp"
+  ];
+
+  const sources = [
+    "lospobres.mp3","vae.mp3","shows.mp3","STOP.mp3","reza.mp3",
+    "depie.mp3","quemarlo.mp3","nadie.mp3","loque.mp3","lacasa.mp3","tenemos.mp3"
+  ];
 
   const $ = (id) => document.getElementById(id);
 
@@ -1178,15 +1329,24 @@
   let usingTouchFallback = false;
   let loadId = 0;
 
-  const LS = { vol:"cm_vol", idx:"cm_idx", shuffle:"cm_shuffle", loop:"cm_loop" };
+  const LS = {
+    vol: "cm_vol",
+    idx: "cm_idx",
+    shuffle: "cm_shuffle",
+    loop: "cm_loop"
+  };
 
-  // ===== PRELOAD NEXT =====
+  // ===== PRELOAD NEXT (más instantáneo) =====
   let preloader = null;
   let preloadedIndex = -1;
 
   function destroyPreloader(){
     if(!preloader) return;
-    try{ preloader.pause(); preloader.removeAttribute("src"); preloader.load(); }catch{}
+    try{
+      preloader.pause();
+      preloader.removeAttribute("src");
+      preloader.load();
+    }catch{}
     preloader = null;
     preloadedIndex = -1;
   }
@@ -1199,10 +1359,12 @@
     if(preloadedIndex === index && preloader) return;
 
     destroyPreloader();
+
     preloader = new Audio();
     preloader.preload = "auto";
     preloader.src = sources[index];
     preloadedIndex = index;
+
     try{ preloader.load(); } catch {}
   }
 
@@ -1238,11 +1400,14 @@
   function freezeVhsFrame(){
     const r = (min, max) => (min + Math.random() * (max - min));
     const root = document.documentElement;
+
     root.style.setProperty("--hx", `${r(-2.6, 2.6).toFixed(2)}px`);
     root.style.setProperty("--hy", `${r(-1.8, 1.8).toFixed(2)}px`);
     root.style.setProperty("--hblur", `${r(0.05, 0.55).toFixed(2)}px`);
+
     root.style.setProperty("--hr", `${r(-3.8, -1.4).toFixed(2)}px`);
     root.style.setProperty("--hb", `${r( 1.6,  4.2).toFixed(2)}px`);
+
     root.style.setProperty("--t1", `${r(10, 24).toFixed(1)}%`);
     root.style.setProperty("--t2", `${r(40, 58).toFixed(1)}%`);
     root.style.setProperty("--t3", `${r(64, 84).toFixed(1)}%`);
@@ -1277,6 +1442,7 @@
     playPauseBtn.innerHTML = audio.paused ? ICONS.play : ICONS.pause;
     playPauseBtn.classList.toggle("pulse", audio.paused);
     setPlayingClass();
+    psySyncPlayIcon();
   }
 
   function syncButtons(){
@@ -1301,6 +1467,7 @@
     else volumeIcon.innerHTML = ICONS.vol3;
   }
 
+  /* ✅ SOLO el TEXTO depende del volumen */
   function setGlitchFromVolume(){
     const v = clamp01(audio.volume || 0);
 
@@ -1427,6 +1594,7 @@
     usingTouchFallback = true;
     isScrubbing = true;
     ev.preventDefault();
+
     const cx = touchClientX(ev);
     if(cx == null) return;
     showPreview();
@@ -1438,6 +1606,7 @@
     if(!audio.duration) return;
     if(!isScrubbing) return;
     ev.preventDefault();
+
     const cx = touchClientX(ev);
     if(cx == null) return;
     showPreview();
@@ -1453,7 +1622,7 @@
     hidePreview();
   }
 
-  // ===== PLAYER =====
+  // ===== PLAYER (robusto) =====
   function loadTrack(index){
     currentIndex = index;
 
@@ -1502,22 +1671,23 @@
       if(myId !== loadId) return;
 
       setPlayIcon();
-      psySyncPlayIcon();
+      psyResumeAudioContextIfNeeded();
     } catch(e){
       setPlayIcon();
-      psySyncPlayIcon();
       setStatus("Pulsa Play para iniciar.");
     }
   }
 
-  function playTrack(index){ loadTrack(index); playCurrent(); }
+  function playTrack(index){
+    loadTrack(index);
+    playCurrent();
+  }
 
   function togglePlay(){
     if(audio.paused) playCurrent();
     else{
       audio.pause();
       setPlayIcon();
-      psySyncPlayIcon();
     }
   }
 
@@ -1539,9 +1709,11 @@
     localStorage.setItem(LS.idx, "0");
 
     destroyPreloader();
+
     resetProgressUI();
     clearVhsFrame();
-    setPlayIcon();
+    setPlayIcon(); // deja clases limpias
+
     document.documentElement.style.setProperty("--g", "0");
 
     psyUpdateNowPlaying();
@@ -1570,6 +1742,7 @@
     localStorage.setItem(LS.shuffle, shuffleOn ? "1" : "0");
     syncButtons();
     setStatus(shuffleOn ? "Shuffle ON" : "Shuffle OFF");
+
     if(!shuffleOn) primePreload(getNextIndexLinear());
     else destroyPreloader();
   }
@@ -1583,6 +1756,7 @@
 
   async function sharePage(){
     const url = window.location.href;
+
     try{
       if(navigator.share){
         await navigator.share({ title: "Cosmic Marciana", url });
@@ -1590,6 +1764,7 @@
         return;
       }
     } catch {}
+
     try{
       if(navigator.clipboard && window.isSecureContext){
         await navigator.clipboard.writeText(url);
@@ -1597,6 +1772,7 @@
         return;
       }
     } catch {}
+
     window.prompt("Copia este link:", url);
   }
 
@@ -1613,8 +1789,11 @@
     }
 
     const idx = Number(localStorage.getItem(LS.idx));
-    if(Number.isInteger(idx) && idx >= 0 && idx < sources.length) currentIndex = idx;
-    else currentIndex = 0;
+    if(Number.isInteger(idx) && idx >= 0 && idx < sources.length){
+      currentIndex = idx;
+    } else {
+      currentIndex = 0;
+    }
 
     shuffleOn = localStorage.getItem(LS.shuffle) === "1";
     const lm = Number(localStorage.getItem(LS.loop));
@@ -1688,11 +1867,12 @@
       currentTimeEl.textContent = formatTime(audio.currentTime);
       totalTimeEl.textContent = formatTime(audio.duration);
       setProgressUI(audio.currentTime / audio.duration);
+      if(psyEl.classList.contains("open")) psyUpdateNowPlaying();
     });
 
     audio.addEventListener("loadedmetadata", ()=>{
       if(audio.duration) totalTimeEl.textContent = formatTime(audio.duration);
-      psyUpdateNowPlaying();
+      if(psyEl.classList.contains("open")) psyUpdateNowPlaying();
     });
 
     audio.addEventListener("ended", ()=>{
@@ -1711,12 +1891,11 @@
     audio.addEventListener("error", ()=>{
       setStatus("Error cargando audio.");
       setPlayIcon();
-      psySyncPlayIcon();
     });
 
-    audio.addEventListener("play", setPlayingClass);
-    audio.addEventListener("pause", setPlayingClass);
-    audio.addEventListener("ended", setPlayingClass);
+    audio.addEventListener("play", ()=>{ setPlayingClass(); psySyncPlayIcon(); psyResumeAudioContextIfNeeded(); });
+    audio.addEventListener("pause", ()=>{ setPlayingClass(); psySyncPlayIcon(); });
+    audio.addEventListener("ended", ()=>{ setPlayingClass(); psySyncPlayIcon(); });
     audio.addEventListener("volumechange", setGlitchFromVolume);
 
     volumeSlider.addEventListener("input", ()=>{
@@ -1764,18 +1943,17 @@
         if(!audio.paused){
           audio.pause();
           setPlayIcon();
-          psySyncPlayIcon();
         }
       }
     });
   }
 
   function supportInit(){
-    const openBtn = $("support-open");
-    const modal = $("support-modal");
-    const closeBtn = $("support-close");
-    const copyBtn = $("copy-bizum");
-    const bizumEl = $("bizum-number");
+    const openBtn = document.getElementById("support-open");
+    const modal = document.getElementById("support-modal");
+    const closeBtn = document.getElementById("support-close");
+    const copyBtn = document.getElementById("copy-bizum");
+    const bizumEl = document.getElementById("bizum-number");
 
     if(!openBtn || !modal || !closeBtn) return;
 
@@ -1793,9 +1971,13 @@
     openBtn.addEventListener("click", open);
     closeBtn.addEventListener("click", close);
 
-    modal.addEventListener("click", (e)=>{ if(e.target === modal) close(); });
+    modal.addEventListener("click", (e)=>{
+      if(e.target === modal) close();
+    });
 
-    document.addEventListener("keydown", (e)=>{ if(e.key === "Escape" && modal.classList.contains("open")) close(); });
+    document.addEventListener("keydown", (e)=>{
+      if(e.key === "Escape" && modal.classList.contains("open")) close();
+    });
 
     copyBtn?.addEventListener("click", async ()=>{
       const txt = (bizumEl?.textContent || "").trim();
@@ -1815,119 +1997,85 @@
   }
 
   /* =========================================================
-     ✅ MODO PSICODÉLICO (Kaleidoscopio + Lava 70s + Audio-reactive)
+     ✅ MODO PSICODÉLICO (SIEMPRE ANIMA; audio-reactive si puede)
      ========================================================= */
   const psyBtn = $("psy-btn");
   const psyEl = $("psy");
   const psyClose = $("psy-close");
-  const psyFull = $("psy-full");
   const psyNow = $("psy-now");
   const psyCanvas = $("psy-canvas");
 
   const psyPrevBtn = $("psy-prev");
-  const psyStopBtn = $("psy-stop");
   const psyPlayBtn = $("psy-play");
   const psyNextBtn = $("psy-next");
 
   let psyCtx2d = null;
   let psyRaf = 0;
 
-  // Offscreen buffer (lava / textura base)
+  // offscreen para “lava”
   let lavaC = null;
   let lavaX = null;
 
-  // WebAudio (se inicializa al abrir)
+  // WebAudio (opcional)
   let waCtx = null;
   let waSource = null;
   let waAnalyser = null;
   let waData = null;
+  let waReady = false;
 
-  // “Metaballs” (lava)
-  const lavaBalls = Array.from({length: 10}, (_,i)=>({
+  // bolas lava
+  const lavaBalls = Array.from({length: 12}, ()=>({
     x: Math.random(),
     y: Math.random(),
-    vx: (Math.random()*2-1) * 0.07,
-    vy: (Math.random()*2-1) * 0.05,
-    r: 0.10 + Math.random()*0.18,
-    phase: Math.random()*Math.PI*2
+    vx: (Math.random()*2-1) * 0.09,
+    vy: (Math.random()*2-1) * 0.07,
+    r:  0.09 + Math.random()*0.18,
+    ph: Math.random()*Math.PI*2
   }));
 
   function psyTrackLabel(){
-    return (tracks[currentIndex]?.textContent || "").trim() || "TRANSMISIÓN";
+    return (tracks[currentIndex]?.textContent || "").trim().replace(/^\d+\.\s*/, "") || "—";
   }
 
   function psyUpdateNowPlaying(){
     if(!psyNow) return;
     if(!hasLoaded){
-      psyNow.textContent = "MODO PSICODÉLICO · SIN SEÑAL";
+      psyNow.textContent = "está sonando: —";
       return;
     }
-    const t = psyTrackLabel();
-    if(audio.duration && Number.isFinite(audio.duration)){
-      psyNow.textContent = `MODO PSICODÉLICO · ${t} · ${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
-    } else {
-      psyNow.textContent = `MODO PSICODÉLICO · ${t}`;
-    }
+    const name = psyTrackLabel();
+    const time = (audio.duration && Number.isFinite(audio.duration))
+      ? `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`
+      : `${formatTime(audio.currentTime || 0)}`;
+    psyNow.textContent = `está sonando: ${name} · ${time}`;
   }
 
   function psySyncPlayIcon(){
     if(!psyPlayBtn) return;
     const isPaused = (!hasLoaded) || audio.paused;
     psyPlayBtn.innerHTML = isPaused ? ICONS.play : ICONS.pause;
-    psyPlayBtn.classList.toggle("pulse", isPaused);
   }
 
   function psyRenderControlIcons(){
     psyPrevBtn && (psyPrevBtn.innerHTML = ICONS.prev);
     psyNextBtn && (psyNextBtn.innerHTML = ICONS.next);
-    psyStopBtn && (psyStopBtn.innerHTML = ICONS.stop);
     psySyncPlayIcon();
   }
 
-  function psyEnsureAudioAnalyser(){
-    if(waCtx && waAnalyser && waData) return;
-
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if(!AC) { setStatus("Tu navegador no soporta AudioContext."); return; }
-
-    waCtx = new AC();
-    waAnalyser = waCtx.createAnalyser();
-    waAnalyser.fftSize = 2048;
-    waAnalyser.smoothingTimeConstant = 0.78;
-
-    // ✅ Solo una vez por audio element
-    waSource = waCtx.createMediaElementSource(audio);
-    waSource.connect(waAnalyser);
-    waAnalyser.connect(waCtx.destination);
-
-    waData = new Uint8Array(waAnalyser.frequencyBinCount);
-  }
-
-  function psyResumeAudioContextIfNeeded(){
-    if(!waCtx) return;
-    if(waCtx.state === "suspended") waCtx.resume().catch(()=>{});
-  }
-
   function psyResize(){
-    if(!psyCanvas) return;
-
-    // Usa tamaño real (evita 0 en algunos móviles)
-    const rect = psyCanvas.getBoundingClientRect();
-    const cssW = Math.max(1, Math.floor(rect.width || window.innerWidth));
-    const cssH = Math.max(1, Math.floor(rect.height || window.innerHeight));
-
     const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-    const w = Math.floor(cssW * dpr);
-    const h = Math.floor(cssH * dpr);
+    const w = Math.max(1, Math.floor(window.innerWidth * dpr));
+    const h = Math.max(1, Math.floor(window.innerHeight * dpr));
 
     if(psyCanvas.width !== w || psyCanvas.height !== h){
       psyCanvas.width = w;
       psyCanvas.height = h;
     }
 
-    // Offscreen (más pequeño para rendimiento)
-    const lw = Math.max(240, Math.floor(cssW * 0.55));
-    const lh = Math.max(240, Math.floor(cssH * 0.55));
+    // lava buffer más pequeño para rendimiento
+    const lw = Math.max(240, Math.floor(window.innerWidth * 0.55));
+    const lh = Math.max(240, Math.floor(window.innerHeight * 0.55));
+
     if(!lavaC){
       lavaC = document.createElement("canvas");
       lavaX = lavaC.getContext("2d");
@@ -1947,238 +2095,223 @@
     return s / (b - a);
   }
 
+  function psyEnsureAudioAnalyser(){
+    // ✅ importantísimo: NO crear MediaElementSource más de 1 vez
+    if(waReady) return;
+
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC) return;
+
+    try{
+      waCtx = waCtx || new AC();
+      waAnalyser = waAnalyser || waCtx.createAnalyser();
+      waAnalyser.fftSize = 2048;
+      waAnalyser.smoothingTimeConstant = 0.80;
+
+      if(!waSource){
+        waSource = waCtx.createMediaElementSource(audio);
+        waSource.connect(waAnalyser);
+        waAnalyser.connect(waCtx.destination);
+      }
+
+      waData = new Uint8Array(waAnalyser.frequencyBinCount);
+      waReady = true;
+    } catch(e){
+      // si falla, no pasa nada: animación seguirá viva
+      waReady = false;
+    }
+  }
+
+  function psyResumeAudioContextIfNeeded(){
+    if(!waCtx) return;
+    if(waCtx.state === "suspended") waCtx.resume().catch(()=>{});
+  }
+
   function psyGetEnergy(nowMs){
-    // ✅ si no hay analyser, animación “viva” igualmente
-    if(!waAnalyser || !waData){
+    // ✅ fallback animado SIEMPRE
+    let bass = 0.22, mid = 0.16, treble = 0.10;
+
+    if(waReady && waAnalyser && waData){
+      try{
+        waAnalyser.getByteFrequencyData(waData);
+        const n = waData.length;
+        bass = avgRange(waData, 0, Math.floor(n * 0.10)) / 255;
+        mid  = avgRange(waData, Math.floor(n * 0.10), Math.floor(n * 0.40)) / 255;
+        treble = avgRange(waData, Math.floor(n * 0.40), n) / 255;
+      } catch {}
+    } else {
       const t = nowMs * 0.001;
-      const bass = 0.22 + 0.10 * (0.5 + 0.5*Math.sin(t*1.7));
-      const mid  = 0.16 + 0.10 * (0.5 + 0.5*Math.sin(t*2.3 + 1.2));
-      const treble = 0.10 + 0.08 * (0.5 + 0.5*Math.sin(t*3.4 + 2.2));
-      const energy = Math.min(1, bass*0.55 + mid*0.30 + treble*0.15);
-      return { bass, mid, treble, energy };
+      bass   = 0.20 + 0.12 * (0.5 + 0.5*Math.sin(t*1.6));
+      mid    = 0.14 + 0.10 * (0.5 + 0.5*Math.sin(t*2.1 + 1.3));
+      treble = 0.10 + 0.08 * (0.5 + 0.5*Math.sin(t*3.2 + 2.2));
     }
 
-    waAnalyser.getByteFrequencyData(waData);
-    const n = waData.length;
-
-    const bass = avgRange(waData, 0, Math.floor(n * 0.10)) / 255;
-    const mid  = avgRange(waData, Math.floor(n * 0.10), Math.floor(n * 0.40)) / 255;
-    const treb = avgRange(waData, Math.floor(n * 0.40), n) / 255;
-
-    // un pelín “exagerado” para que se note
-    const energy = Math.min(1, (bass*0.62 + mid*0.28 + treb*0.10) * 1.40);
-    return { bass, mid, treble:treb, energy };
+    const energy = Math.min(1, (bass*0.62 + mid*0.28 + treble*0.10) * 1.35);
+    return { bass, mid, treble, energy };
   }
 
-  function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
-  function smoothstep(a,b,x){
-    const t = clamp((x-a)/(b-a), 0, 1);
-    return t*t*(3-2*t);
-  }
-
-  // Lava 70s: metaballs + posterize + “grano”
   function drawLava(nowMs, bass, mid, treble, energy){
+    if(!lavaX) return;
     const x = lavaX;
-    if(!x) return;
     const W = lavaC.width, H = lavaC.height;
-
     const t = nowMs * 0.001;
-    x.clearRect(0,0,W,H);
 
-    // Fondo degradado “retro”
-    const hueA = (t*18 + energy*240) % 360;
+    // fondo
+    const hueA = (t*16 + energy*260) % 360;
     const hueB = (hueA + 140 + mid*80) % 360;
-    const g = x.createLinearGradient(0,0, W, H);
-    g.addColorStop(0, `hsl(${hueA} 90% ${18 + energy*14}%)`);
-    g.addColorStop(1, `hsl(${hueB} 95% ${10 + energy*10}%)`);
+    const g = x.createLinearGradient(0,0,W,H);
+    g.addColorStop(0, `hsl(${hueA} 95% ${18 + energy*14}%)`);
+    g.addColorStop(1, `hsl(${hueB} 95% ${10 + energy*12}%)`);
+    x.globalCompositeOperation = "source-over";
     x.fillStyle = g;
     x.fillRect(0,0,W,H);
 
-    // Metaballs: dibujamos muchos blobs con screen/lighter para “derretir”
+    // blobs
     x.globalCompositeOperation = "screen";
+    const sp = 0.75 + bass*2.2;
 
-    const wobble = 0.25 + bass*1.2;
     for(const b of lavaBalls){
-      // mover (wrap)
-      b.phase += 0.6 + treble*1.4;
-      b.x += b.vx * (0.6 + energy*1.2);
-      b.y += b.vy * (0.6 + energy*1.2);
+      b.ph += (0.6 + treble*1.6) * (1/60);
+      b.x += b.vx * sp * (1/60);
+      b.y += b.vy * sp * (1/60);
+
+      // wrap
       if(b.x < -0.2) b.x = 1.2;
       if(b.x >  1.2) b.x = -0.2;
       if(b.y < -0.2) b.y = 1.2;
       if(b.y >  1.2) b.y = -0.2;
 
-      const cx = b.x * W;
-      const cy = b.y * H;
-      const rr = (b.r * (0.85 + 0.35*Math.sin(b.phase*0.9))) * (0.75 + energy*0.7) * Math.min(W,H);
+      const cx = (b.x + 0.03*Math.sin(b.ph*2.0)) * W;
+      const cy = (b.y + 0.03*Math.cos(b.ph*1.7)) * H;
+      const rr = (b.r * (0.85 + energy*0.65)) * Math.min(W,H);
 
-      const hh = (hueA + 60*Math.sin(b.phase*0.7) + mid*120) % 360;
+      const hh = (hueA + 70*Math.sin(b.ph*1.2) + mid*120) % 360;
       const gg = x.createRadialGradient(cx,cy, rr*0.08, cx,cy, rr);
-      gg.addColorStop(0, `hsla(${hh} 100% ${55 + energy*15}% ${0.55 + energy*0.25})`);
-      gg.addColorStop(0.55, `hsla(${(hh+40)%360} 100% ${40 + energy*10}% ${0.18 + wobble*0.10})`);
-      gg.addColorStop(1, `hsla(${(hh+120)%360} 100% ${30 + energy*10}% 0)`);
+      gg.addColorStop(0.00, `hsla(${hh} 100% ${58 + energy*18}% ${0.52 + energy*0.28})`);
+      gg.addColorStop(0.55, `hsla(${(hh+50)%360} 100% ${44 + energy*12}% ${0.18 + bass*0.20})`);
+      gg.addColorStop(1.00, `hsla(${(hh+120)%360} 100% ${35 + energy*10}% 0)`);
       x.fillStyle = gg;
       x.beginPath();
-      x.arc(cx, cy, rr, 0, Math.PI*2);
+      x.arc(cx,cy, rr, 0, Math.PI*2);
       x.fill();
     }
 
-    // “Gotas” extra (bombo)
-    if(bass > 0.12){
-      const k = 3 + Math.floor(bass*10);
-      for(let i=0;i<k;i++){
-        const px = (0.5 + 0.45*Math.sin(t*0.7 + i*2.1)) * W;
-        const py = (0.5 + 0.45*Math.cos(t*0.9 + i*1.7)) * H;
-        const rr = (0.10 + 0.18*bass) * Math.min(W,H);
-        const gg = x.createRadialGradient(px,py, rr*0.1, px,py, rr);
-        gg.addColorStop(0, `hsla(${(hueA+200+i*20)%360} 100% 60% ${0.22 + bass*0.35})`);
-        gg.addColorStop(1, `hsla(${(hueB+40)%360} 100% 50% 0)`);
-        x.fillStyle = gg;
-        x.beginPath();
-        x.arc(px, py, rr, 0, Math.PI*2);
-        x.fill();
-      }
-    }
-
-    // Textura “aceitosa” (overlay + scanlines suaves)
+    // textura “setentera”
     x.globalCompositeOperation = "overlay";
-    x.fillStyle = `rgba(255,255,255,${0.05 + treble*0.05})`;
+    x.fillStyle = `rgba(255,255,255,${0.04 + treble*0.06})`;
     x.fillRect(0,0,W,H);
 
     x.globalCompositeOperation = "multiply";
-    x.fillStyle = `rgba(0,0,0,${0.10})`;
-    const step = 3;
-    for(let y=0;y<H;y+=step) x.fillRect(0,y,W,1);
-
-    // “Posterize” aproximado: una capa de contraste
-    x.globalCompositeOperation = "color-dodge";
-    x.fillStyle = `rgba(255,255,255,${0.03 + energy*0.04})`;
-    x.fillRect(0,0,W,H);
+    x.fillStyle = `rgba(0,0,0,${0.12})`;
+    for(let y=0;y<H;y+=3) x.fillRect(0, y + Math.sin(t*1.6 + y*0.02)*1.2, W, 1);
 
     x.globalCompositeOperation = "source-over";
   }
 
   function psyDraw(nowMs){
-    psyRaf = requestAnimationFrame(psyDraw);
+    try{
+      psyRaf = requestAnimationFrame(psyDraw);
+      if(!psyEl.classList.contains("open")) return;
 
-    if(!psyCtx2d){
-      // ✅ Fallback seguro (sin options raras)
-      psyCtx2d = psyCanvas.getContext("2d") || psyCanvas.getContext("2d", { alpha:true });
       if(!psyCtx2d){
-        setStatus("No se pudo crear el canvas 2D.");
-        return;
+        psyCtx2d = psyCanvas.getContext("2d") || psyCanvas.getContext("2d", { alpha:true });
+        if(!psyCtx2d) return;
       }
-    }
 
-    if(psyEl.classList.contains("open")) psyResize();
-    const ctx = psyCtx2d;
-    const w = psyCanvas.width;
-    const h = psyCanvas.height;
-    if(!w || !h) return;
+      // resize siempre (evita canvas 0)
+      psyResize();
 
-    const { bass, mid, treble, energy } = psyGetEnergy(nowMs);
+      const ctx = psyCtx2d;
+      const w = psyCanvas.width, h = psyCanvas.height;
+      if(!w || !h) return;
 
-    // 1) Dibuja lava base (offscreen)
-    drawLava(nowMs, bass, mid, treble, energy);
+      const { bass, mid, treble, energy } = psyGetEnergy(nowMs);
+      drawLava(nowMs, bass, mid, treble, energy);
 
-    // 2) Kaleidoscopio: dibuja triángulos (wedge) con espejo
-    ctx.clearRect(0,0,w,h);
+      // kaleidoscopio
+      const t = nowMs * 0.001;
+      const seg = 10 + Math.floor(energy * 10); // 10..20
+      const ang = (Math.PI * 2) / seg;
+      const spin = t * (0.18 + mid*1.2 + energy*0.9);
+      const zoom = 0.85 + 0.45*bass + 0.25*energy;
+      const warp = 0.015 + treble*0.07;
 
-    const t = nowMs * 0.001;
-    const seg = 10 + Math.floor(energy * 10);        // más energía = más segmentos
-    const angle = (Math.PI * 2) / seg;
-    const zoom = 0.85 + 0.45*bass + 0.25*energy;     // bombo “respira”
-    const spin = t * (0.18 + mid*1.3 + energy*0.9);
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = `hsl(${(t*10 + energy*220)%360} 70% 6%)`;
+      ctx.fillRect(0,0,w,h);
 
-    // Fondo oscuro para bordes
-    ctx.fillStyle = `hsl(${(t*12 + energy*220)%360} 70% 6%)`;
-    ctx.fillRect(0,0,w,h);
-
-    ctx.save();
-    ctx.translate(w/2, h/2);
-    ctx.rotate(spin);
-
-    // Fuente: lavaC, escalada al centro
-    const srcW = lavaC.width, srcH = lavaC.height;
-    const drawW = srcW * (w / (srcW*1.0)) * zoom;
-    const drawH = srcH * (h / (srcH*1.0)) * zoom;
-
-    // Un “warp” suave con treble
-    const warp = 0.02 + treble*0.08;
-
-    for(let i=0;i<seg;i++){
       ctx.save();
-      ctx.rotate(i * angle);
+      ctx.translate(w/2, h/2);
+      ctx.rotate(spin);
 
-      // Clip wedge
-      ctx.beginPath();
-      ctx.moveTo(0,0);
-      ctx.lineTo(Math.cos(-angle/2)*Math.max(w,h), Math.sin(-angle/2)*Math.max(w,h));
-      ctx.lineTo(Math.cos(angle/2)*Math.max(w,h),  Math.sin(angle/2)*Math.max(w,h));
-      ctx.closePath();
-      ctx.clip();
+      const srcW = lavaC.width, srcH = lavaC.height;
+      const drawW = (w / (srcW*1.0)) * srcW * zoom;
+      const drawH = (h / (srcH*1.0)) * srcH * zoom;
 
-      // espejo alterno
-      const mirror = (i % 2) ? -1 : 1;
-      ctx.scale(mirror, 1);
+      for(let i=0;i<seg;i++){
+        ctx.save();
+        ctx.rotate(i*ang);
 
-      // pequeña traslación “psico”
-      const jx = Math.sin(t*1.7 + i*0.9) * (w*warp);
-      const jy = Math.cos(t*1.3 + i*1.1) * (h*warp);
+        ctx.beginPath();
+        ctx.moveTo(0,0);
+        ctx.lineTo(Math.cos(-ang/2)*Math.max(w,h), Math.sin(-ang/2)*Math.max(w,h));
+        ctx.lineTo(Math.cos( ang/2)*Math.max(w,h), Math.sin( ang/2)*Math.max(w,h));
+        ctx.closePath();
+        ctx.clip();
 
-      ctx.globalCompositeOperation = "screen";
-      ctx.drawImage(lavaC, -drawW/2 + jx, -drawH/2 + jy, drawW, drawH);
+        if(i % 2) ctx.scale(-1, 1);
 
-      // brillos extra (treble)
-      ctx.globalCompositeOperation = "lighter";
-      ctx.globalAlpha = 0.25 + treble*0.35;
-      ctx.drawImage(lavaC, -drawW/2 - jx*0.6, -drawH/2 - jy*0.6, drawW*1.02, drawH*1.02);
-      ctx.globalAlpha = 1;
+        const jx = Math.sin(t*1.7 + i*0.8) * (w*warp);
+        const jy = Math.cos(t*1.3 + i*1.0) * (h*warp);
+
+        ctx.globalCompositeOperation = "screen";
+        ctx.drawImage(lavaC, -drawW/2 + jx, -drawH/2 + jy, drawW, drawH);
+
+        ctx.globalCompositeOperation = "lighter";
+        ctx.globalAlpha = 0.18 + treble*0.40;
+        ctx.drawImage(lavaC, -drawW/2 - jx*0.6, -drawH/2 - jy*0.6, drawW*1.02, drawH*1.02);
+        ctx.globalAlpha = 1;
+
+        ctx.restore();
+      }
 
       ctx.restore();
+
+      // viñeta + brillo
+      ctx.globalCompositeOperation = "multiply";
+      const vg = ctx.createRadialGradient(w/2,h/2, Math.min(w,h)*0.15, w/2,h/2, Math.min(w,h)*0.75);
+      vg.addColorStop(0, "rgba(0,0,0,0)");
+      vg.addColorStop(1, "rgba(0,0,0,0.60)");
+      ctx.fillStyle = vg;
+      ctx.fillRect(0,0,w,h);
+
+      ctx.globalCompositeOperation = "screen";
+      const glow = ctx.createRadialGradient(w/2,h/2, 0, w/2,h/2, Math.min(w,h)*0.55);
+      glow.addColorStop(0, `rgba(255,255,255,${0.05 + energy*0.14})`);
+      glow.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0,0,w,h);
+
+      ctx.globalCompositeOperation = "source-over";
+
+      // texto arriba
+      if((nowMs % 180) < 18) psyUpdateNowPlaying();
+    } catch(e){
+      // si petara algo, intentamos seguir sin romper el player
     }
-
-    ctx.restore();
-
-    // 3) “Grano” + viñeta + bloom suave
-    ctx.globalCompositeOperation = "overlay";
-    ctx.fillStyle = `rgba(255,255,255,${0.03 + treble*0.05})`;
-    ctx.fillRect(0,0,w,h);
-
-    ctx.globalCompositeOperation = "multiply";
-    const vg = ctx.createRadialGradient(w/2,h/2, Math.min(w,h)*0.15, w/2,h/2, Math.min(w,h)*0.75);
-    vg.addColorStop(0, "rgba(0,0,0,0)");
-    vg.addColorStop(1, "rgba(0,0,0,0.55)");
-    ctx.fillStyle = vg;
-    ctx.fillRect(0,0,w,h);
-
-    ctx.globalCompositeOperation = "screen";
-    const glow = ctx.createRadialGradient(w/2,h/2, 0, w/2,h/2, Math.min(w,h)*0.55);
-    glow.addColorStop(0, `rgba(255,255,255,${0.05 + energy*0.12})`);
-    glow.addColorStop(1, "rgba(255,255,255,0)");
-    ctx.fillStyle = glow;
-    ctx.fillRect(0,0,w,h);
-
-    ctx.globalCompositeOperation = "source-over";
   }
 
-  async function psyOpen(){
+  function psyOpen(){
     psyEl.classList.add("open");
     psyEl.setAttribute("aria-hidden","false");
     document.body.classList.add("psy-open");
 
-    psyUpdateNowPlaying();
     psyResize();
+    psyUpdateNowPlaying();
+    psyRenderControlIcons();
 
     psyEnsureAudioAnalyser();
     psyResumeAudioContextIfNeeded();
-
-    // ✅ si está cargado pero en pausa, intentamos arrancar
-    if(hasLoaded && audio.paused){
-      try{ await audio.play(); } catch {}
-      setPlayIcon();
-      psySyncPlayIcon();
-    }
 
     if(!psyRaf) psyRaf = requestAnimationFrame(psyDraw);
   }
@@ -2187,14 +2320,6 @@
     psyEl.classList.remove("open");
     psyEl.setAttribute("aria-hidden","true");
     document.body.classList.remove("psy-open");
-    if(psyRaf){ cancelAnimationFrame(psyRaf); psyRaf = 0; }
-  }
-
-  async function psyToggleFullscreen(){
-    try{
-      if(!document.fullscreenElement) await psyEl.requestFullscreen();
-      else await document.exitFullscreen();
-    } catch { setStatus("No se pudo activar fullscreen."); }
   }
 
   function psyInit(){
@@ -2203,32 +2328,22 @@
     psyRenderControlIcons();
     psyUpdateNowPlaying();
 
-    psyBtn.addEventListener("click", ()=> psyEl.classList.contains("open") ? psyCloseOverlay() : psyOpen() );
+    psyBtn.addEventListener("click", psyOpen);
     psyClose?.addEventListener("click", psyCloseOverlay);
-    psyFull?.addEventListener("click", psyToggleFullscreen);
 
-    psyPrevBtn?.addEventListener("click", ()=>{ prevTrack(); psyUpdateNowPlaying(); psySyncPlayIcon(); });
-    psyNextBtn?.addEventListener("click", ()=>{ nextTrack(); psyUpdateNowPlaying(); psySyncPlayIcon(); });
-
-    psyStopBtn?.addEventListener("click", ()=>{ stopTrack(); psyUpdateNowPlaying(); psySyncPlayIcon(); });
-
+    psyPrevBtn?.addEventListener("click", ()=>{ prevTrack(); psyUpdateNowPlaying(); });
+    psyNextBtn?.addEventListener("click", ()=>{ nextTrack(); psyUpdateNowPlaying(); });
     psyPlayBtn?.addEventListener("click", ()=>{
       if(!hasLoaded) playCurrent();
       else togglePlay();
       psySyncPlayIcon();
+      psyResumeAudioContextIfNeeded();
     });
 
     window.addEventListener("resize", ()=>{ if(psyEl.classList.contains("open")) psyResize(); }, { passive:true });
 
-    document.addEventListener("keydown", (e)=>{
-      if(!psyEl.classList.contains("open")) return;
-      if(e.key === "Escape") psyCloseOverlay();
-    });
-
     audio.addEventListener("play", ()=>{ psySyncPlayIcon(); psyUpdateNowPlaying(); psyResumeAudioContextIfNeeded(); });
     audio.addEventListener("pause", ()=>{ psySyncPlayIcon(); psyUpdateNowPlaying(); });
-    audio.addEventListener("ended", ()=>{ psySyncPlayIcon(); psyUpdateNowPlaying(); });
-    audio.addEventListener("timeupdate", ()=>{ if(psyEl.classList.contains("open")) psyUpdateNowPlaying(); });
     audio.addEventListener("loadedmetadata", ()=>{ if(psyEl.classList.contains("open")) psyUpdateNowPlaying(); });
   }
 
