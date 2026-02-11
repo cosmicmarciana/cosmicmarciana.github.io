@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>La puta casa del terror</title>
+<title>La casa del terror</title>
 
 <!-- Favicons -->
 <link rel="icon" href="favicon.ico">
@@ -38,9 +38,9 @@
 
     /* ✅ Botón psicodélico (ajuste fino y robusto multi-dispositivo) */
     /* Lo muevo: más a la derecha y un poco más arriba */
-    --psy-x: 76.8%;
-    --psy-y: 74.6%;
-    --psy-s: 11.8%;
+    --psy-x: 74.8%;
+    --psy-y: 75.9%;
+    --psy-s: 11.2%;
   }
 
   *{ box-sizing:border-box; }
@@ -669,6 +669,37 @@
     border-color: rgba(0,255,0,.45);
     color: var(--neon);
   }
+
+  /* ✅ Hotspot: que NO cambie de posición al hover/active */
+.tv-psy-hotspot{
+  /* anulamos el estilo genérico de button */
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  transition: none !important;
+
+  /* su transform base (centrado) */
+  transform: translate(-50%,-50%) !important;
+}
+
+/* cuando pasas por encima o clicas, NO tocar posición */
+.tv-psy-hotspot:hover,
+.tv-psy-hotspot:active,
+.tv-psy-hotspot:focus{
+  transform: translate(-50%,-50%) !important;
+}
+
+/* evita que el :hover global lo “suba” */
+.tv-psy-hotspot:hover{
+  color: inherit !important;
+}
+
+/* el “punto” es el que anima, no el botón entero */
+.tv-psy-hotspot::before{
+  animation: tv-btn-flicker 1.05s steps(2,end) infinite;
+  will-change: transform, opacity, filter;
+}
+
 
   #play-pause{
     width:48px;
@@ -2366,3 +2397,4 @@
 
 </body>
 </html>
+
