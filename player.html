@@ -1700,7 +1700,7 @@
   }
 
   async function playCurrent(){
-    initPsyAnalyser(); // ✅ gesto usuario / audioCtx
+    initPsyAnalyser(); // ✅ gesto usuario
 
     if(!hasLoaded) loadTrack(currentIndex);
 
@@ -1759,7 +1759,7 @@
     setPlayIcon();
 
     document.documentElement.style.setProperty("--g", "0");
-    setPsyTitle(); // en overlay quedará "—" pero el canvas estará negro
+    setPsyTitle();
   }
 
   function getRandomNextIndex(){
@@ -1855,10 +1855,14 @@
     setGlitchFromVolume();
   }
 
-  // ===== PSY VISUALS (LAVA 70s) — negro si no hay música =====
+  /* =========================================================
+     PSY VISUALS — Opción 3: "Liquid Light Show 70s"
+     - Capas grandes tipo overhead projector
+     - Flow suave + beat “respira” (sin espasmos)
+     - Negro si no hay música
+     ========================================================= */
+
   let psyCtx = null;
-  let psyOff = null;
-  let psyOffCtx = null;
   let psyRAF = 0;
   let psyRunning = false;
   let psyStart = 0;
@@ -1868,8 +1872,12 @@
   let psyAnalyser = null;
   let psyData = null;
   let psySrcNode = null;
-  let psyAmp = 0; // suavizado
-  let psyAmpVel = 0; // limitador de cambios (slew)
+  let psyAmp = 0;      // nivel suavizado
+  let psyAmpVel = 0;   // slew limiter
+
+  // Buffers para capas
+  let layerA = null, layerB = null, layerC = null;
+  let ctxA = null, ctxB = null, ctxC = null;
 
   function initPsyAnalyser(){
     try{
@@ -1882,7 +1890,7 @@
       if(!psyAnalyser){
         psyAnalyser = psyAudioCtx.createAnalyser();
         psyAnalyser.fftSize = 1024;
-        psyAnalyser.smoothingTimeConstant = 0.85;
+        psyAnalyser.smoothingTimeConstant = 0.86;
         psyData = new Uint8Array(psyAnalyser.frequencyBinCount);
       }
 
@@ -1902,12 +1910,13 @@
 
     psyAnalyser.getByteFrequencyData(psyData);
 
-    // bajos (para “bombeo”) + algo de energía total
-    const bassBins = 18;
+    // “bombo”/bajos
+    const bassBins = 22;
     let bass = 0;
     for(let i=0;i<bassBins;i++) bass += psyData[i];
     bass /= (bassBins * 255);
 
+    // energía total (RMS)
     let sum = 0;
     for(let i=0;i<psyData.length;i++){
       const v = psyData[i] / 255;
@@ -1915,20 +1924,24 @@
     }
     const rms = Math.sqrt(sum / psyData.length);
 
-    // mezcla y compresión suave
-    let raw = (bass * 0.78) + (rms * 0.22);
+    let raw = bass * 0.75 + rms * 0.25;
     raw = Math.pow(Math.max(0, raw), 0.55);
 
-    // Suavizado + limitador de “espasmos”
-    // (psyAmpVel limita cuánto puede cambiar por frame)
+    // suavizado + limitador para que no haya “espasmos”
     const target = raw;
     const diff = target - psyAmp;
-    psyAmpVel = psyAmpVel * 0.80 + diff * 0.08;     // acel. suave
-    psyAmpVel = Math.max(-0.018, Math.min(0.018, psyAmpVel)); // límite
+    psyAmpVel = psyAmpVel * 0.82 + diff * 0.08;
+    psyAmpVel = Math.max(-0.014, Math.min(0.014, psyAmpVel));
     psyAmp = psyAmp + psyAmpVel;
     psyAmp = Math.max(0, Math.min(1, psyAmp));
 
     return psyAmp;
+  }
+
+  function makeBuf(w,h){
+    const c = document.createElement("canvas");
+    c.width = w; c.height = h;
+    return c;
   }
 
   function psyResize(){
@@ -1943,12 +1956,10 @@
     psyCtx = psyCanvas.getContext("2d", { alpha:false });
     psyCtx.setTransform(1,0,0,1,0,0);
 
-    psyOff = document.createElement("canvas");
-    psyOff.width = w;
-    psyOff.height = h;
-    psyOffCtx = psyOff.getContext("2d", { alpha:false });
+    layerA = makeBuf(w,h); ctxA = layerA.getContext("2d", { alpha:false });
+    layerB = makeBuf(w,h); ctxB = layerB.getContext("2d", { alpha:false });
+    layerC = makeBuf(w,h); ctxC = layerC.getContext("2d", { alpha:false });
 
-    // fondo negro inicial
     psyCtx.fillStyle = "#000";
     psyCtx.fillRect(0,0,w,h);
   }
@@ -1959,90 +1970,144 @@
     psyCtx.fillRect(0,0,psyCanvas.width, psyCanvas.height);
   }
 
-  function psyDrawLava(t){
+  function clamp(n,a,b){ return Math.max(a, Math.min(b, n)); }
+
+  function drawLiquidLayer(ctx, W, H, t, amp, seed){
+    // Fondo negro
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0,0,W,H);
+
+    // “gelatina” grande: varias manchas con gradiente radial
+    ctx.globalCompositeOperation = "lighter";
+
+    const cx = W*0.5, cy = H*0.5;
+    const big = Math.min(W,H);
+
+    const pump = 0.90 + 0.55*amp;           // bombeo (audio)
+    const drift = 0.45 + 0.35*amp;          // velocidad suave
+    const k = 0.65 + 0.35*Math.sin(t*0.18); // variación lenta
+
+    const nBlobs = 6;
+    for(let i=0;i<nBlobs;i++){
+      const ii = i + seed*10.0;
+      const a = t*(0.25 + 0.08*seed)*drift + ii*1.2;
+      const b = t*(0.19 + 0.06*seed)*drift + ii*0.9;
+
+      const rx = (W*0.22 + (W*0.10*Math.sin(ii*0.7))) * (0.95 + 0.20*amp);
+      const ry = (H*0.18 + (H*0.10*Math.cos(ii*0.6))) * (0.95 + 0.20*amp);
+
+      const x = cx + Math.cos(a) * rx + Math.sin(b*0.7) * (W*0.06);
+      const y = cy + Math.sin(b) * ry + Math.cos(a*0.55) * (H*0.06);
+
+      const r = big * (0.14 + 0.03*Math.sin(ii*0.8 + t*0.2)) * pump;
+
+      // Paleta tipo “liquid light show”: ámbar, fucsia, verde ácido, cian
+      // (cada capa con distinta base)
+      const baseHue = (seed===0 ? 18 : seed===1 ? 295 : 140);
+      const hue = baseHue + (i*22) + (amp*35) + Math.sin(t*0.12 + seed)*18;
+      const sat = 88 + amp*10;
+      const l0  = 58 + amp*10;
+
+      const g = ctx.createRadialGradient(x,y, r*0.06, x,y, r);
+      g.addColorStop(0.00, `hsla(${hue}, ${sat}%, ${l0}%, ${0.80})`);
+      g.addColorStop(0.45, `hsla(${hue+25}, ${sat}%, ${l0-10}%, ${0.28 + 0.22*amp})`);
+      g.addColorStop(1.00, `hsla(${hue+55}, ${sat}%, ${l0-18}%, 0)`);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(x,y,r,0,Math.PI*2);
+      ctx.fill();
+    }
+
+    // “placa” de líquido grande (como gel extendido)
+    const plateR = big * (0.36 + 0.05*Math.sin(t*0.15 + seed));
+    const px = cx + Math.sin(t*0.10 + seed*2.0) * (W*0.10);
+    const py = cy + Math.cos(t*0.12 + seed*1.7) * (H*0.08);
+
+    const plateHue = (seed===0 ? 35 : seed===1 ? 305 : 170) + amp*25;
+    const pg = ctx.createRadialGradient(px,py, plateR*0.08, px,py, plateR);
+    pg.addColorStop(0, `hsla(${plateHue}, 92%, ${60+amp*10}%, ${0.42})`);
+    pg.addColorStop(0.55, `hsla(${plateHue+30}, 92%, ${50+amp*8}%, ${0.14})`);
+    pg.addColorStop(1, `hsla(${plateHue+65}, 92%, ${45}%, 0)`);
+    ctx.fillStyle = pg;
+    ctx.beginPath();
+    ctx.arc(px,py,plateR,0,Math.PI*2);
+    ctx.fill();
+
+    // No dejar bordes duros: blur suave
+    ctx.globalCompositeOperation = "source-over";
+  }
+
+  function psyDrawLiquidShow(t){
     const ctx = psyCtx;
-    const off = psyOffCtx;
     const W = psyCanvas.width;
     const H = psyCanvas.height;
 
-    // ✅ si no hay música → nada (negro)
+    // ✅ si no hay música → negro absoluto
     if(!hasLoaded || audio.paused || !audio.src){
       psyFillBlack();
       return;
     }
 
-    const amp = psyGetLevel(); // 0..1 (suave)
+    const amp = psyGetLevel(); // 0..1 suavizado
 
-    // Base: negro
+    // 1) Dibujamos capas en buffers
+    drawLiquidLayer(ctxA, W, H, t, amp, 0);
+    drawLiquidLayer(ctxB, W, H, t + 7.3, amp*0.92, 1);
+    drawLiquidLayer(ctxC, W, H, t + 13.8, amp*0.88, 2);
+
+    // 2) Componemos al canvas principal
     ctx.fillStyle = "#000";
     ctx.fillRect(0,0,W,H);
 
-    // Metaballs en offscreen, con blur y “screen”
-    off.clearRect(0,0,W,H);
-    off.fillStyle = "#000";
-    off.fillRect(0,0,W,H);
+    // Base blur + saturación (bloom)
+    const bloom = 18 + 32*amp;
+    const contrast = 1.10 + 0.70*amp;
+    const sat = 1.10 + 0.95*amp;
 
-    off.globalCompositeOperation = "lighter";
-
-    const cx = W * 0.5;
-    const cy = H * 0.5;
-
-    const baseR = Math.min(W,H) * (0.16 + 0.06*amp);
-    const wobble = 0.9 + 1.8*amp;
-
-    const blobCount = 7;
-    for(let i=0;i<blobCount;i++){
-      const a = t*0.35*wobble + i*1.1;
-      const b = t*0.22*wobble + i*0.9;
-
-      const rx = (W*0.22) + (W*0.06*i/blobCount);
-      const ry = (H*0.18) + (H*0.06*(blobCount-i)/blobCount);
-
-      const x = cx + Math.cos(a) * rx + Math.sin(b*0.7) * (W*0.06);
-      const y = cy + Math.sin(b) * ry + Math.cos(a*0.6) * (H*0.06);
-
-      const r = baseR * (0.85 + 0.35*Math.sin(a*1.2 + i) + 0.25*amp);
-
-      // Paleta 70s: ámbar / rojo / verde ácido / violeta
-      const hue = 18 + i*26 + (amp*40) + Math.sin(t*0.15)*18;
-      const sat = 82 + amp*14;
-      const light = 52 + amp*10;
-
-      const grad = off.createRadialGradient(x,y, r*0.08, x,y, r);
-      grad.addColorStop(0, `hsla(${hue}, ${sat}%, ${light}%, ${0.72 + 0.20*amp})`);
-      grad.addColorStop(0.55, `hsla(${hue+18}, ${sat}%, ${light-6}%, ${0.22 + 0.25*amp})`);
-      grad.addColorStop(1, `hsla(${hue+40}, ${sat}%, ${light-12}%, 0)`);
-      off.fillStyle = grad;
-      off.beginPath();
-      off.arc(x,y,r,0,Math.PI*2);
-      off.fill();
-    }
-
-    // “derretido” suave: blur y contraste por amp
     ctx.save();
-    ctx.filter = `blur(${Math.round(18 + 26*amp)}px) contrast(${1.08 + 0.55*amp}) saturate(${1.05 + 0.65*amp})`;
+    ctx.filter = `blur(${Math.round(bloom)}px) contrast(${contrast.toFixed(2)}) saturate(${sat.toFixed(2)})`;
     ctx.globalCompositeOperation = "screen";
-    ctx.drawImage(psyOff, 0, 0);
+    ctx.globalAlpha = 0.95;
+    ctx.drawImage(layerA,0,0);
+    ctx.globalAlpha = 0.90;
+    ctx.drawImage(layerB,0,0);
+    ctx.globalAlpha = 0.88;
+    ctx.drawImage(layerC,0,0);
     ctx.restore();
 
-    // Scanlines/grain muy suave (setentero / cinta)
+    // 3) Añadimos una capa “más definida” encima (sin tanto blur) para que haya detalle
     ctx.save();
-    ctx.globalCompositeOperation = "overlay";
-    ctx.globalAlpha = 0.10 + 0.10*amp;
-    const step = Math.max(2, Math.floor(2 + 2*(1-amp)));
-    for(let y=0;y<H;y+=step){
-      ctx.fillStyle = (y % (step*2) === 0) ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
-      ctx.fillRect(0,y,W,1);
-    }
+    ctx.filter = `blur(${Math.round(6 + 10*amp)}px) saturate(${(1.05 + 0.45*amp).toFixed(2)})`;
+    ctx.globalCompositeOperation = "screen";
+    ctx.globalAlpha = 0.55 + 0.20*amp;
+    ctx.drawImage(layerA,0,0);
+    ctx.globalAlpha = 0.50 + 0.18*amp;
+    ctx.drawImage(layerB,0,0);
     ctx.restore();
 
-    // Vignette para foco
+    // 4) “Proyector” setentero: ligeras sombras / viñeta
     ctx.save();
-    const vg = ctx.createRadialGradient(cx,cy, Math.min(W,H)*0.15, cx,cy, Math.min(W,H)*0.75);
+    const cx = W*0.5, cy = H*0.5;
+    const vg = ctx.createRadialGradient(cx,cy, Math.min(W,H)*0.12, cx,cy, Math.min(W,H)*0.78);
     vg.addColorStop(0, "rgba(0,0,0,0)");
-    vg.addColorStop(1, "rgba(0,0,0,0.65)");
+    vg.addColorStop(1, "rgba(0,0,0,0.70)");
+    ctx.globalCompositeOperation = "source-over";
     ctx.fillStyle = vg;
     ctx.fillRect(0,0,W,H);
+    ctx.restore();
+
+    // 5) Scanlines/grano MUY leve (para que no se vea “digital”)
+    ctx.save();
+    ctx.globalCompositeOperation = "overlay";
+    ctx.globalAlpha = 0.08 + 0.08*amp;
+
+    const step = 2;
+    for(let y=0;y<H;y+=step){
+      const a = (y % 4 === 0) ? 0.06 : 0.03;
+      ctx.fillStyle = `rgba(255,255,255,${a})`;
+      ctx.fillRect(0,y,W,1);
+    }
     ctx.restore();
   }
 
@@ -2051,11 +2116,9 @@
     psyRAF = requestAnimationFrame(psyLoop);
 
     const t = (performance.now() - psyStart) * 0.001;
-
-    // si no hay contexto (por cualquier cosa), negro
     if(!psyCtx) return;
 
-    psyDrawLava(t);
+    psyDrawLiquidShow(t);
   }
 
   function startPsy(){
