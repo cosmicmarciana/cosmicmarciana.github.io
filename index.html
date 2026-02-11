@@ -111,7 +111,7 @@
       animation: crt-glitch .35s steps(2,end);
     }
 
-    /* ===== SETA PSICODÉLICA ===== */
+    /* ===== SETA SECRETA ===== */
     .secret-shroom{
       position:absolute;
       right:10%;
@@ -128,18 +128,18 @@
     }
 
     .secret-shroom:hover{
-      opacity:.9;
-      transform: rotate(-4deg) translateY(-1px) scale(1.05);
+      opacity:.75;
+      transform: rotate(-4deg) translateY(-1px);
     }
 
     .secret-shroom svg{
       width:52px;
       height:52px;
-      filter: drop-shadow(0 6px 16px rgba(0,0,0,.5));
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.55));
     }
 
     /* ===========================
-       VHS GLITCH SOLO EN LA PANTALLA
+       VHS GLITCH SOLO EN LA PANTALLA (INDEX)
        =========================== */
     .tv-screen{
       position:absolute;
@@ -164,6 +164,10 @@
       filter: contrast(1.30) saturate(1.35);
       animation-fill-mode: both;
     }
+    .vhs::before,
+    .vhs::after,
+    .vhs .chroma,
+    .tear{ animation-fill-mode: both; }
 
     .vhs, .vhs::before, .vhs::after, .vhs .chroma, .tear{
       animation-play-state: paused;
@@ -176,6 +180,8 @@
         vhs-vertical-float calc(1.6s - (0.7s * var(--g))) infinite ease-in-out;
       animation-play-state: running;
     }
+
+    /* ===== ANIMACIONES CRT ===== */
 
     @keyframes crt-flicker{
       0%{filter:brightness(1)}
@@ -198,56 +204,66 @@
     <div class="crt" aria-label="Televisor CRT">
       <img src="tv.webp" alt="Televisor CRT con Cosmic Marciana – La casa del terror" class="hero" />
 
-      <!-- 🍄 SETA ROJA SETENTERA -->
+      <!-- 🍄 SETA ROJA PSICODÉLICA -->
       <a class="secret-shroom" href="bosque.html" aria-label="entre los árboles">
         <svg viewBox="0 0 120 120" aria-hidden="true">
-          <!-- sombrero -->
-          <path d="M10 65 
-                   C20 25, 100 25, 110 65 
-                   Q60 55, 10 65Z"
-                fill="#e10600"/>
-
-          <!-- brillo psicodélico -->
-          <ellipse cx="60" cy="55" rx="40" ry="22"
-                   fill="rgba(255,120,0,0.25)"/>
-
-          <!-- puntos -->
-          <circle cx="35" cy="50" r="6" fill="#fff"/>
-          <circle cx="60" cy="42" r="5" fill="#fff"/>
-          <circle cx="85" cy="52" r="6" fill="#fff"/>
-          <circle cx="50" cy="58" r="4" fill="#fff"/>
-          <circle cx="75" cy="60" r="4" fill="#fff"/>
-
-          <!-- pie -->
-          <path d="M45 65 
-                   Q60 90 75 65 
-                   L75 95 
-                   Q60 110 45 95Z"
-                fill="#f2f2f2"/>
-
-          <!-- sombra -->
-          <ellipse cx="60" cy="98" rx="20" ry="6"
-                   fill="rgba(0,0,0,0.25)"/>
+          <path d="M8 70 C20 20, 105 18, 112 70 C85 62, 35 62, 8 70Z"
+                fill="#d90404"/>
+          <ellipse cx="60" cy="55" rx="38" ry="20"
+                   fill="rgba(255,140,0,0.35)"/>
+          <circle cx="32" cy="52" r="7" fill="#fff"/>
+          <circle cx="58" cy="44" r="6" fill="#fff"/>
+          <circle cx="85" cy="56" r="7" fill="#fff"/>
+          <circle cx="48" cy="60" r="5" fill="#fff"/>
+          <circle cx="74" cy="63" r="5" fill="#fff"/>
+          <path d="M42 70 C50 95, 70 95, 78 70 L78 100 C65 115, 55 115, 42 100Z"
+                fill="#f4f4f4"/>
+          <ellipse cx="60" cy="104" rx="22" ry="6"
+                   fill="rgba(0,0,0,0.35)"/>
         </svg>
       </a>
 
+      <!-- ✅ OVERLAY VHS SOLO EN LA PANTALLA -->
       <div class="tv-screen" aria-hidden="true">
-        <div class="vhs"></div>
+        <div class="vhs">
+          <div class="chroma r"></div>
+          <div class="chroma b"></div>
+          <div class="tear t1"></div>
+          <div class="tear t2"></div>
+          <div class="tear t3"></div>
+        </div>
       </div>
     </div>
 
-    <p style="font-size:15px; line-height:1.55; margin:0 auto 18px; max-width:50ch; color:var(--muted);">
+    <p class="text">
       Señales rotas. Pop electrónico.<br />
       Transmisiones desde otra dimensión.
     </p>
 
-    <div style="margin-bottom:18px;">
-      <a style="display:inline-block;padding:16px 28px;font-size:16px;border-radius:999px;text-decoration:none;background:var(--neon);color:#000;box-shadow:0 0 22px rgba(0,255,0,.3);"
-         href="player.html">
-         ¿Te atreves a entrar en la casa del terror?
+    <div class="whisper" data-text="transmisión en curso…">transmisión en curso…</div>
+
+    <div class="cta">
+      <a class="btn" href="player.html">¿Te atreves a entrar en la casa del terror?</a>
+    </div>
+
+    <div class="links icons">
+      <a href="https://www.instagram.com/cosmicmarciana" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2"/></svg>
+      </a>
+      <a href="https://open.spotify.com/intl-es/artist/0qSO1brlu9jrjrhmMldEVL" target="_blank" rel="noopener noreferrer" aria-label="Spotify">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M7 10.5c3-1 7-.8 10 .6"/><path d="M7.5 13c2.5-.7 6-.5 8.5 .5"/><path d="M8 15.5c2-.5 4.5-.4 6.5 .4"/></svg>
+      </a>
+      <a href="mailto:cosmicmarciana@gmail.com" aria-label="Contacto">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
       </a>
     </div>
 
+    <div class="sig" data-text="COSMIC MARCIANA 2026 · EMISIÓN NO AUTORIZADA · NO AJUSTAR EL DIAL">
+      COSMIC MARCIANA <span class="hit">2026</span> · EMISIÓN NO AUTORIZADA · NO AJUSTAR EL DIAL
+    </div>
+
   </main>
+
+  <!-- TU SCRIPT ORIGINAL DE SONIDO Y GLITCH VA AQUÍ SIN CAMBIOS -->
 </body>
 </html>
