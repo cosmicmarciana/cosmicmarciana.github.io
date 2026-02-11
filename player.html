@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ddLa casa del terror</title>
+<title>La casa del terror</title>
 
 <!-- Favicons -->
 <link rel="icon" href="favicon.ico">
@@ -210,6 +210,7 @@
     filter: brightness(1.05);
   }
 
+  /* --- anims base --- */
   @keyframes red-flicker{
     0%, 55%, 100% { filter: none; transform: translateZ(0); }
     60% { filter: contrast(1.05); }
@@ -325,7 +326,85 @@
   .crt:active #cover{ transform: translateY(-1px); }
   .crt:hover #cover{ transform: translateY(-2px); animation: crt-glitch .35s steps(2,end); }
 
-  /* VHS GLITCH SOLO EN LA PANTALLA */
+  /* ✅ Hotspot / botón redondo (neón parpadeando) */
+  .tv-psy-hotspot{
+    position:absolute;
+    /* Coordenadas relativas a la imagen (ajústalas si tu tv.webp cambia) */
+    left: 74.5%;
+    top: 76.2%;
+    width: 11.2%;
+    aspect-ratio: 1 / 1;
+    border-radius:999px;
+    transform: translate(-50%,-50%);
+    z-index: 6;
+    cursor:pointer;
+    pointer-events:auto;
+
+    background: radial-gradient(circle at 30% 30%,
+      rgba(255,255,255,.85),
+      rgba(0,255,0,.55),
+      rgba(0,0,0,0) 62%
+    );
+    border: 1px solid rgba(0,255,0,.35);
+    box-shadow:
+      0 0 18px rgba(0,255,0,.18),
+      0 0 40px rgba(0,255,0,.10);
+    animation: tv-btn-pulse 2.4s ease-in-out infinite;
+  }
+
+  /* Pequeño “halo” exterior */
+  .tv-psy-hotspot::after{
+    content:"";
+    position:absolute;
+    inset:-18%;
+    border-radius:999px;
+    border: 1px dashed rgba(0,255,0,.25);
+    opacity:.55;
+    filter: blur(.2px);
+    animation: tv-btn-halo 3.8s linear infinite;
+    pointer-events:none;
+  }
+
+  /* En playing, un pelín más vivo */
+  body.playing .tv-psy-hotspot{
+    animation-duration: 1.6s;
+    box-shadow:
+      0 0 22px rgba(0,255,0,.24),
+      0 0 50px rgba(0,255,0,.14);
+  }
+
+  @keyframes tv-btn-pulse{
+    0%, 70%, 100%{
+      transform: translate(-50%,-50%) scale(1);
+      opacity: .85;
+      filter: saturate(1) brightness(1);
+    }
+    80%{
+      transform: translate(-50%,-50%) scale(1.06);
+      opacity: 1;
+      filter: saturate(1.25) brightness(1.08);
+    }
+    90%{
+      transform: translate(-50%,-50%) scale(1.02);
+      opacity: .92;
+      filter: saturate(1.10) brightness(1.04);
+    }
+  }
+  @keyframes tv-btn-halo{
+    0%{ transform: rotate(0deg); opacity:.35; }
+    50%{ opacity:.65; }
+    100%{ transform: rotate(360deg); opacity:.35; }
+  }
+
+  /* Accesibilidad: foco */
+  .tv-psy-hotspot:focus-visible{
+    outline: 2px solid rgba(0,255,0,.75);
+    outline-offset: 4px;
+  }
+
+  /* ===========================
+     VHS GLITCH SOLO EN LA PANTALLA
+     =========================== */
   .tv-screen{
     position:absolute;
     left: 17.63%;
@@ -350,6 +429,7 @@
     animation-fill-mode: both;
   }
 
+  /* PLAY: animado */
   body.playing .vhs{
     opacity: calc(0.22 + (0.78 * var(--gvhs)));
     animation:
@@ -357,6 +437,7 @@
       vhs-vertical-float 1.35s infinite ease-in-out;
   }
 
+  /* ✅ PAUSE: visible + “congelado” + micro vida + ticks VHS */
   body.paused .vhs{
     opacity: calc(0.28 + (0.72 * var(--gvhs)));
     transform: translate3d(var(--hx), var(--hy), 0);
@@ -373,8 +454,18 @@
     position:absolute;
     inset:0;
     background:
-      repeating-linear-gradient(to bottom, rgba(255,255,255,0.07) 0px, rgba(255,255,255,0.07) 1px, rgba(0,0,0,0) 3px),
-      repeating-linear-gradient(90deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, rgba(0,0,0,0) 6px);
+      repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.07) 0px,
+        rgba(255,255,255,0.07) 1px,
+        rgba(0,0,0,0) 3px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        rgba(255,255,255,0.05) 0px,
+        rgba(255,255,255,0.05) 1px,
+        rgba(0,0,0,0) 6px
+      );
     opacity: 0.95;
     animation: vhs-noise 0.12s infinite steps(2,end);
   }
@@ -391,30 +482,49 @@
       rgba(160,255,160,0.22) 35%,
       rgba(255,255,255,0.36) 50%,
       rgba(160,255,160,0.22) 65%,
-      rgba(255,255,255,0) 100%);
+      rgba(255,255,255,0) 100%
+    );
     filter: blur(2.3px);
     opacity: 1;
     animation: vhs-track 1.05s infinite linear;
   }
 
-  body.paused .vhs::before{ animation: vhs-noise-hold 1.25s infinite steps(2,end); opacity: 0.92; }
-  body.paused .vhs::after{ animation: vhs-track-hold 8.2s infinite steps(2,end); opacity: 0.95; }
+  /* PAUSE: el ruido NO se apaga, se “ralentiza” */
+  body.paused .vhs::before{
+    animation: vhs-noise-hold 1.25s infinite steps(2,end);
+    opacity: 0.92;
+  }
 
-  .vhs .chroma{ position:absolute; inset:0; opacity:0; pointer-events:none; mix-blend-mode: screen; }
+  /* PAUSE: tracking casi parado */
+  body.paused .vhs::after{
+    animation: vhs-track-hold 8.2s infinite steps(2,end);
+    opacity: 0.95;
+  }
+
+  .vhs .chroma{
+    position:absolute;
+    inset:0;
+    opacity:0;
+    pointer-events:none;
+    mix-blend-mode: screen;
+  }
   body.playing .vhs .chroma{ opacity: 0.22; }
   body.paused  .vhs .chroma{ opacity: 0.26; }
 
   .vhs .chroma.r{
-    background: repeating-linear-gradient(to bottom, rgba(255,0,0,0.11), rgba(255,0,0,0.11) 1px, transparent 3px);
+    background:
+      repeating-linear-gradient(to bottom, rgba(255,0,0,0.11), rgba(255,0,0,0.11) 1px, transparent 3px);
     transform: translateX(-3.4px);
     animation: chroma-r 0.28s infinite steps(2,end);
   }
   .vhs .chroma.b{
-    background: repeating-linear-gradient(to bottom, rgba(0,120,255,0.11), rgba(0,120,255,0.11) 1px, transparent 3px);
+    background:
+      repeating-linear-gradient(to bottom, rgba(0,120,255,0.11), rgba(0,120,255,0.11) 1px, transparent 3px);
     transform: translateX(3.8px);
     animation: chroma-b 0.26s infinite steps(2,end);
   }
 
+  /* PAUSE: cromas “congelados” */
   body.paused .vhs .chroma.r{ transform: translateX(var(--hr)); animation: chroma-hold-r 6.8s infinite steps(2,end); }
   body.paused .vhs .chroma.b{ transform: translateX(var(--hb)); animation: chroma-hold-b 7.6s infinite steps(2,end); }
 
@@ -425,43 +535,77 @@
     height: 10%;
     top: 15%;
     opacity:0;
-    background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.38), rgba(255,255,255,0));
+    background: linear-gradient(
+      90deg,
+      rgba(255,255,255,0),
+      rgba(255,255,255,0.38),
+      rgba(255,255,255,0)
+    );
     filter: blur(1.2px);
     mix-blend-mode: screen;
     transform: translateX(0);
   }
-  body.playing .tear{ opacity: 0.50; animation: vhs-tear 0.22s infinite steps(2,end); }
-  body.paused .tear{ opacity: 0.55; transform: translateX(calc(var(--hx) * -1)); animation: tear-hold 9s infinite steps(2,end); }
+  body.playing .tear{
+    opacity: 0.50;
+    animation: vhs-tear 0.22s infinite steps(2,end);
+  }
+  body.paused .tear{
+    opacity: 0.55;
+    transform: translateX(calc(var(--hx) * -1));
+    animation: tear-hold 9s infinite steps(2,end);
+  }
 
   .tear.t1{ top: var(--t1); }
   .tear.t2{ top: var(--t2); height: 8%; }
   .tear.t3{ top: var(--t3); height: 12%; }
 
-  @keyframes vhs-track{ 0%{ transform: translateY(-10%);} 100%{ transform: translateY(780%);} }
-  @keyframes vhs-noise{ 0%{ transform: translateX(0); filter:none;} 50%{ transform: translateX(-1.2px); filter: contrast(1.12);} 100%{ transform: translateX(0); filter:none;} }
-  @keyframes vhs-global-jitter{ 0%{ transform: translate(0,0);} 25%{ transform: translate(-2px,0);} 50%{ transform: translate(2px,-1px);} 75%{ transform: translate(-1px,1px);} 100%{ transform: translate(0,0);} }
-  @keyframes vhs-vertical-float{ 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-2px);} }
-  @keyframes vhs-tear{ 0%{ transform: translateX(-18px);} 50%{ transform: translateX(22px);} 100%{ transform: translateX(-14px);} }
-  @keyframes chroma-r{ 0%{ transform: translateX(-3px);} 50%{ transform: translateX(-5px);} 100%{ transform: translateX(-3px);} }
-  @keyframes chroma-b{ 0%{ transform: translateX(3px);} 50%{ transform: translateX(6px);} 100%{ transform: translateX(3px);} }
+  @keyframes vhs-track{ 0%{ transform: translateY(-10%); } 100%{ transform: translateY(780%); } }
+  @keyframes vhs-noise{ 0%{ transform: translateX(0); filter:none; } 50%{ transform: translateX(-1.2px); filter: contrast(1.12); } 100%{ transform: translateX(0); filter:none; } }
+  @keyframes vhs-global-jitter{ 0%{ transform: translate(0,0); } 25%{ transform: translate(-2px, 0); } 50%{ transform: translate( 2px,-1px); } 75%{ transform: translate(-1px, 1px); } 100%{ transform: translate(0,0); } }
+  @keyframes vhs-vertical-float{ 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-2px); } }
+  @keyframes vhs-tear{ 0%{ transform: translateX(-18px); } 50%{ transform: translateX( 22px); } 100%{ transform: translateX(-14px); } }
+  @keyframes chroma-r{ 0%{ transform: translateX(-3px); } 50%{ transform: translateX(-5px); } 100%{ transform: translateX(-3px); } }
+  @keyframes chroma-b{ 0%{ transform: translateX(3px); } 50%{ transform: translateX(6px); } 100%{ transform: translateX(3px); } }
+
   @keyframes vhs-hold-breathe{
-    0%{ transform: translate3d(var(--hx), var(--hy), 0); }
-    35%{ transform: translate3d(calc(var(--hx) + .55px), calc(var(--hy) - .35px), 0); }
-    70%{ transform: translate3d(calc(var(--hx) - .45px), calc(var(--hy) + .25px), 0); }
-    100%{ transform: translate3d(var(--hx), var(--hy), 0); }
+    0%   { transform: translate3d(var(--hx), var(--hy), 0); }
+    35%  { transform: translate3d(calc(var(--hx) + .55px), calc(var(--hy) - .35px), 0); }
+    70%  { transform: translate3d(calc(var(--hx) - .45px), calc(var(--hy) + .25px), 0); }
+    100% { transform: translate3d(var(--hx), var(--hy), 0); }
   }
   @keyframes vhs-hold-tick{
-    0%{ filter: contrast(1.23) saturate(1.26) blur(var(--hblur)); }
-    86%{ filter: contrast(1.23) saturate(1.26) blur(var(--hblur)); }
-    90%{ filter: contrast(1.30) saturate(1.35) blur(calc(var(--hblur) + .25px)); }
-    92%{ filter: contrast(1.23) saturate(1.26) blur(var(--hblur)); }
-    100%{ filter: contrast(1.23) saturate(1.26) blur(var(--hblur)); }
+    0%   { filter: contrast(1.23) saturate(1.26) blur(var(--hblur)); }
+    86%  { filter: contrast(1.23) saturate(1.26) blur(var(--hblur)); }
+    90%  { filter: contrast(1.30) saturate(1.35) blur(calc(var(--hblur) + .25px)); }
+    92%  { filter: contrast(1.23) saturate(1.26) blur(var(--hblur)); }
+    100% { filter: contrast(1.23) saturate(1.26) blur(var(--hblur)); }
   }
-  @keyframes vhs-track-hold{ 0%{ transform: translateY(0%);} 88%{ transform: translateY(0%);} 100%{ transform: translateY(26%);} }
-  @keyframes vhs-noise-hold{ 0%{ transform: translateX(0); filter:none;} 40%{ transform: translateX(-.8px); filter: contrast(1.06);} 80%{ transform: translateX(.7px); filter:none;} 100%{ transform: translateX(0); filter:none;} }
-  @keyframes chroma-hold-r{ 0%{ transform: translateX(var(--hr)); } 50%{ transform: translateX(calc(var(--hr) - .55px)); } 100%{ transform: translateX(var(--hr)); } }
-  @keyframes chroma-hold-b{ 0%{ transform: translateX(var(--hb)); } 50%{ transform: translateX(calc(var(--hb) + .65px)); } 100%{ transform: translateX(var(--hb)); } }
-  @keyframes tear-hold{ 0%{ opacity:.52;} 84%{ opacity:.52;} 100%{ opacity:.66;} }
+  @keyframes vhs-track-hold{
+    0%   { transform: translateY(0%); }
+    88%  { transform: translateY(0%); }
+    100% { transform: translateY(26%); }
+  }
+  @keyframes vhs-noise-hold{
+    0%   { transform: translateX(0); filter:none; }
+    40%  { transform: translateX(-.8px); filter: contrast(1.06); }
+    80%  { transform: translateX(.7px); filter:none; }
+    100% { transform: translateX(0); filter:none; }
+  }
+  @keyframes chroma-hold-r{
+    0%   { transform: translateX(var(--hr)); }
+    50%  { transform: translateX(calc(var(--hr) - .55px)); }
+    100% { transform: translateX(var(--hr)); }
+  }
+  @keyframes chroma-hold-b{
+    0%   { transform: translateX(var(--hb)); }
+    50%  { transform: translateX(calc(var(--hb) + .65px)); }
+    100% { transform: translateX(var(--hb)); }
+  }
+  @keyframes tear-hold{
+    0%   { opacity:.52; }
+    84%  { opacity:.52; }
+    100% { opacity:.66; }
+  }
 
   /* Controls */
   .controls{
@@ -682,7 +826,7 @@
     accent-color: var(--neon);
   }
 
-  /* SUPPORT */
+  /* ===== SUPPORT (CAFÉ) ===== */
   .support{
     margin: 18px auto 10px;
     width: min(720px, 100%);
@@ -730,7 +874,13 @@
   }
   .support-btn:active{ transform:none !important; }
 
-  .support-note{ margin-top:10px; font-size:12px; color: var(--muted); opacity:.9; letter-spacing:.03em; }
+  .support-note{
+    margin-top:10px;
+    font-size:12px;
+    color: var(--muted);
+    opacity:.9;
+    letter-spacing:.03em;
+  }
 
   .download-link{
     display:inline-flex;
@@ -752,9 +902,14 @@
     box-shadow: 0 0 18px rgba(0,255,0,.16);
   }
 
-  .download-note{ margin-top:8px; font-size:12px; color: var(--muted); opacity:.9; }
+  .download-note{
+    margin-top:8px;
+    font-size:12px;
+    color: var(--muted);
+    opacity:.9;
+  }
 
-  /* MODAL */
+  /* ===== MODAL ===== */
   .modal{
     position: fixed;
     inset: 0;
@@ -873,7 +1028,10 @@
     width:auto;
     height:auto;
   }
-  .copy-btn:hover{ color: var(--neon); border-color: rgba(0,255,0,.5); }
+  .copy-btn:hover{
+    color: var(--neon);
+    border-color: rgba(0,255,0,.5);
+  }
 
   /* Playlist */
   .playlist{
@@ -948,33 +1106,12 @@
       animation:none !important;
       opacity:0 !important;
     }
+
+    .tv-psy-hotspot{ animation:none !important; }
+    .tv-psy-hotspot::after{ animation:none !important; }
   }
 
-  /* ===== PSY (VIDEO GLITCH) ===== */
-  .psy-btn{
-    width:auto;
-    height:44px;
-    padding: 0 14px;
-    border-radius: 999px;
-    background: rgba(0,0,0,.25);
-    color: var(--muted);
-    border:1px solid rgba(255,255,255,.14);
-    box-shadow:none;
-    gap:8px;
-  }
-  .psy-btn:hover{
-    color: var(--neon);
-    border-color: rgba(0,255,0,.35);
-    box-shadow: 0 0 18px rgba(0,255,0,.14);
-    transform:none !important;
-  }
-  .psy-dot{
-    width:10px; height:10px;
-    border-radius:999px;
-    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(0,255,0,.55), rgba(0,0,0,0));
-    box-shadow: 0 0 14px rgba(0,255,0,.22);
-  }
-
+  /* ===== FULLSCREEN GLITCH MODE ===== */
   .psy-overlay{
     position: fixed;
     inset: 0;
@@ -1010,7 +1147,6 @@
     100%{ transform: scale(1.10) rotate(0.1deg); }
   }
 
-  /* Overlay de “emisión” (ruido + scanlines) */
   .psy-noise{
     position:absolute;
     inset:0;
@@ -1148,7 +1284,7 @@
   }
   .psy-controls #psy-play-pause .ico{ stroke:#000; }
 
-  /* si NO hay música (no cargado) -> negro total (sin vídeo visible) */
+  /* si NO hay música (no cargado) -> negro total */
   body.psy-open:not(.playing):not(.paused) #psy-video{ opacity:0; }
   body.psy-open:not(.playing):not(.paused) .psy-noise{ opacity:0; }
   body.psy-open:not(.playing):not(.paused) .psy-tear{ opacity:0; }
@@ -1173,6 +1309,10 @@
     <div class="crt" aria-hidden="true">
       <img id="cover" src="tv.webp" alt="Televisor CRT / portada" />
 
+      <!-- ✅ Botón redondo clicable (neón) -->
+      <button class="tv-psy-hotspot" id="tv-psy-hotspot" type="button"
+        aria-label="Abrir modo psicodélico" title="Abrir modo psicodélico"></button>
+
       <div class="tv-screen" aria-hidden="true">
         <div class="vhs">
           <div class="chroma r"></div>
@@ -1195,10 +1335,7 @@
       <button id="shuffle-btn" class="icon-btn" aria-label="Shuffle" title="Shuffle"></button>
       <button id="loop-btn" class="icon-btn" aria-label="Loop" title="Loop"></button>
       <button id="share-btn" class="icon-btn" aria-label="Compartir" title="Compartir"></button>
-      <button id="psy-btn" class="psy-btn" aria-label="Modo psicodélico" title="Modo psicodélico">
-        <span class="psy-dot" aria-hidden="true"></span>
-        Modo psicodélico
-      </button>
+      <!-- ✅ Quitado botón "Modo psicodélico" -->
     </div>
 
     <div id="status-line"></div>
@@ -1278,9 +1415,8 @@
     <div class="sig">EMISIÓN NO AUTORIZADA · NO MIRES ATRÁS!</div>
   </main>
 
-  <!-- FULLSCREEN GLITCH VIDEO MODE -->
+  <!-- FULLSCREEN GLITCH MODE -->
   <div class="psy-overlay" id="psy-overlay" aria-hidden="true">
-    <!-- ✅ PON AQUÍ TU VÍDEO (mismo nombre / ruta en tu servidor) -->
     <video id="psy-video" class="psy-video" muted loop playsinline preload="auto">
       <source src="glitch.mp4" type="video/mp4">
     </video>
@@ -1371,11 +1507,12 @@
   const stopBtn = $("stop-btn");
   const shareBtn = $("share-btn");
   const playlistEl = $("playlist");
-
   const tracks = Array.from(document.querySelectorAll(".track"));
 
-  // PSY
-  const psyBtn = $("psy-btn");
+  // TV hotspot
+  const tvPsyHotspot = $("tv-psy-hotspot");
+
+  // PSY overlay
   const psyOverlay = $("psy-overlay");
   const psyVideo = $("psy-video");
   const psyTrackTitle = $("psy-track-title");
@@ -1393,7 +1530,6 @@
 
   let isScrubbing = false;
   let usingTouchFallback = false;
-
   let loadId = 0;
 
   const LS = {
@@ -1404,7 +1540,7 @@
     time: "cm_time"
   };
 
-  // ===== PRELOAD NEXT =====
+  // PRELOAD NEXT
   let preloader = null;
   let preloadedIndex = -1;
 
@@ -1476,15 +1612,17 @@
   }
   function setPsyPlayIcon(){ psyPlayPause.innerHTML = audio.paused ? ICONS.play : ICONS.pause; }
 
-  /* ✅ Captura un “frame VHS” al pausar */
   function freezeVhsFrame(){
     const r = (min, max) => (min + Math.random() * (max - min));
     const root = document.documentElement;
+
     root.style.setProperty("--hx", `${r(-2.6, 2.6).toFixed(2)}px`);
     root.style.setProperty("--hy", `${r(-1.8, 1.8).toFixed(2)}px`);
     root.style.setProperty("--hblur", `${r(0.05, 0.55).toFixed(2)}px`);
+
     root.style.setProperty("--hr", `${r(-3.8, -1.4).toFixed(2)}px`);
     root.style.setProperty("--hb", `${r( 1.6,  4.2).toFixed(2)}px`);
+
     root.style.setProperty("--t1", `${r(10, 24).toFixed(1)}%`);
     root.style.setProperty("--t2", `${r(40, 58).toFixed(1)}%`);
     root.style.setProperty("--t3", `${r(64, 84).toFixed(1)}%`);
@@ -1502,6 +1640,25 @@
     root.style.setProperty("--t3", "76%");
   }
 
+  function setGlitchFromVolume(){
+    const v = clamp01(audio.volume || 0);
+
+    if(!hasLoaded){
+      document.documentElement.style.setProperty("--g", "0");
+      return;
+    }
+
+    if(audio.paused){
+      const g = Math.max(0.22, Math.pow(0.10 + 0.90 * v, 1.15));
+      document.documentElement.style.setProperty("--g", g.toFixed(3));
+      return;
+    }
+
+    let g = Math.pow(0.10 + 0.90 * v, 1.6);
+    if(v < 0.08) g = 0.12;
+    document.documentElement.style.setProperty("--g", g.toFixed(3));
+  }
+
   function setPlayingClass(){
     const isPlaying = hasLoaded && !audio.paused;
     const isPaused  = hasLoaded && audio.paused;
@@ -1514,8 +1671,6 @@
 
     setGlitchFromVolume();
     setPsyPlayIcon();
-
-    // vídeo glitch: play/pause real + “freeze”
     syncPsyVideo();
   }
 
@@ -1545,25 +1700,6 @@
     if(audio.volume === 0) volumeIcon.innerHTML = ICONS.mute;
     else if(audio.volume < 0.5) volumeIcon.innerHTML = ICONS.vol2;
     else volumeIcon.innerHTML = ICONS.vol3;
-  }
-
-  function setGlitchFromVolume(){
-    const v = clamp01(audio.volume || 0);
-
-    if(!hasLoaded){
-      document.documentElement.style.setProperty("--g", "0");
-      return;
-    }
-
-    if(audio.paused){
-      const g = Math.max(0.22, Math.pow(0.10 + 0.90 * v, 1.15));
-      document.documentElement.style.setProperty("--g", g.toFixed(3));
-      return;
-    }
-
-    let g = Math.pow(0.10 + 0.90 * v, 1.6);
-    if(v < 0.08) g = 0.12;
-    document.documentElement.style.setProperty("--g", g.toFixed(3));
   }
 
   function markCurrent(){
@@ -1609,7 +1745,7 @@
   function showPreview(){ progressContainer.classList.add("preview"); }
   function hidePreview(){ progressContainer.classList.remove("preview"); }
 
-  // ===== SCRUBBING SUAVE (RAF) =====
+  // SCRUBBING RAF
   let pendingSeekPct = null;
   let rafSeekId = 0;
 
@@ -1633,7 +1769,6 @@
     pendingSeekPct = null;
   }
 
-  // ===== POINTER EVENTS =====
   function onPointerDown(e){
     e.preventDefault();
     if(!audio.duration) return;
@@ -1663,7 +1798,6 @@
     hidePreview();
   }
 
-  // ===== TOUCH FALLBACK =====
   function touchClientX(ev){
     const t = ev.touches && ev.touches[0] ? ev.touches[0] : (ev.changedTouches ? ev.changedTouches[0] : null);
     return t ? t.clientX : null;
@@ -1709,7 +1843,7 @@
     hidePreview();
   }
 
-  // ===== Continuar donde lo dejaste (y STOP lo borra) =====
+  // Continuar automático donde lo dejaste
   function saveCurrentTime(){
     if(!hasLoaded) return;
     try{
@@ -1741,9 +1875,8 @@
     audio.addEventListener("loadedmetadata", resume);
   }
 
-  // ===== PSY VIDEO SYNC (freeze real) =====
+  // PSY video sync (freeze real)
   function ensurePsyVideoReady(){
-    // si estás en local, el autoplay puede fallar; muted ayuda
     if(!psyVideo) return;
     psyVideo.muted = true;
     psyVideo.loop = true;
@@ -1754,23 +1887,18 @@
     if(!psyOverlay.classList.contains("open")) return;
     if(!psyVideo) return;
 
-    // si no hay música cargada -> no mostramos vídeo (CSS lo oculta)
     if(!hasLoaded || !audio.src){
       try{ psyVideo.pause(); }catch{}
       return;
     }
 
-    // PLAY -> que corra
     if(!audio.paused){
-      // intenta play (puede fallar si no hubo gesto, pero al abrir overlay hay gesto)
       psyVideo.play().catch(()=>{});
     } else {
-      // PAUSE -> freeze
       psyVideo.pause();
     }
   }
 
-  // ===== PLAYER (robusto) =====
   function loadTrack(index){
     currentIndex = index;
 
@@ -1863,7 +1991,6 @@
     document.documentElement.style.setProperty("--g", "0");
     setPsyTitle();
 
-    // también apaga el vídeo
     try{ psyVideo.pause(); }catch{}
   }
 
@@ -1968,13 +2095,9 @@
     setPsyTitle();
     setPsyPlayIcon();
 
-    // intenta fullscreen al abrir (si falla, botón arriba)
     psyClose.focus();
-
-    // sincroniza vídeo con estado actual
     syncPsyVideo();
 
-    // si está sonando, que arranque
     if(hasLoaded && !audio.paused){
       psyVideo.play().catch(()=>{});
     }
@@ -1987,7 +2110,7 @@
     if(document.fullscreenElement){
       document.exitFullscreen().catch(()=>{});
     }
-    psyBtn.focus();
+    tvPsyHotspot.focus();
   }
 
   function isFullscreen(){ return !!document.fullscreenElement; }
@@ -2133,8 +2256,10 @@
       }
     });
 
-    // PSY events
-    psyBtn.addEventListener("click", openPsy);
+    // ✅ ABRIR MODO: click en el botón redondo de la tele
+    tvPsyHotspot.addEventListener("click", openPsy);
+
+    // PSY overlay
     psyClose.addEventListener("click", closePsy);
     psyFullscreen.addEventListener("click", toggleFullscreen);
     psyPrev.addEventListener("click", prevTrack);
@@ -2206,4 +2331,3 @@
 
 </body>
 </html>
-
