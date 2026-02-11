@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>La casa del terror</title>
+<title>La puta casa del terror</title>
 
 <!-- Favicons -->
 <link rel="icon" href="favicon.ico">
@@ -35,6 +35,12 @@
     --t1: 18%;
     --t2: 50%;
     --t3: 76%;
+
+    /* ✅ Botón psicodélico (ajuste fino y robusto multi-dispositivo) */
+    /* Lo muevo: más a la derecha y un poco más arriba */
+    --psy-x: 76.8%;
+    --psy-y: 74.6%;
+    --psy-s: 11.8%;
   }
 
   *{ box-sizing:border-box; }
@@ -326,74 +332,98 @@
   .crt:active #cover{ transform: translateY(-1px); }
   .crt:hover #cover{ transform: translateY(-2px); animation: crt-glitch .35s steps(2,end); }
 
-  /* ✅ Hotspot / botón redondo (neón parpadeando) */
+  /* ✅ Hotspot (tap-area grande) + botón visible (más pequeño) */
   .tv-psy-hotspot{
     position:absolute;
-    /* Coordenadas relativas a la imagen (ajústalas si tu tv.webp cambia) */
-    left: 74.5%;
-    top: 76.2%;
-    width: 11.2%;
+    left: var(--psy-x);
+    top:  var(--psy-y);
+
+    /* Tap area */
+    width: var(--psy-s);
+    min-width: 38px;
+    max-width: 66px;
     aspect-ratio: 1 / 1;
+
     border-radius:999px;
     transform: translate(-50%,-50%);
     z-index: 6;
     cursor:pointer;
     pointer-events:auto;
 
-    background: radial-gradient(circle at 30% 30%,
-      rgba(255,255,255,.85),
-      rgba(0,255,0,.55),
-      rgba(0,0,0,0) 62%
-    );
-    border: 1px solid rgba(0,255,0,.35);
-    box-shadow:
-      0 0 18px rgba(0,255,0,.18),
-      0 0 40px rgba(0,255,0,.10);
-    animation: tv-btn-pulse 2.4s ease-in-out infinite;
+    /* Tap area casi invisible */
+    background: transparent;
+    border: 0;
+    padding: 0;
+
+    /* Esto evita “selección” rara en iOS */
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
   }
 
-  /* Pequeño “halo” exterior */
+  /* Botón visible (el “punto” real) */
+  .tv-psy-hotspot::before{
+    content:"";
+    position:absolute;
+    inset: 22%; /* tamaño del punto dentro del tap-area */
+    border-radius:999px;
+
+    background: radial-gradient(circle at 35% 30%,
+      rgba(255,255,255,.98) 0%,
+      rgba(0,255,0,.98) 28%,
+      rgba(0,255,0,.50) 52%,
+      rgba(0,0,0,0) 72%
+    );
+
+    border: 1px solid rgba(0,255,0,.72);
+
+    box-shadow:
+      0 0 10px rgba(0,255,0,.60),
+      0 0 28px rgba(0,255,0,.36),
+      0 0 74px rgba(0,255,0,.18);
+
+    animation: tv-btn-flicker 1.05s steps(2,end) infinite;
+  }
+
+  /* Halo exterior (más evidente, pero fino) */
   .tv-psy-hotspot::after{
     content:"";
     position:absolute;
-    inset:-18%;
+    inset: 6%;
     border-radius:999px;
-    border: 1px dashed rgba(0,255,0,.25);
-    opacity:.55;
-    filter: blur(.2px);
-    animation: tv-btn-halo 3.8s linear infinite;
+    border: 2px dashed rgba(0,255,0,.30);
+    opacity:.90;
+    filter: blur(.25px);
+    animation: tv-btn-halo 2.4s linear infinite;
     pointer-events:none;
   }
 
-  /* En playing, un pelín más vivo */
-  body.playing .tv-psy-hotspot{
-    animation-duration: 1.6s;
+  /* En playing, más “vivo” */
+  body.playing .tv-psy-hotspot::before{
+    animation-duration: .62s;
     box-shadow:
-      0 0 22px rgba(0,255,0,.24),
-      0 0 50px rgba(0,255,0,.14);
+      0 0 14px rgba(0,255,0,.78),
+      0 0 40px rgba(0,255,0,.46),
+      0 0 96px rgba(0,255,0,.22);
+  }
+  body.playing .tv-psy-hotspot::after{
+    opacity: 1;
+    border-color: rgba(0,255,0,.38);
+    animation-duration: 1.8s;
   }
 
-  @keyframes tv-btn-pulse{
-    0%, 70%, 100%{
-      transform: translate(-50%,-50%) scale(1);
-      opacity: .85;
-      filter: saturate(1) brightness(1);
-    }
-    80%{
-      transform: translate(-50%,-50%) scale(1.06);
-      opacity: 1;
-      filter: saturate(1.25) brightness(1.08);
-    }
-    90%{
-      transform: translate(-50%,-50%) scale(1.02);
-      opacity: .92;
-      filter: saturate(1.10) brightness(1.04);
-    }
+  @keyframes tv-btn-flicker{
+    0%   { opacity: .55; filter: saturate(1.1) brightness(1.0); transform: scale(1); }
+    12%  { opacity: 1;   filter: saturate(1.9) brightness(1.28); transform: scale(1.08); }
+    25%  { opacity: .65; filter: saturate(1.2) brightness(1.06); transform: scale(1.02); }
+    45%  { opacity: 1;   filter: saturate(2.0) brightness(1.32); transform: scale(1.10); }
+    70%  { opacity: .62; filter: saturate(1.2) brightness(1.02); transform: scale(1.00); }
+    100% { opacity: .55; filter: saturate(1.1) brightness(1.0); transform: scale(1); }
   }
   @keyframes tv-btn-halo{
-    0%{ transform: rotate(0deg); opacity:.35; }
-    50%{ opacity:.65; }
-    100%{ transform: rotate(360deg); opacity:.35; }
+    0%{ transform: rotate(0deg); opacity:.45; }
+    50%{ opacity:1; }
+    100%{ transform: rotate(360deg); opacity:.45; }
   }
 
   /* Accesibilidad: foco */
@@ -1087,6 +1117,11 @@
     .subtitle{ font-size:15px; }
     .progress-wrapper{ gap:8px; }
     #volume-slider{ width: 140px; }
+
+    /* En móvil, un pelín más grande para el dedo sin reventar el diseño */
+    :root{
+      --psy-s: 12.6%;
+    }
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -1107,7 +1142,7 @@
       opacity:0 !important;
     }
 
-    .tv-psy-hotspot{ animation:none !important; }
+    .tv-psy-hotspot::before{ animation:none !important; }
     .tv-psy-hotspot::after{ animation:none !important; }
   }
 
