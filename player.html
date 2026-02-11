@@ -99,6 +99,11 @@
       );
   }
 
+  body.psy-open{
+    overflow:hidden;
+    touch-action: none;
+  }
+
   .wrap{
     width:100%;
     max-width:820px;
@@ -1088,6 +1093,126 @@
       opacity:0 !important;
     }
   }
+
+  /* ===========================
+     MODO PSICODÉLICO (OVERLAY)
+     =========================== */
+  .psy-btn{
+    width:auto;
+    height:auto;
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: rgba(0,255,0,.10);
+    border: 1px solid rgba(0,255,0,.35);
+    color: var(--ink);
+    cursor:pointer;
+    transition:.18s ease;
+    letter-spacing:.06em;
+    text-transform: uppercase;
+    font-size:12px;
+  }
+  .psy-btn:hover{
+    border-color: rgba(0,255,0,.7);
+    color: var(--neon);
+    box-shadow: 0 0 18px rgba(0,255,0,.18);
+    transform: translateY(-1px);
+  }
+
+  .psy{
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display:none;
+    background: #000;
+    overflow:hidden;
+  }
+  .psy.open{ display:block; }
+
+  .psy canvas{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+  }
+
+  .psy-ui{
+    position:absolute;
+    left: 14px;
+    right: 14px;
+    top: calc(14px + env(safe-area-inset-top));
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    pointer-events:none;
+  }
+  .psy-ui .left,
+  .psy-ui .right{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    pointer-events:auto;
+  }
+
+  .psy-chip{
+    padding: 10px 12px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.45);
+    border: 1px solid rgba(255,255,255,.14);
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing:.06em;
+    backdrop-filter: blur(6px);
+    max-width: 70vw;
+    white-space: nowrap;
+    overflow:hidden;
+    text-overflow: ellipsis;
+  }
+
+  .psy-close{
+    width:auto !important;
+    height:auto !important;
+    padding: 10px 12px !important;
+    border-radius: 999px !important;
+    background: rgba(255,255,255,.08) !important;
+    border: 1px solid rgba(255,255,255,.16) !important;
+    color: var(--muted) !important;
+  }
+  .psy-close:hover{
+    border-color: rgba(0,255,0,.45) !important;
+    color: var(--neon) !important;
+    box-shadow: 0 0 18px rgba(0,255,0,.16);
+  }
+
+  .psy-full{
+    width:auto !important;
+    height:auto !important;
+    padding: 10px 12px !important;
+    border-radius: 999px !important;
+    background: rgba(0,255,0,.10) !important;
+    border: 1px solid rgba(0,255,0,.28) !important;
+    color: var(--ink) !important;
+  }
+  .psy-full:hover{
+    border-color: rgba(0,255,0,.55) !important;
+    color: var(--neon) !important;
+  }
+
+  .psy-hint{
+    position:absolute;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    left: 0;
+    right: 0;
+    text-align:center;
+    font-size:12px;
+    color: rgba(234,234,234,.7);
+    letter-spacing:.06em;
+    text-transform: uppercase;
+    pointer-events:none;
+    mix-blend-mode: screen;
+    opacity:.8;
+    text-shadow: 0 0 18px rgba(0,255,0,.14);
+  }
 </style>
 </head>
 
@@ -1126,6 +1251,13 @@
       <button id="shuffle-btn" class="icon-btn" aria-label="Shuffle" title="Shuffle"></button>
       <button id="loop-btn" class="icon-btn" aria-label="Loop" title="Loop"></button>
       <button id="share-btn" class="icon-btn" aria-label="Compartir" title="Compartir"></button>
+    </div>
+
+    <!-- ✅ Nuevo botón -->
+    <div class="actions" aria-label="Modo">
+      <button id="psy-btn" class="psy-btn" type="button" title="Modo psicodélico">
+        ✨ Modo psicodélico
+      </button>
     </div>
 
     <div id="status-line"></div>
@@ -1201,6 +1333,23 @@
     </div>
 
     <audio id="audio" preload="metadata" playsinline></audio>
+
+    <!-- ✅ Overlay psicodélico -->
+    <section class="psy" id="psy" aria-hidden="true">
+      <canvas id="psy-canvas"></canvas>
+
+      <div class="psy-ui">
+        <div class="left">
+          <div class="psy-chip" id="psy-now">MODO PSICODÉLICO</div>
+        </div>
+        <div class="right">
+          <button class="psy-full" id="psy-full" type="button" title="Pantalla completa">⛶</button>
+          <button class="psy-close" id="psy-close" type="button" title="Cerrar">✕</button>
+        </div>
+      </div>
+
+      <div class="psy-hint">ESC para salir · SPACE play/pause · ⛶ fullscreen</div>
+    </section>
 
     <div class="sig">EMISIÓN NO AUTORIZADA · NO MIRES ATRÁS!</div>
   </main>
@@ -1589,6 +1738,7 @@
     setPlayingClass();
 
     primePreload(getNextIndexLinear());
+    psyUpdateNowPlaying(); // ✅ actualizar overlay si está abierto
   }
 
   async function waitCanPlay(){
@@ -1661,6 +1811,7 @@
     setPlayIcon(); // deja clases limpias
 
     document.documentElement.style.setProperty("--g", "0");
+    psyUpdateNowPlaying(); // ✅
   }
 
   function getRandomNextIndex(){
@@ -1754,6 +1905,7 @@
     else destroyPreloader();
 
     setGlitchFromVolume();
+    psyUpdateNowPlaying(); // ✅
   }
 
   function endScrub(){
@@ -1843,7 +1995,7 @@
       lastVolume = v || lastVolume;
       localStorage.setItem(LS.vol, String(v));
       updateVolumeIcon();
-      setGlitchFromVolume(); 
+      setGlitchFromVolume();
     });
 
     volumeIcon.addEventListener("click", ()=>{
@@ -1870,6 +2022,7 @@
     document.addEventListener("keydown", (e)=>{
       if(e.code === "Space"){
         if(document.activeElement && document.activeElement.tagName === "INPUT") return;
+        // Si está el modal abierto o el modo psicodélico, igual dejamos SPACE para el audio (ok)
         e.preventDefault();
         togglePlay();
       }
@@ -1935,25 +2088,271 @@
     });
   }
 
+  /* =========================================================
+     ✅ MODO PSICODÉLICO (Canvas + WebAudio Analyser)
+     ========================================================= */
+  const psyBtn = $("psy-btn");
+  const psyEl = $("psy");
+  const psyClose = $("psy-close");
+  const psyFull = $("psy-full");
+  const psyNow = $("psy-now");
+  const psyCanvas = $("psy-canvas");
+
+  let psyCtx2d = null;
+  let psyRaf = 0;
+
+  // WebAudio (se inicializa al abrir)
+  let waCtx = null;
+  let waSource = null;
+  let waAnalyser = null;
+  let waData = null;
+
+  function psyUpdateNowPlaying(){
+    if(!psyNow) return;
+    const t = tracks[currentIndex]?.textContent?.trim();
+    if(!hasLoaded) psyNow.textContent = "MODO PSICODÉLICO · SIN SEÑAL";
+    else psyNow.textContent = "MODO PSICODÉLICO · " + (t || "TRANSMISIÓN");
+  }
+
+  function psyEnsureAudioAnalyser(){
+    if(waCtx && waAnalyser && waData) return;
+
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC) {
+      setStatus("Tu navegador no soporta AudioContext.");
+      return;
+    }
+
+    waCtx = new AC();
+    waAnalyser = waCtx.createAnalyser();
+    waAnalyser.fftSize = 2048;
+    waAnalyser.smoothingTimeConstant = 0.78;
+
+    // ⚠️ Solo se puede crear un MediaElementSource por elemento y contexto.
+    waSource = waCtx.createMediaElementSource(audio);
+
+    // Ruta: source -> analyser -> destination (para que siga sonando)
+    waSource.connect(waAnalyser);
+    waAnalyser.connect(waCtx.destination);
+
+    waData = new Uint8Array(waAnalyser.frequencyBinCount);
+  }
+
+  function psyResumeAudioContextIfNeeded(){
+    if(!waCtx) return;
+    if(waCtx.state === "suspended") waCtx.resume().catch(()=>{});
+  }
+
+  function psyResize(){
+    if(!psyCanvas) return;
+    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    const w = Math.floor(window.innerWidth * dpr);
+    const h = Math.floor(window.innerHeight * dpr);
+    if(psyCanvas.width !== w || psyCanvas.height !== h){
+      psyCanvas.width = w;
+      psyCanvas.height = h;
+    }
+  }
+
+  function avgRange(arr, from, to){
+    const a = Math.max(0, Math.min(arr.length, from|0));
+    const b = Math.max(0, Math.min(arr.length, to|0));
+    if(b <= a) return 0;
+    let s = 0;
+    for(let i=a;i<b;i++) s += arr[i];
+    return s / (b - a);
+  }
+
+  function psyGetEnergy(){
+    if(!waAnalyser || !waData) return { bass:0, mid:0, treble:0, energy:0 };
+    waAnalyser.getByteFrequencyData(waData);
+
+    // Simple “band split” (suficiente para mover el kaleidoscopio)
+    const n = waData.length;
+    const bass = avgRange(waData, 0, Math.floor(n * 0.12)) / 255;
+    const mid  = avgRange(waData, Math.floor(n * 0.12), Math.floor(n * 0.45)) / 255;
+    const treb = avgRange(waData, Math.floor(n * 0.45), n) / 255;
+
+    const energy = Math.min(1, (bass*0.55 + mid*0.30 + treb*0.15) * 1.25);
+    return { bass, mid, treble:treb, energy };
+  }
+
+  function psyDraw(nowMs){
+    psyRaf = requestAnimationFrame(psyDraw);
+
+    if(!psyCtx2d){
+      psyCtx2d = psyCanvas.getContext("2d", { alpha:false, desynchronized:true });
+      if(!psyCtx2d) return;
+    }
+
+    const ctx = psyCtx2d;
+    const w = psyCanvas.width;
+    const h = psyCanvas.height;
+    if(!w || !h) return;
+
+    const t = nowMs * 0.001;
+    const { bass, mid, treble, energy } = psyGetEnergy();
+
+    // Parámetros “vivos”
+    const seg = 10; // segmentos del kaleidoscopio
+    const rot = t * (0.25 + 1.4 * mid + 1.2 * energy);
+    const zoom = 0.78 + 0.35 * bass + 0.22 * energy;
+    const pulse = 0.06 + 0.18 * bass;
+    const shimmer = 0.10 + 0.55 * treble;
+
+    // Fondo
+    ctx.globalCompositeOperation = "source-over";
+    const hue = (t * 18 + energy * 180) % 360;
+    ctx.fillStyle = `hsl(${hue} 60% ${8 + energy*10}%)`;
+    ctx.fillRect(0,0,w,h);
+
+    ctx.save();
+    ctx.translate(w/2, h/2);
+    ctx.rotate(rot);
+
+    // Capa base con “screen” para psicodelia
+    ctx.globalCompositeOperation = "screen";
+
+    const baseR = Math.min(w,h) * 0.62 * zoom;
+    for(let s=0; s<seg; s++){
+      ctx.save();
+      const a = (Math.PI * 2 / seg) * s;
+      ctx.rotate(a);
+
+      // Triángulo radial
+      ctx.beginPath();
+      ctx.moveTo(0,0);
+      ctx.lineTo(baseR, -baseR*0.14);
+      ctx.lineTo(baseR,  baseR*0.14);
+      ctx.closePath();
+
+      // Gradiente por segmento
+      const g = ctx.createLinearGradient(0,0, baseR, 0);
+      const h1 = (hue + s*22 + t*25) % 360;
+      const h2 = (hue + 180 + s*10 + t*12) % 360;
+      g.addColorStop(0, `hsla(${h1} 90% ${35 + energy*25}% ${0.12 + energy*0.18})`);
+      g.addColorStop(0.5, `hsla(${h2} 95% ${45 + energy*20}% ${0.10 + shimmer*0.10})`);
+      g.addColorStop(1, `hsla(${h1} 90% ${35 + energy*25}% ${0.06 + energy*0.10})`);
+
+      ctx.fillStyle = g;
+      ctx.fill();
+
+      // “Nervio” central (bombo)
+      ctx.globalCompositeOperation = "lighter";
+      ctx.strokeStyle = `hsla(${(hue+90)%360} 100% ${55 + energy*20}% ${0.10 + pulse})`;
+      ctx.lineWidth = Math.max(1, (w/800) * (1 + bass*6));
+      ctx.beginPath();
+      ctx.moveTo(baseR*0.08, 0);
+      ctx.lineTo(baseR*(0.85 + bass*0.12), 0);
+      ctx.stroke();
+
+      // espejo alterno
+      if(s % 2 === 0){
+        ctx.scale(1, -1);
+        ctx.globalCompositeOperation = "screen";
+        ctx.fillStyle = `hsla(${(hue+30)%360} 100% ${40 + energy*20}% ${0.05 + treble*0.08})`;
+        ctx.beginPath();
+        ctx.moveTo(baseR*0.05, 0);
+        ctx.arc(0,0, baseR*(0.35 + 0.25*energy), -0.18, 0.18);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    // Velo + grano “analógico”
+    ctx.globalCompositeOperation = "overlay";
+    ctx.rotate(-rot*0.35);
+    ctx.fillStyle = `rgba(255,255,255,${0.03 + treble*0.03})`;
+    ctx.fillRect(-w/2, -h/2, w, h);
+
+    // Scanlines suaves
+    ctx.globalCompositeOperation = "multiply";
+    ctx.fillStyle = `rgba(0,0,0,${0.08})`;
+    const step = Math.max(2, Math.floor((h/540) * 3));
+    for(let y=-h/2; y<h/2; y+=step){
+      ctx.fillRect(-w/2, y, w, 1);
+    }
+
+    ctx.restore();
+  }
+
+  function psyOpen(){
+    psyEl.classList.add("open");
+    psyEl.setAttribute("aria-hidden","false");
+    document.body.classList.add("psy-open");
+
+    psyUpdateNowPlaying();
+    psyResize();
+
+    // Inicia WebAudio aquí (gesto de usuario)
+    psyEnsureAudioAnalyser();
+    psyResumeAudioContextIfNeeded();
+
+    if(!psyRaf){
+      psyRaf = requestAnimationFrame(psyDraw);
+    }
+  }
+
+  function psyCloseOverlay(){
+    psyEl.classList.remove("open");
+    psyEl.setAttribute("aria-hidden","true");
+    document.body.classList.remove("psy-open");
+
+    if(psyRaf){
+      cancelAnimationFrame(psyRaf);
+      psyRaf = 0;
+    }
+  }
+
+  async function psyToggleFullscreen(){
+    try{
+      if(!document.fullscreenElement){
+        await psyEl.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch {
+      setStatus("No se pudo activar fullscreen.");
+    }
+  }
+
+  function psyInit(){
+    if(!psyBtn || !psyEl || !psyCanvas) return;
+
+    psyBtn.addEventListener("click", ()=>{
+      if(psyEl.classList.contains("open")) psyCloseOverlay();
+      else psyOpen();
+    });
+
+    psyClose?.addEventListener("click", psyCloseOverlay);
+    psyFull?.addEventListener("click", psyToggleFullscreen);
+
+    // Click fuera (opcional): si quieres, lo descomentamos
+    // psyEl.addEventListener("click", (e)=>{ if(e.target === psyEl) psyCloseOverlay(); });
+
+    window.addEventListener("resize", ()=>{
+      if(psyEl.classList.contains("open")) psyResize();
+    }, { passive:true });
+
+    document.addEventListener("keydown", (e)=>{
+      if(!psyEl.classList.contains("open")) return;
+      if(e.key === "Escape") psyCloseOverlay();
+    });
+
+    // si el audio está en play y el contexto se suspende (iOS), reintenta
+    audio.addEventListener("play", ()=> psyResumeAudioContextIfNeeded());
+  }
+
   (function init(){
     renderIcons();
     applyStoredSettings();
     wireEvents();
     supportInit();
+    psyInit(); // ✅
   })();
 </script>
 
 </body>
-</html> 
-
-
-
-
-
-
-
-
-
-
-
-
+</html>
