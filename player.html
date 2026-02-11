@@ -37,7 +37,6 @@
     --t3: 76%;
 
     /* ✅ Botón psicodélico (ajuste fino y robusto multi-dispositivo) */
-    /* Lo muevo: más a la derecha y un poco más arriba */
     --psy-x: 86.1%;
     --psy-y: 58.8%;
     --psy-s: 11.2%;
@@ -332,122 +331,123 @@
   .crt:active #cover{ transform: translateY(-1px); }
   .crt:hover #cover{ transform: translateY(-2px); animation: crt-glitch .35s steps(2,end); }
 
-  /* ✅ Hotspot (tap-area grande) + botón visible (más pequeño) */
+  /* ============================================================
+     ✅ BOTÓN PSICODÉLICO (FIX)
+     - Invisible y no clicable hasta que se reproduce (psy-unlocked)
+     - No hereda hover/active del button global (no “salta”)
+     - Verde sutil + parpadeo mínimo (no discoteca)
+     ============================================================ */
+
   .tv-psy-hotspot{
-  position:absolute;
-  left: var(--psy-x);
-  top:  var(--psy-y);
-  width: var(--psy-s);
-  aspect-ratio: 1 / 1;
-  border-radius:999px;
-  transform: translate(-50%,-50%);
-  z-index: 6;
-  opacity: 0;
-  pointer-events: none;
+    position:absolute;
+    left: var(--psy-x);
+    top:  var(--psy-y);
+    width: var(--psy-s);
+    aspect-ratio: 1 / 1;
+    border-radius:999px;
+    transform: translate(-50%,-50%);
+    z-index: 6;
 
-  cursor:pointer;
-  pointer-events:auto;
+    /* tap-area: el botón es el área, el punto se dibuja en ::before */
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    padding: 0;
 
-  background: radial-gradient(circle at 40% 35%,
-    rgba(255,255,255,.75) 0%,
-    rgba(0,255,0,.65) 35%,
-    rgba(0,255,0,.25) 55%,
-    rgba(0,0,0,0) 70%
-  );
+    /* 🔒 bloqueado hasta play */
+    opacity: 0;
+    pointer-events: none;
 
-  border: 1px solid rgba(0,255,0,.35);
+    cursor: pointer;
+    transition: opacity .18s ease;
+  }
 
-  box-shadow:
-    0 0 6px rgba(0,255,0,.35),
-    0 0 16px rgba(0,255,0,.18);
+  /* Evita que el :hover global cambie la posición */
+  .tv-psy-hotspot:hover,
+  .tv-psy-hotspot:active,
+  .tv-psy-hotspot:focus{
+    transform: translate(-50%,-50%);
+  }
 
-  animation: tv-btn-idle 3.6s ease-in-out infinite;
-
-
-}
+  /* ✅ Desbloqueado tras el primer play */
   body.psy-unlocked .tv-psy-hotspot{
-  opacity: .9;
-  pointer-events: auto;
-  animation: tv-btn-idle 3.6s ease-in-out infinite;
-}
+    opacity: .92;
+    pointer-events: auto;
+  }
 
-
-
-  /* Botón visible (el “punto” real) */
-  .tv-psy-hotspot::before{
+  /* Punto real (más pequeño dentro del tap-area) */
+  body.psy-unlocked .tv-psy-hotspot::before{
     content:"";
     position:absolute;
-    inset: 22%; /* tamaño del punto dentro del tap-area */
+    inset: 26%;
     border-radius:999px;
 
     background: radial-gradient(circle at 35% 30%,
-      rgba(255,255,255,.98) 0%,
-      rgba(0,255,0,.98) 28%,
-      rgba(0,255,0,.50) 52%,
-      rgba(0,0,0,0) 72%
+      rgba(255,255,255,.85) 0%,
+      rgba(0,255,0,.55) 38%,
+      rgba(0,255,0,.22) 58%,
+      rgba(0,0,0,0) 74%
     );
 
-    border: 1px solid rgba(0,255,0,.72);
+    border: 1px solid rgba(0,255,0,.28);
 
     box-shadow:
-      0 0 10px rgba(0,255,0,.60),
-      0 0 28px rgba(0,255,0,.36),
-      0 0 74px rgba(0,255,0,.18);
+      0 0 7px rgba(0,255,0,.32),
+      0 0 18px rgba(0,255,0,.14);
 
-    animation: tv-btn-flicker 1.05s steps(2,end) infinite;
+    animation: tv-btn-idle 3.6s ease-in-out infinite;
+    will-change: opacity, filter, transform;
+    pointer-events: none;
   }
 
-  /* Halo exterior (más evidente, pero fino) */
-  .tv-psy-hotspot::after{
+  /* Halo finísimo (sin rotaciones) */
+  body.psy-unlocked .tv-psy-hotspot::after{
     content:"";
     position:absolute;
-    inset: 6%;
+    inset: 10%;
     border-radius:999px;
-    border: 2px dashed rgba(0,255,0,.30);
-    opacity:.90;
-    filter: blur(.25px);
-    animation: tv-btn-halo 2.4s linear infinite;
+    border: 1px solid rgba(0,255,0,.12);
+    opacity: .55;
+    filter: blur(.2px);
     pointer-events:none;
+    animation: tv-halo-breathe 4.8s ease-in-out infinite;
   }
 
-  /* En playing, más “vivo” */
-  body.playing .tv-psy-hotspot::before{
-    animation-duration: .62s;
+  /* En playing: un pelín más “vivo” pero sutil */
+  body.playing.psy-unlocked .tv-psy-hotspot::before{
+    animation-duration: 2.8s;
     box-shadow:
-      0 0 14px rgba(0,255,0,.78),
-      0 0 40px rgba(0,255,0,.46),
-      0 0 96px rgba(0,255,0,.22);
-  }
-  body.playing .tv-psy-hotspot::after{
-    opacity: 1;
-    border-color: rgba(0,255,0,.38);
-    animation-duration: 1.8s;
+      0 0 9px rgba(0,255,0,.38),
+      0 0 22px rgba(0,255,0,.18);
   }
 
   @keyframes tv-btn-idle{
-  0%, 100%{
-    opacity:.88;
-    transform: translate(-50%,-50%) scale(1);
-    filter: brightness(1);
+    0%, 100%{
+      opacity:.82;
+      transform: scale(1);
+      filter: brightness(1);
+    }
+    42%{
+      opacity:.92;
+      transform: scale(1.03);
+      filter: brightness(1.06);
+    }
+    47%{
+      opacity:.76;
+      transform: scale(1.01);
+      filter: brightness(0.98);
+    }
+    75%{
+      opacity:.90;
+      transform: scale(1.02);
+      filter: brightness(1.05);
+    }
   }
-  42%{
-    opacity:.95;
-    transform: translate(-50%,-50%) scale(1.02);
-    filter: brightness(1.05);
-  }
-  47%{
-    opacity:.82;
-    transform: translate(-50%,-50%) scale(1);
-    filter: brightness(0.98);
-  }
-  75%{
-    opacity:.93;
-    transform: translate(-50%,-50%) scale(1.015);
-    filter: brightness(1.04);
-  }
-}
 
-
+  @keyframes tv-halo-breathe{
+    0%, 100%{ opacity:.40; }
+    55%{ opacity:.65; }
+  }
 
   /* Accesibilidad: foco */
   .tv-psy-hotspot:focus-visible{
@@ -692,37 +692,6 @@
     border-color: rgba(0,255,0,.45);
     color: var(--neon);
   }
-
-  /* ✅ Hotspot: que NO cambie de posición al hover/active */
-.tv-psy-hotspot{
-  /* anulamos el estilo genérico de button */
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  transition: none !important;
-
-  /* su transform base (centrado) */
-  transform: translate(-50%,-50%) !important;
-}
-
-/* cuando pasas por encima o clicas, NO tocar posición */
-.tv-psy-hotspot:hover,
-.tv-psy-hotspot:active,
-.tv-psy-hotspot:focus{
-  transform: translate(-50%,-50%) !important;
-}
-
-/* evita que el :hover global lo “suba” */
-.tv-psy-hotspot:hover{
-  color: inherit !important;
-}
-
-/* el “punto” es el que anima, no el botón entero */
-.tv-psy-hotspot::before{
-  animation: tv-btn-flicker 1.05s steps(2,end) infinite;
-  will-change: transform, opacity, filter;
-}
-
 
   #play-pause{
     width:48px;
@@ -1196,8 +1165,8 @@
       opacity:0 !important;
     }
 
-    .tv-psy-hotspot::before{ animation:none !important; }
-    .tv-psy-hotspot::after{ animation:none !important; }
+    body.psy-unlocked .tv-psy-hotspot::before{ animation:none !important; }
+    body.psy-unlocked .tv-psy-hotspot::after{ animation:none !important; }
   }
 
   /* ===== FULLSCREEN GLITCH MODE ===== */
@@ -1398,7 +1367,7 @@
     <div class="crt" aria-hidden="true">
       <img id="cover" src="tv.webp" alt="Televisor CRT / portada" />
 
-      <!-- ✅ Botón redondo clicable (neón) -->
+      <!-- ✅ Botón redondo clicable (se desbloquea tras Play) -->
       <button class="tv-psy-hotspot" id="tv-psy-hotspot" type="button"
         aria-label="Abrir modo psicodélico" title="VHS"></button>
 
@@ -2034,6 +2003,8 @@
       if(myId !== loadId) return;
 
       setPlayIcon();
+
+      // ✅ desbloquea el botón tras el primer play
       document.body.classList.add("psy-unlocked");
 
     } catch(e){
@@ -2347,7 +2318,7 @@
       }
     });
 
-    // ✅ ABRIR MODO: click en el botón redondo de la tele
+    // ✅ ABRIR MODO: click en el botón redondo de la tele (solo existe tras desbloqueo)
     tvPsyHotspot.addEventListener("click", openPsy);
 
     // PSY overlay
@@ -2422,21 +2393,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
