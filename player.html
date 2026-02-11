@@ -446,6 +446,25 @@
       filter: brightness(1.05);
     }
   }
+  @keyframes tv-led-analog{
+  0%,100%{
+    opacity:.92;
+    filter: brightness(1.02);
+  }
+  48%{
+    opacity:.97;
+    filter: brightness(1.08);
+  }
+  50%{
+    opacity:.88;
+    filter: brightness(0.96);
+  }
+  52%{
+    opacity:.95;
+    filter: brightness(1.05);
+  }
+}
+
 
   @keyframes tv-halo-breathe{
     0%, 100%{ opacity:.40; }
@@ -1168,7 +1187,8 @@
       opacity:0 !important;
     }
 
-    body.psy-unlocked .tv-psy-hotspot::before{ animation:none !important; }
+    body.psy-unlocked .tv-psy-hotspot::before{ animation: tv-led-analog 3.8s infinite;
+ }
     body.psy-unlocked .tv-psy-hotspot::after{ animation:none !important; }
   }
 
@@ -2396,5 +2416,6 @@
 
 </body>
 </html>
+
 
 
