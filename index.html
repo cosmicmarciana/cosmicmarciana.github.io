@@ -19,6 +19,14 @@
       /* VHS */
       --g: .55;
       --gpx: 10px;
+
+      /* Bosque palette (para que la seta “huela” a bosque.html) */
+      --pink:#ff8fd4;
+      --orange:#ffb347;
+      --yellow:#ffe066;
+      --green:#8affc1;
+      --blue:#7ad7ff;
+      --violet:#b388ff;
     }
 
     *{ box-sizing:border-box; }
@@ -111,7 +119,7 @@
       animation: crt-glitch .35s steps(2,end);
     }
 
-    /* ===== SETA SECRETA (PEGATINA EN LA TV) ===== */
+    /* ===== SETA SECRETA (PORTAL/PEGATINA) ===== */
     .secret-shroom{
       position:absolute;
       right:10%;
@@ -119,37 +127,85 @@
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      opacity:.22;
-      transform: rotate(-6deg);
+
+      /* antes: opacity .22 + 30px -> parecía icono */
+      opacity:.16;
+      transform: rotate(-6deg) scale(1.25);
       transition:.25s ease;
       text-decoration:none;
       user-select:none;
       z-index:5; /* por encima de la imagen */
+
+      /* sticker/portal */
+      padding: 10px;
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,143,212,.22), transparent 55%),
+        radial-gradient(circle at 70% 60%, rgba(122,215,255,.18), transparent 60%),
+        rgba(0,0,0,.10);
+      border: 1px solid rgba(255,255,255,.14);
+      backdrop-filter: blur(4px);
+      box-shadow:
+        0 10px 20px rgba(0,0,0,.45),
+        0 0 22px rgba(179,136,255,.14);
+      isolation:isolate;
+    }
+
+    .secret-shroom::after{
+      content:"";
+      position:absolute;
+      inset:-18px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 40% 40%, rgba(255,143,212,.22), transparent 55%),
+        radial-gradient(circle at 70% 60%, rgba(138,255,193,.18), transparent 60%),
+        radial-gradient(circle at 50% 50%, rgba(255,224,102,.14), transparent 65%);
+      filter: blur(16px);
+      opacity: 0;
+      transition: .25s ease;
+      z-index:-1;
+      pointer-events:none;
     }
 
     .secret-shroom:hover{
-      opacity:.75;
-      transform: rotate(-4deg) translateY(-1px);
+      opacity:.92;
+      transform: rotate(-4deg) translateY(-1px) scale(1.32);
     }
+    .secret-shroom:hover::after{ opacity: 1; }
 
     .secret-shroom svg{
-      width:30px;
-      height:30px;
+      width:42px;
+      height:42px;
       fill:none;
       stroke: var(--ink);
-      stroke-width:2.2;
+      stroke-width:2.4;
       stroke-linecap:round;
       stroke-linejoin:round;
+      opacity:.92;
       filter:
-        drop-shadow(0 0 6px rgba(255,176,0,.22))
-        drop-shadow(0 0 14px rgba(255,74,0,.14));
+        drop-shadow(0 0 10px rgba(0,0,0,.6))
+        drop-shadow(0 0 10px rgba(179,136,255,.10));
     }
 
-    .secret-shroom:hover svg{
-      filter:
-        drop-shadow(0 0 10px rgba(255,176,0,.35))
-        drop-shadow(0 0 20px rgba(255,74,0,.22))
-        drop-shadow(0 0 12px rgba(0,255,0,.18));
+    /* mini “susurro” opcional (solo hover) */
+    .secret-shroom .hint{
+      position:absolute;
+      left:50%;
+      top:-10px;
+      transform:translate(-50%, -100%);
+      font-size:10px;
+      letter-spacing:.22em;
+      text-transform:lowercase;
+      color: rgba(240,234,223,.85);
+      opacity:0;
+      transition:.22s ease;
+      white-space:nowrap;
+      text-shadow: 0 0 18px rgba(0,0,0,.55);
+      pointer-events:none;
+    }
+    .secret-shroom:hover .hint{
+      opacity:.9;
+      transform:translate(-50%, -105%);
     }
 
     /* ===========================
@@ -571,11 +627,19 @@
         padding:16px 18px;
         font-size:15px;
       }
+      .secret-shroom{
+        transform: rotate(-6deg) scale(1.18);
+      }
+      .secret-shroom svg{
+        width:40px;
+        height:40px;
+      }
     }
 
     @media (prefers-reduced-motion: reduce){
       *{ animation:none !important; }
       body.tuning .vhs{ opacity:0 !important; }
+      .secret-shroom::after{ display:none !important; }
     }
   </style>
 </head>
@@ -586,8 +650,9 @@
     <div class="crt" aria-label="Televisor CRT">
       <img src="tv.webp" alt="Televisor CRT con Cosmic Marciana – La casa del terror" class="hero" />
 
-      <!-- 🍄 SETA PEGATINA SECRETA (clicable) -->
+      <!-- 🍄 SETA-PORTAL (clicable) -->
       <a class="secret-shroom" href="bosque.html" aria-label="entre los árboles">
+        <span class="hint" aria-hidden="true">entre los árboles</span>
         <svg viewBox="0 0 64 64" aria-hidden="true">
           <path d="M8 30C10 15 22 7 32 7s22 8 24 23H8z"/>
           <path d="M14 28c6-6 30-6 36 0" />
@@ -808,6 +873,3 @@
 
 </body>
 </html>
-
- 
-
