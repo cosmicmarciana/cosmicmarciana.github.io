@@ -124,6 +124,12 @@
     border-bottom:1px dotted rgba(255,255,255,.35);
     padding-bottom:2px;
   }
+  .back{
+  position: relative;
+  z-index: 4000;
+  pointer-events: auto;
+}
+
   .back:hover{ opacity:1; color:var(--neon); border-bottom-color:rgba(0,255,0,.65); }
 
   h1{
@@ -1323,7 +1329,10 @@
 
 <body>
   <main class="wrap">
-    <a href="index.html" class="back">← HUYE! Sal corriendo...</a>
+    <a href="./index.html" class="back" role="button" tabindex="0"
+   onclick="window.location.href='./index.html'; return false;">
+  ← HUYE! Sal corriendo...
+</a>
 
     <h1>Cosmic Marciana</h1>
 
@@ -2388,3 +2397,4 @@
 
 </body>
 </html>
+
