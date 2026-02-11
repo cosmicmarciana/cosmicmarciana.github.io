@@ -18,7 +18,7 @@
   --blue:#7ad7ff;
   --violet:#b388ff;
 
-  /* ===== VIDEO: lava debajo + super8 prota moderado ===== */
+  /* VIDEO */
   --v-bri: 0.92;
   --v-sat: 0.95;
   --v-con: 1.06;
@@ -40,17 +40,15 @@ body{
   background:#000;
 }
 
-/* ===== FONDO VIDEO (2 mp4) ===== */
+/* ===== FONDO VIDEO ===== */
 .bg{
   position:fixed;
   inset:0;
   z-index:-2;
   overflow:hidden;
   pointer-events:none;
-  background:#000;
 }
 
-/* lava base */
 .bg video{
   position:absolute;
   inset:-3%;
@@ -59,10 +57,8 @@ body{
   object-fit:cover;
   transform: scale(var(--v-zoom));
   filter: brightness(var(--v-bri)) saturate(var(--v-sat)) contrast(var(--v-con));
-  will-change: transform, filter, opacity;
 }
 
-/* super8 más prota sin pasarse */
 #v2{
   opacity: var(--v2-alpha);
   mix-blend-mode: overlay;
@@ -71,34 +67,19 @@ body{
 }
 
 @keyframes v2-float{
-  0%,100%{ transform: scale(calc(var(--v-zoom) * 1.005)) translate(0,0); }
+  0%,100%{ transform: scale(calc(var(--v-zoom) * 1.005)); }
   50%{ transform: scale(calc(var(--v-zoom) * 1.015)) translate(.6%, -.4%); }
 }
 
-/* ===== LIQUID MINIMO ===== */
+/* ===== LIQUID ===== */
 .liquid{
   position:fixed;
   inset:-30%;
   z-index:-1;
   pointer-events:none;
   opacity:.10;
-  filter: blur(18px) saturate(1.02) brightness(1);
+  filter: blur(18px) saturate(1.02);
   animation: slow-rotate 180s infinite linear;
-  will-change: filter, transform, opacity;
-}
-
-.liquid::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    radial-gradient(circle at 20% 30%, var(--pink), transparent 50%),
-    radial-gradient(circle at 70% 25%, var(--orange), transparent 52%),
-    radial-gradient(circle at 30% 70%, var(--green), transparent 56%),
-    radial-gradient(circle at 75% 65%, var(--blue), transparent 54%),
-    radial-gradient(circle at 50% 50%, var(--violet), transparent 58%),
-    radial-gradient(circle at 55% 40%, var(--yellow), transparent 48%);
-  animation: liquid-drift 60s infinite ease-in-out;
 }
 
 .grain{
@@ -125,7 +106,7 @@ body{
     radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 45%, rgba(0,0,0,.40) 84%);
 }
 
-/* ===== CONTENIDO CENTRAL ===== */
+/* ===== CONTENIDO ===== */
 .wrap{
   position:relative;
   z-index:5;
@@ -138,8 +119,7 @@ body{
   font-size:16px;
   line-height:1.7;
   color:var(--muted);
-  margin:0;
-  text-shadow: 0 0 22px rgba(0,0,0,.45);
+  text-shadow:0 0 22px rgba(0,0,0,.45);
 }
 
 .into{
@@ -149,7 +129,7 @@ body{
   color:var(--ink);
 }
 
-/* botón respira */
+/* ===== BOTÓN NORMAL ===== */
 #breath-btn{
   margin-top:20px;
   font-size:11px;
@@ -158,23 +138,51 @@ body{
   padding:10px 18px;
   border-radius:999px;
   border:1px solid rgba(255,255,255,.25);
-  background: rgba(0,0,0,.16);
+  background:rgba(0,0,0,.16);
   color:var(--muted);
   cursor:pointer;
-  backdrop-filter: blur(6px);
-  transition:.3s ease;
-  animation: breathing 7s ease-in-out infinite;
+  backdrop-filter:blur(6px);
+  transition:.4s ease;
+  animation: breathing 5.5s cubic-bezier(.4,0,.2,1) infinite;
 }
 
-#breath-btn:hover{
-  border-color: rgba(255,255,255,.45);
-  transform: translateY(-1px);
+@keyframes breathing{
+  0%{
+    transform:scale(1);
+    opacity:.65;
+    box-shadow:0 0 0px rgba(255,255,255,0);
+  }
+  50%{
+    transform:scale(1.10);
+    opacity:1;
+    box-shadow:0 0 22px rgba(255,255,255,.18);
+  }
+  100%{
+    transform:scale(1);
+    opacity:.65;
+    box-shadow:0 0 0px rgba(255,255,255,0);
+  }
 }
 
-@keyframes breathing {
-  0% { transform: scale(1); opacity: 0.65; }
-  50% { transform: scale(1.06); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.65; }
+/* ===== BOTÓN MODO SILENCIO ===== */
+#breath-btn.silence{
+  color:#d8d4cd;
+  border-color:rgba(255,255,255,.18);
+  background:rgba(0,0,0,.22);
+  animation: breathingSilence 7s ease-in-out infinite;
+}
+
+@keyframes breathingSilence{
+  0%,100%{
+    transform:scale(1);
+    opacity:.55;
+    box-shadow:0 0 0px rgba(255,255,255,0);
+  }
+  50%{
+    transform:scale(1.06);
+    opacity:.8;
+    box-shadow:0 0 10px rgba(200,200,200,.10);
+  }
 }
 
 /* ===== BLOQUE INFERIOR ===== */
@@ -187,7 +195,6 @@ body{
   text-align:center;
 }
 
-/* flecha minimal (igual que tu versión original) */
 .bottom a{
   display:inline-block;
   margin-bottom:14px;
@@ -197,69 +204,52 @@ body{
   color:rgba(240,234,223,.75);
   text-decoration:none;
   padding:6px 8px;
-  transition:.25s ease;
 }
 
-.bottom a:hover{
-  color:rgba(240,234,223,1);
-  transform: translateY(-1px);
-  text-decoration: underline;
-  text-underline-offset: 6px;
-  text-decoration-thickness: 1px;
-}
-
-/* ===== FIRMA NERD ADAPTATIVA (RESTAURADA) ===== */
 .sig{
-  white-space: nowrap;
-  font-size: clamp(9px, 2.2vw, 11.5px);
-  letter-spacing: clamp(.08em, .3vw, .18em);
+  white-space:nowrap;
+  font-size:clamp(9px,2.2vw,11.5px);
+  letter-spacing:clamp(.08em,.3vw,.18em);
   opacity:.65;
   text-transform:uppercase;
   color:var(--muted);
 }
 
-/* animaciones */
-@keyframes liquid-drift{
-  0%,100%{ transform: translate(0,0) scale(1); }
-  50%{ transform: translate(-3%,2%) scale(1.04); }
-}
-@keyframes slow-rotate{
-  0%{ transform: rotate(0deg); }
-  100%{ transform: rotate(360deg); }
+/* sombra sutil */
+.bottom a,
+.sig{
+  text-shadow:
+    0 0 6px rgba(0,0,0,.55),
+    0 0 14px rgba(0,0,0,.35);
 }
 
-@media (prefers-reduced-motion: reduce){
-  .liquid, .liquid::before{ animation:none !important; }
-  #breath-btn{ animation:none !important; }
-  #v2{ animation:none !important; }
+@keyframes slow-rotate{
+  from{transform:rotate(0deg);}
+  to{transform:rotate(360deg);}
 }
 </style>
 </head>
 
 <body>
 
-<div class="bg" aria-hidden="true">
-  <!-- lava base (debajo) -->
-  <video id="v1" autoplay muted loop playsinline preload="auto">
+<div class="bg">
+  <video id="v1" autoplay muted loop playsinline>
     <source src="lava.mp4" type="video/mp4">
   </video>
-
-  <!-- super8 prota moderado -->
-  <video id="v2" autoplay muted loop playsinline preload="auto">
+  <video id="v2" autoplay muted loop playsinline>
     <source src="super8.mp4" type="video/mp4">
   </video>
 </div>
 
 <div class="liquid" id="liquid"></div>
-<div class="grain" aria-hidden="true"></div>
-<div class="vignette" aria-hidden="true"></div>
+<div class="grain"></div>
+<div class="vignette"></div>
 
 <main class="wrap">
   <p class="text">
     <span class="into">entre los árboles</span><br>
     el mundo se para
   </p>
-
   <button id="breath-btn">respira</button>
 </main>
 
@@ -273,165 +263,23 @@ body{
 </audio>
 
 <script>
-const audio = document.getElementById('bg-audio');
-const btn = document.getElementById('breath-btn');
-const liquid = document.getElementById('liquid');
-const v1 = document.getElementById('v1');
-const v2 = document.getElementById('v2');
+const audio=document.getElementById('bg-audio');
+const btn=document.getElementById('breath-btn');
+let playing=false;
 
-let playing = false;
-
-/* ===== Audio reactive ===== */
-let audioCtx, analyser, sourceNode, data;
-let reactiveReady = false;
-let rafId = null;
-
-// bases (lava debajo + super8 más presente, zen)
-const baseVid = { bri: 0.92, sat: 0.95, con: 1.06, zoom: 1.045, v2a: 0.34 };
-const baseLiquid = { op: 0.10 };
-
-function initAudioReactive(){
-  if(reactiveReady) return;
-  reactiveReady = true;
-
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  analyser = audioCtx.createAnalyser();
-  analyser.fftSize = 1024;
-  analyser.smoothingTimeConstant = 0.94;
-
-  sourceNode = audioCtx.createMediaElementSource(audio);
-  sourceNode.connect(analyser);
-  analyser.connect(audioCtx.destination);
-
-  data = new Uint8Array(analyser.frequencyBinCount);
-}
-
-function getEnergy(){
-  analyser.getByteFrequencyData(data);
-  let sum = 0;
-  const start = 2;
-  const end = Math.min(70, data.length);
-  for(let i=start; i<end; i++) sum += data[i];
-  const avg = sum / (end - start);
-  return avg / 255;
-}
-
-function reactiveLoop(){
-  if(!analyser) return;
-
-  const e = getEnergy();
-  const n = Math.min(1, Math.pow(e, 0.88)); // zen
-
-  // vídeo: micro respiración
-  document.documentElement.style.setProperty('--v-bri', (baseVid.bri + n*0.07).toFixed(3));
-  document.documentElement.style.setProperty('--v-sat', (baseVid.sat + n*0.15).toFixed(3));
-  document.documentElement.style.setProperty('--v-con', (baseVid.con + n*0.05).toFixed(3));
-  document.documentElement.style.setProperty('--v-zoom', (baseVid.zoom + n*0.007).toFixed(4));
-  document.documentElement.style.setProperty('--v2-alpha', (baseVid.v2a + n*0.05).toFixed(3));
-
-  // liquid mínimo, solo “vida”
-  if(liquid){
-    liquid.style.opacity = (baseLiquid.op + n*0.03).toFixed(3);
-  }
-
-  rafId = requestAnimationFrame(reactiveLoop);
-}
-
-function startReactive(){
-  if(rafId) return;
-  reactiveLoop();
-}
-
-function stopReactive(){
-  if(rafId){
-    cancelAnimationFrame(rafId);
-    rafId = null;
-  }
-
-  // vuelve a base
-  document.documentElement.style.setProperty('--v-bri', String(baseVid.bri));
-  document.documentElement.style.setProperty('--v-sat', String(baseVid.sat));
-  document.documentElement.style.setProperty('--v-con', String(baseVid.con));
-  document.documentElement.style.setProperty('--v-zoom', String(baseVid.zoom));
-  document.documentElement.style.setProperty('--v2-alpha', String(baseVid.v2a));
-
-  if(liquid) liquid.style.opacity = String(baseLiquid.op);
-}
-
-/* ===== fades (sin pisarse) ===== */
-let fadeTimer = null;
-
-function clearFade(){
-  if(fadeTimer){
-    clearInterval(fadeTimer);
-    fadeTimer = null;
-  }
-}
-
-function fadeIn(target=0.5, duration=1500){
-  clearFade();
-  const step = 50;
-  const inc = target / (duration / step);
-  audio.volume = 0;
-  fadeTimer = setInterval(()=>{
-    if(audio.volume < target){
-      audio.volume = Math.min(audio.volume + inc, target);
-    } else {
-      clearFade();
-    }
-  }, step);
-}
-
-function fadeOut(duration=1000){
-  clearFade();
-  const step = 50;
-  const dec = audio.volume / (duration / step);
-  fadeTimer = setInterval(()=>{
-    if(audio.volume > 0){
-      audio.volume = Math.max(audio.volume - dec, 0);
-    } else {
-      audio.pause();
-      clearFade();
-    }
-  }, step);
-}
-
-/* ===== autoplay-friendly: videos muted ===== */
-function kickVideos(){
-  [v1, v2].forEach(v=>{
-    if(!v) return;
-    try{ v.muted = true; v.playsInline = true; }catch(e){}
-    const p = v.play();
-    if(p && typeof p.catch === "function") p.catch(()=>{});
-  });
-}
-
-/* ===== BOTÓN TOGGLE: respira / silencio ===== */
-btn.addEventListener('click', async () => {
+btn.addEventListener('click',()=>{
   if(!playing){
-    initAudioReactive();
-    if(audioCtx && audioCtx.state === "suspended") await audioCtx.resume();
-
-    kickVideos();
-
-    audio.play().catch(()=>{});
-    fadeIn(0.5, 1500);
-
-    startReactive();
-
-    btn.textContent = "silencio";
-    playing = true;
-  } else {
-    fadeOut(1000);
-    stopReactive();
-
-    btn.textContent = "respira";
-    playing = false;
+    audio.play();
+    btn.textContent="silencio";
+    btn.classList.add("silence");
+    playing=true;
+  }else{
+    audio.pause();
+    btn.textContent="respira";
+    btn.classList.remove("silence");
+    playing=false;
   }
 });
-
-// si toca antes en móvil, intenta arrancar videos
-window.addEventListener('pointerdown', ()=>{ if(!playing) kickVideos(); }, { once:true });
 </script>
 
 </body>
