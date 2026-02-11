@@ -17,6 +17,13 @@
   --green:#8affc1;
   --blue:#7ad7ff;
   --violet:#b388ff;
+
+  /* variables reactivas para video */
+  --v-bri: 0.92;
+  --v-sat: 1.05;
+  --v-con: 1.05;
+  --v-zoom: 1.06;
+  --v2-alpha: .42;
 }
 
 *{ box-sizing:border-box; }
@@ -33,13 +40,46 @@ body{
   background:#000;
 }
 
-/* ===== LIQUID LIGHT SHOW ===== */
+/* ===== VIDEO DOBLE ===== */
+.bg{
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  overflow:hidden;
+  pointer-events:none;
+  background:#000;
+}
+
+.bg video{
+  position:absolute;
+  inset:-3%;
+  width:106%;
+  height:106%;
+  object-fit:cover;
+  transform: scale(var(--v-zoom));
+  filter: brightness(var(--v-bri)) 
+          saturate(var(--v-sat)) 
+          contrast(var(--v-con));
+  will-change: transform, filter, opacity;
+}
+
+#v2{
+  opacity: var(--v2-alpha);
+  mix-blend-mode: screen;
+  animation: v2-float 18s ease-in-out infinite;
+}
+
+@keyframes v2-float{
+  0%,100%{ transform: scale(calc(var(--v-zoom) * 1.01)); }
+  50%{ transform: scale(calc(var(--v-zoom) * 1.03)) translate(1%, -1%); }
+}
+
+/* ===== LIQUID ===== */
 .liquid{
   position:fixed;
   inset:-30%;
   z-index:0;
   pointer-events:none;
-  /* filtro base (lo tocaremos con audio-reactive) */
   filter: blur(28px) saturate(1.25) brightness(1);
   animation: slow-rotate 90s infinite linear;
   will-change: filter, transform;
@@ -94,7 +134,7 @@ body{
     radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 45%, rgba(0,0,0,.35) 80%);
 }
 
-/* ===== CONTENIDO CENTRAL ===== */
+/* ===== CONTENIDO ===== */
 .wrap{
   position:relative;
   z-index:5;
@@ -107,8 +147,7 @@ body{
   font-size:16px;
   line-height:1.7;
   color:var(--muted);
-  margin:0;
-  text-shadow: 0 0 22px rgba(0,0,0,.45);
+  text-shadow:0 0 22px rgba(0,0,0,.45);
 }
 
 .into{
@@ -118,35 +157,24 @@ body{
   color:var(--ink);
 }
 
-/* botón respira */
 #breath-btn{
   margin-top:20px;
   font-size:11px;
   letter-spacing:.22em;
-  text-transform:lowercase;
   padding:10px 18px;
   border-radius:999px;
   border:1px solid rgba(255,255,255,.25);
-  background: rgba(0,0,0,.16);
+  background:rgba(0,0,0,.16);
   color:var(--muted);
   cursor:pointer;
-  backdrop-filter: blur(6px);
-  transition:.3s ease;
-  animation: breathing 6s ease-in-out infinite;
+  animation:breathing 6s ease-in-out infinite;
 }
 
-#breath-btn:hover{
-  border-color: rgba(255,255,255,.45);
-  transform: translateY(-1px);
+@keyframes breathing{
+  0%,100%{ transform:scale(1); opacity:.7; }
+  50%{ transform:scale(1.08); opacity:1; }
 }
 
-@keyframes breathing {
-  0% { transform: scale(1); opacity: 0.7; }
-  50% { transform: scale(1.08); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.7; }
-}
-
-/* ===== BLOQUE INFERIOR ===== */
 .bottom{
   position:fixed;
   bottom:22px;
@@ -156,82 +184,58 @@ body{
   text-align:center;
 }
 
-/* flecha minimal */
-.bottom a{
-  display:inline-block;
-  margin-bottom:14px;
-  font-size:11px;
-  letter-spacing:.22em;
-  text-transform:lowercase;
-  color:rgba(240,234,223,.75);
-  text-decoration:none;
-  padding:6px 8px;
-  transition:.25s ease;
-}
-
-.bottom a:hover{
-  color:rgba(240,234,223,1);
-  transform: translateY(-1px);
-  text-decoration: underline;
-  text-underline-offset: 6px;
-  text-decoration-thickness: 1px;
-}
-
-/* ===== FIRMA NERD ADAPTATIVA ===== */
 .sig{
-  white-space: nowrap;
-  font-size: clamp(9px, 2.2vw, 11.5px);
-  letter-spacing: clamp(.08em, .3vw, .18em);
+  font-size:11px;
+  letter-spacing:.18em;
   opacity:.65;
   text-transform:uppercase;
-  color:var(--muted);
 }
 
-/* animaciones fondo */
 @keyframes liquid-drift{
-  0%,100%{ transform: translate(0,0) scale(1); }
-  50%{ transform: translate(-6%, 4%) scale(1.08); }
+  0%,100%{ transform:translate(0,0) scale(1); }
+  50%{ transform:translate(-6%,4%) scale(1.08); }
 }
-
 @keyframes liquid-drift-alt{
-  0%,100%{ transform: translate(0,0) scale(1); }
-  50%{ transform: translate(5%, -6%) scale(1.1); }
+  0%,100%{ transform:translate(0,0) scale(1); }
+  50%{ transform:translate(5%,-6%) scale(1.1); }
 }
-
 @keyframes slow-rotate{
-  0%{ transform: rotate(0deg); }
-  100%{ transform: rotate(360deg); }
-}
-
-@media (prefers-reduced-motion: reduce){
-  .liquid, .liquid::before, .liquid::after{ animation:none !important; }
-  #breath-btn{ animation:none !important; }
+  0%{ transform:rotate(0deg); }
+  100%{ transform:rotate(360deg); }
 }
 </style>
 </head>
 
 <body>
 
+<div class="bg">
+  <video id="v1" autoplay muted loop playsinline>
+    <source src="super8.mp4" type="video/mp4">
+  </video>
+
+  <video id="v2" autoplay muted loop playsinline>
+    <source src="lava.mp4" type="video/mp4">
+  </video>
+</div>
+
 <div class="liquid" id="liquid"></div>
-<div class="grain" aria-hidden="true"></div>
-<div class="vignette" aria-hidden="true"></div>
+<div class="grain"></div>
+<div class="vignette"></div>
 
 <main class="wrap">
   <p class="text">
     <span class="into">entre los árboles</span><br>
     el mundo se para
   </p>
-
   <button id="breath-btn">respira</button>
 </main>
 
 <div class="bottom">
-  <a href="index.html">← regresa al ruido</a>
   <div class="sig">COSMIC MARCIANA 2026 · AMOR · PAZ · SEÑAL</div>
 </div>
 
 <audio id="bg-audio" loop>
-  <source src="respira.mp3" type="audio/mpeg">
+  <source src="respira2.mp3" type="audio/mpeg">
 </audio>
 
 <script>
@@ -239,133 +243,61 @@ const audio = document.getElementById('bg-audio');
 const btn = document.getElementById('breath-btn');
 const liquid = document.getElementById('liquid');
 
-let playing = false;
-
-/* ===== Audio reactive (visible sin cantarse) ===== */
-let audioCtx, analyser, sourceNode, data;
-let reactiveReady = false;
+let audioCtx, analyser, data;
 let rafId = null;
 
-// valores base para volver cuando está en silencio
-const base = { blur: 28, sat: 1.25, bri: 1.0 };
-
-function initAudioReactive(){
-  if(reactiveReady) return;
-  reactiveReady = true;
-
+function initReactive(){
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   analyser = audioCtx.createAnalyser();
   analyser.fftSize = 1024;
-
-  // muy importante para ambient: suaviza bastante para que no tiemble
   analyser.smoothingTimeConstant = 0.92;
 
-  sourceNode = audioCtx.createMediaElementSource(audio);
-  sourceNode.connect(analyser);
+  const source = audioCtx.createMediaElementSource(audio);
+  source.connect(analyser);
   analyser.connect(audioCtx.destination);
 
   data = new Uint8Array(analyser.frequencyBinCount);
 }
 
-// energía general (más robusta que solo “bass” si el ambient es suave)
 function getEnergy(){
   analyser.getByteFrequencyData(data);
-
   let sum = 0;
-  // usamos una franja baja-media (se nota, pero no “canta”)
-  const start = 2;
-  const end = Math.min(80, data.length);
-  for(let i=start; i<end; i++) sum += data[i];
-
-  const avg = sum / (end - start);     // 0..255
-  return avg / 255;                    // 0..1
+  for(let i=2;i<80;i++) sum += data[i];
+  return (sum / 78) / 255;
 }
 
-function reactiveLoop(){
-  if(!analyser) return;
+function loop(){
+  const e = Math.pow(getEnergy(),0.75);
 
-  const e = getEnergy();
+  liquid.style.filter =
+    `blur(${28 + e*22}px)
+     saturate(${1.25 + e*.9})
+     brightness(${1 + e*.22})`;
 
-  // curva suave (levantamos un poco para que sea visible incluso en ambient)
-  const n = Math.min(1, Math.pow(e, 0.75));
+  document.documentElement.style.setProperty('--v-bri', 0.92 + e*0.28);
+  document.documentElement.style.setProperty('--v-sat', 1.05 + e*0.7);
+  document.documentElement.style.setProperty('--v-con', 1.05 + e*0.18);
+  document.documentElement.style.setProperty('--v-zoom', 1.06 + e*0.035);
+  document.documentElement.style.setProperty('--v2-alpha', 0.42 + e*0.18);
 
-  // Ajustes "visibles sin cantarse":
-  // - blur: aumenta y baja como niebla
-  // - saturación: sube un poco
-  // - brillo: sube muy poco
-  const blur = base.blur + n * 22;          // 28..50
-  const sat  = base.sat  + n * 0.95;        // 1.25..2.2
-  const bri  = base.bri  + n * 0.22;        // 1.0..1.22
-
-  liquid.style.filter = `blur(${blur}px) saturate(${sat}) brightness(${bri})`;
-
-  rafId = requestAnimationFrame(reactiveLoop);
+  rafId = requestAnimationFrame(loop);
 }
 
-function startReactive(){
-  if(rafId) return;
-  reactiveLoop();
-}
+btn.addEventListener('click', async ()=>{
+  if(!audioCtx) initReactive();
+  if(audioCtx.state === "suspended") await audioCtx.resume();
 
-function stopReactive(){
-  if(rafId){
-    cancelAnimationFrame(rafId);
-    rafId = null;
-  }
-  // vuelve suave al estado base
-  liquid.style.filter = `blur(${base.blur}px) saturate(${base.sat}) brightness(${base.bri})`;
-}
+  audio.volume = 0;
+  audio.play();
 
-/* ===== fades ===== */
-function fadeIn(audio, targetVolume, duration){
-  const step = 50;
-  const increment = targetVolume / (duration / step);
   const fade = setInterval(()=>{
-    if(audio.volume < targetVolume){
-      audio.volume = Math.min(audio.volume + increment, targetVolume);
-    } else clearInterval(fade);
-  }, step);
-}
+    if(audio.volume < .5) audio.volume += .02;
+    else clearInterval(fade);
+  },50);
 
-function fadeOut(audio, duration){
-  const step = 50;
-  const decrement = audio.volume / (duration / step);
-  const fade = setInterval(()=>{
-    if(audio.volume > 0){
-      audio.volume = Math.max(audio.volume - decrement, 0);
-    } else{
-      audio.pause();
-      clearInterval(fade);
-    }
-  }, step);
-}
-
-/* ===== botón ===== */
-btn.addEventListener('click', async () => {
-  if(!playing){
-    audio.volume = 0;
-
-    // setup audio reactive (requiere gesto del usuario)
-    initAudioReactive();
-    if(audioCtx && audioCtx.state === "suspended") await audioCtx.resume();
-
-    audio.play().catch(()=>{});
-    fadeIn(audio, 0.5, 1500);
-
-    startReactive();
-
-    btn.textContent = "silencio";
-    playing = true;
-  } else {
-    fadeOut(audio, 1000);
-    stopReactive();
-
-    btn.textContent = "respira";
-    playing = false;
-  }
+  loop();
 });
 </script>
 
 </body>
 </html>
-
