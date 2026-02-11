@@ -334,32 +334,33 @@
 
   /* ✅ Hotspot (tap-area grande) + botón visible (más pequeño) */
   .tv-psy-hotspot{
-    position:absolute;
-    left: var(--psy-x);
-    top:  var(--psy-y);
+  position:absolute;
+  left: var(--psy-x);
+  top:  var(--psy-y);
+  width: var(--psy-s);
+  aspect-ratio: 1 / 1;
+  border-radius:999px;
+  transform: translate(-50%,-50%);
+  z-index: 6;
+  cursor:pointer;
+  pointer-events:auto;
 
-    /* Tap area */
-    width: var(--psy-s);
-    min-width: 38px;
-    max-width: 66px;
-    aspect-ratio: 1 / 1;
+  background: radial-gradient(circle at 40% 35%,
+    rgba(255,255,255,.75) 0%,
+    rgba(0,255,0,.65) 35%,
+    rgba(0,255,0,.25) 55%,
+    rgba(0,0,0,0) 70%
+  );
 
-    border-radius:999px;
-    transform: translate(-50%,-50%);
-    z-index: 6;
-    cursor:pointer;
-    pointer-events:auto;
+  border: 1px solid rgba(0,255,0,.35);
 
-    /* Tap area casi invisible */
-    background: transparent;
-    border: 0;
-    padding: 0;
+  box-shadow:
+    0 0 6px rgba(0,255,0,.35),
+    0 0 16px rgba(0,255,0,.18);
 
-    /* Esto evita “selección” rara en iOS */
-    -webkit-user-select: none;
-    user-select: none;
-    touch-action: manipulation;
-  }
+  animation: tv-btn-breathe 2.8s ease-in-out infinite;
+}
+
 
   /* Botón visible (el “punto” real) */
   .tv-psy-hotspot::before{
@@ -412,19 +413,19 @@
     animation-duration: 1.8s;
   }
 
-  @keyframes tv-btn-flicker{
-    0%   { opacity: .55; filter: saturate(1.1) brightness(1.0); transform: scale(1); }
-    12%  { opacity: 1;   filter: saturate(1.9) brightness(1.28); transform: scale(1.08); }
-    25%  { opacity: .65; filter: saturate(1.2) brightness(1.06); transform: scale(1.02); }
-    45%  { opacity: 1;   filter: saturate(2.0) brightness(1.32); transform: scale(1.10); }
-    70%  { opacity: .62; filter: saturate(1.2) brightness(1.02); transform: scale(1.00); }
-    100% { opacity: .55; filter: saturate(1.1) brightness(1.0); transform: scale(1); }
+  @keyframes tv-btn-breathe{
+  0%,100%{
+    opacity:.85;
+    transform: translate(-50%,-50%) scale(1);
+    filter: brightness(1);
   }
-  @keyframes tv-btn-halo{
-    0%{ transform: rotate(0deg); opacity:.45; }
-    50%{ opacity:1; }
-    100%{ transform: rotate(360deg); opacity:.45; }
+  50%{
+    opacity:1;
+    transform: translate(-50%,-50%) scale(1.04);
+    filter: brightness(1.1);
   }
+}
+
 
   /* Accesibilidad: foco */
   .tv-psy-hotspot:focus-visible{
@@ -2397,6 +2398,7 @@
 
 </body>
 </html>
+
 
 
 
