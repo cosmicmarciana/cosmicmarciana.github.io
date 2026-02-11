@@ -540,6 +540,7 @@
     100% { transform: translate3d(var(--hx), var(--hy), 0); }
   }
 
+  /* ✅ “tick” VHS (mini salto ocasional) */
   @keyframes vhs-hold-tick{
     0%   { filter: contrast(1.23) saturate(1.26) blur(var(--hblur)); }
     86%  { filter: contrast(1.23) saturate(1.26) blur(var(--hblur)); }
@@ -1087,105 +1088,6 @@
       opacity:0 !important;
     }
   }
-
-  /* =========================
-     ✅ OVERLAY PSICODÉLICO
-     ========================= */
-  body.psy-open{ overflow:hidden; }
-
-  .psy{
-    position:fixed;
-    inset:0;
-    z-index: 99999;
-    display:none;
-    background:#000;
-  }
-  .psy.open{ display:block; }
-  .psy canvas{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    display:block;
-  }
-
-  .psy-ui{
-    position:absolute;
-    left: 14px;
-    right: 14px;
-    top: calc(14px + env(safe-area-inset-top));
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-    pointer-events:none;
-  }
-  .psy-chip{
-    pointer-events:auto;
-    padding: 10px 12px;
-    border-radius: 999px;
-    background: rgba(0,0,0,.55);
-    border: 1px solid rgba(255,255,255,.14);
-    color: var(--muted);
-    font-size: 12px;
-    letter-spacing:.04em;
-    backdrop-filter: blur(6px);
-    max-width: 74vw;
-    white-space: nowrap;
-    overflow:hidden;
-    text-overflow: ellipsis;
-  }
-  .psy-top-actions{
-    pointer-events:auto;
-    display:flex;
-    gap:10px;
-    align-items:center;
-  }
-  .psy-top-btn{
-    width:44px;
-    height:44px;
-    border-radius:999px;
-    border:1px solid rgba(255,255,255,.16);
-    background: rgba(255,255,255,.10);
-    color: var(--muted);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    backdrop-filter: blur(6px);
-  }
-  .psy-top-btn:hover{
-    border-color: rgba(0,255,0,.45);
-    color: var(--neon);
-  }
-
-  .psy-bar{
-    position:absolute;
-    left: 14px;
-    right: 14px;
-    bottom: calc(14px + env(safe-area-inset-bottom));
-    display:flex;
-    justify-content:center;
-    gap:10px;
-    pointer-events:none;
-  }
-  .psy-ctrl{
-    pointer-events:auto;
-    width:44px;
-    height:44px;
-    border-radius:999px;
-    border:1px solid rgba(0,255,0,.22);
-    background: rgba(0,0,0,.35);
-    color: var(--ink);
-    backdrop-filter: blur(6px);
-  }
-  .psy-ctrl:hover{ border-color: rgba(0,255,0,.55); color: var(--neon); }
-  .psy-main{
-    width:50px;
-    height:50px;
-    background: rgba(0,255,0,.14);
-    border-color: rgba(0,255,0,.35);
-  }
 </style>
 </head>
 
@@ -1223,7 +1125,6 @@
     <div class="actions" aria-label="Acciones">
       <button id="shuffle-btn" class="icon-btn" aria-label="Shuffle" title="Shuffle"></button>
       <button id="loop-btn" class="icon-btn" aria-label="Loop" title="Loop"></button>
-      <button id="psy-btn" class="icon-btn" aria-label="Modo psicodélico" title="Modo psicodélico"></button>
       <button id="share-btn" class="icon-btn" aria-label="Compartir" title="Compartir"></button>
     </div>
 
@@ -1304,38 +1205,6 @@
     <div class="sig">EMISIÓN NO AUTORIZADA · NO MIRES ATRÁS!</div>
   </main>
 
-  <!-- ✅ OVERLAY PSICODÉLICO -->
-  <section class="psy" id="psy" aria-hidden="true">
-    <canvas id="psy-canvas"></canvas>
-
-    <div class="psy-ui">
-      <div class="psy-chip" id="psy-now">está sonando: —</div>
-
-      <div class="psy-top-actions">
-        <button class="psy-top-btn" id="psy-fs" type="button" title="Full screen" aria-label="Full screen">
-          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M9 3H4v5"/><path d="M4 4l6 6"/>
-            <path d="M15 3h5v5"/><path d="M20 4l-6 6"/>
-            <path d="M9 21H4v-5"/><path d="M4 20l6-6"/>
-            <path d="M15 21h5v-5"/><path d="M20 20l-6-6"/>
-          </svg>
-        </button>
-
-        <button class="psy-top-btn" id="psy-close" type="button" title="Cerrar" aria-label="Cerrar">
-          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M6 6l12 12M18 6L6 18"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
-
-    <div class="psy-bar" aria-label="Controles psicodélicos">
-      <button class="psy-ctrl" id="psy-prev" type="button" title="Anterior" aria-label="Anterior"></button>
-      <button class="psy-ctrl psy-main" id="psy-play" type="button" title="Play/Pause" aria-label="Play/Pause"></button>
-      <button class="psy-ctrl" id="psy-next" type="button" title="Siguiente" aria-label="Siguiente"></button>
-    </div>
-  </section>
-
 <script>
   const ICONS = {
     prev: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6v12"/><path d="M18 6l-8 6 8 6z"/></svg>`,
@@ -1349,12 +1218,7 @@
     share:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4"/><path d="M8 8l4-4 4 4"/><path d="M6 12v7a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-7"/></svg>`,
     vol3:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 8a4 4 0 0 1 0 8"/><path d="M18.5 5.5a7 7 0 0 1 0 13"/></svg>`,
     vol2:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 8a4 4 0 0 1 0 8"/></svg>`,
-    mute:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 9l5 6"/><path d="M21 9l-5 6"/></svg>`,
-    psy:` `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5L12 2z"/>
-            <path d="M5 14l1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3z"/>
-            <path d="M19 13l.8 2.4L22 16l-2.2.6L19 19l-.8-2.4L16 16l2.2-.6L19 13z"/>
-          </svg>`
+    mute:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 9l5 6"/><path d="M21 9l-5 6"/></svg>`
   };
 
   const tvBase = "tv.webp";
@@ -1388,7 +1252,6 @@
   const statusLineEl = $("status-line");
   const shuffleBtn = $("shuffle-btn");
   const loopBtn = $("loop-btn");
-  const psyBtn = $("psy-btn");
   const playPauseBtn = $("play-pause");
 
   const prevBtn = $("prev-btn");
@@ -1398,16 +1261,6 @@
   const playlistEl = $("playlist");
 
   const tracks = Array.from(document.querySelectorAll(".track"));
-
-  // Psy overlay elements
-  const psy = $("psy");
-  const psyCanvas = $("psy-canvas");
-  const psyNow = $("psy-now");
-  const psyClose = $("psy-close");
-  const psyFS = $("psy-fs");
-  const psyPrev = $("psy-prev");
-  const psyPlay = $("psy-play");
-  const psyNext = $("psy-next");
 
   let currentIndex = 0;
   let lastVolume = 1;
@@ -1488,14 +1341,8 @@
     shareBtn.innerHTML = ICONS.share;
     shuffleBtn.innerHTML = ICONS.shuffle;
     loopBtn.innerHTML = ICONS.loop;
-    psyBtn.innerHTML = ICONS.psy;
     volumeIcon.innerHTML = ICONS.vol3;
     playPauseBtn.innerHTML = ICONS.play;
-
-    // overlay buttons
-    psyPrev.innerHTML = ICONS.prev;
-    psyNext.innerHTML = ICONS.next;
-    psyPlay.innerHTML = ICONS.play;
   }
 
   /* ✅ Captura un “frame VHS” al pausar (esto hace que se note el PAUSE) */
@@ -1539,16 +1386,11 @@
     if(isPlaying) clearVhsFrame();
 
     setGlitchFromVolume();
-    updatePsyNow();
   }
 
   function setPlayIcon(){
-    const paused = audio.paused;
-    playPauseBtn.innerHTML = paused ? ICONS.play : ICONS.pause;
-    playPauseBtn.classList.toggle("pulse", paused);
-
-    psyPlay.innerHTML = paused ? ICONS.play : ICONS.pause;
-
+    playPauseBtn.innerHTML = audio.paused ? ICONS.play : ICONS.pause;
+    playPauseBtn.classList.toggle("pulse", audio.paused);
     setPlayingClass();
   }
 
@@ -1763,54 +1605,6 @@
     });
   }
 
-  // ===== WebAudio (para ritmo) =====
-  let audioCtx = null;
-  let analyser = null;
-  let analyserData = null;
-  let analyserSrc = null;
-  let beatLevel = 0; // 0..1 (suavizado)
-
-  function ensureAudioContext(){
-    try{
-      if(audioCtx && audioCtx.state !== "closed") return true;
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 512;
-      analyser.smoothingTimeConstant = 0.85;
-      analyserData = new Uint8Array(analyser.frequencyBinCount);
-
-      analyserSrc = audioCtx.createMediaElementSource(audio);
-      analyserSrc.connect(analyser);
-      analyser.connect(audioCtx.destination);
-      return true;
-    } catch(e){
-      audioCtx = null; analyser = null; analyserData = null; analyserSrc = null;
-      return false;
-    }
-  }
-
-  function resumeAudioContext(){
-    if(!audioCtx) return;
-    if(audioCtx.state === "suspended") {
-      audioCtx.resume().catch(()=>{});
-    }
-  }
-
-  function readBeat(){
-    if(!analyser || !analyserData) return;
-    analyser.getByteFrequencyData(analyserData);
-
-    // promedio de graves/medios bajos (más “bombeo”)
-    const n = analyserData.length;
-    const from = 2;
-    const to = Math.min(n, Math.floor(n * 0.22));
-    let sum = 0;
-    for(let i=from;i<to;i++) sum += analyserData[i];
-    const avg = sum / Math.max(1, (to-from));
-    const lvl = Math.max(0, Math.min(1, (avg - 20) / 180)); // normalización
-    beatLevel = beatLevel * 0.92 + lvl * 0.08; // suavizado
-  }
-
   async function playCurrent(){
     if(!hasLoaded) loadTrack(currentIndex);
 
@@ -1819,10 +1613,6 @@
     try{
       await waitCanPlay();
       if(myId !== loadId) return;
-
-      // activar análisis (solo si el navegador deja)
-      ensureAudioContext();
-      resumeAudioContext();
 
       await audio.play();
       if(myId !== loadId) return;
@@ -1868,10 +1658,9 @@
 
     resetProgressUI();
     clearVhsFrame();
-    setPlayIcon();
+    setPlayIcon(); // deja clases limpias
 
     document.documentElement.style.setProperty("--g", "0");
-    updatePsyNow();
   }
 
   function getRandomNextIndex(){
@@ -1965,7 +1754,6 @@
     else destroyPreloader();
 
     setGlitchFromVolume();
-    updatePsyNow();
   }
 
   function endScrub(){
@@ -1973,6 +1761,130 @@
     isScrubbing = false;
     cancelSeekRAF();
     hidePreview();
+  }
+
+  function wireEvents(){
+    prevBtn.addEventListener("click", prevTrack);
+    nextBtn.addEventListener("click", nextTrack);
+    playPauseBtn.addEventListener("click", togglePlay);
+    stopBtn.addEventListener("click", stopTrack);
+    shuffleBtn.addEventListener("click", toggleShuffle);
+    loopBtn.addEventListener("click", cycleLoop);
+    shareBtn.addEventListener("click", sharePage);
+
+    playlistEl.addEventListener("click", (e)=>{
+      const item = e.target.closest(".track");
+      if(!item) return;
+      const idx = Number(item.dataset.index);
+      if(!Number.isInteger(idx)) return;
+
+      if(idx === currentIndex && hasLoaded){
+        togglePlay();
+        return;
+      }
+      playTrack(idx);
+    });
+
+    progressContainer.addEventListener("pointerdown", onPointerDown, { passive:false });
+    progressContainer.addEventListener("pointermove", onPointerMove, { passive:false });
+    progressContainer.addEventListener("pointerup", onPointerUp);
+    progressContainer.addEventListener("pointercancel", onPointerUp);
+
+    progressContainer.addEventListener("touchstart", onTouchStart, { passive:false });
+    progressContainer.addEventListener("touchmove", onTouchMove, { passive:false });
+    progressContainer.addEventListener("touchend", onTouchEnd, { passive:false });
+    progressContainer.addEventListener("touchcancel", onTouchEnd, { passive:false });
+
+    progressContainer.addEventListener("pointerenter", ()=> { if(audio.duration) showPreview(); });
+    progressContainer.addEventListener("pointerleave", ()=> { if(!isScrubbing) hidePreview(); });
+
+    document.addEventListener("pointerup", endScrub, { passive:true });
+    document.addEventListener("pointercancel", endScrub, { passive:true });
+    document.addEventListener("touchend", endScrub, { passive:true });
+    document.addEventListener("touchcancel", endScrub, { passive:true });
+
+    audio.addEventListener("timeupdate", ()=>{
+      if(!audio.duration) return;
+      currentTimeEl.textContent = formatTime(audio.currentTime);
+      totalTimeEl.textContent = formatTime(audio.duration);
+      setProgressUI(audio.currentTime / audio.duration);
+    });
+
+    audio.addEventListener("loadedmetadata", ()=>{
+      if(audio.duration) totalTimeEl.textContent = formatTime(audio.duration);
+    });
+
+    audio.addEventListener("ended", ()=>{
+      if(loopMode === 1) return playTrack(currentIndex);
+      if(loopMode === 2) return nextTrack();
+      if(shuffleOn) return nextTrack();
+
+      if(currentIndex === tracks.length - 1){
+        stopTrack();
+        setStatus("Final del disco.");
+      } else {
+        nextTrack();
+      }
+    });
+
+    audio.addEventListener("error", ()=>{
+      setStatus("Error cargando audio.");
+      setPlayIcon();
+    });
+
+    audio.addEventListener("play", setPlayingClass);
+    audio.addEventListener("pause", setPlayingClass);
+    audio.addEventListener("ended", setPlayingClass);
+    audio.addEventListener("volumechange", setGlitchFromVolume);
+
+    volumeSlider.addEventListener("input", ()=>{
+      const v = Number(volumeSlider.value) / 100;
+      audio.volume = v;
+      lastVolume = v || lastVolume;
+      localStorage.setItem(LS.vol, String(v));
+      updateVolumeIcon();
+      setGlitchFromVolume(); 
+    });
+
+    volumeIcon.addEventListener("click", ()=>{
+      if(audio.volume > 0){
+        lastVolume = audio.volume;
+        audio.volume = 0;
+        volumeSlider.value = "0";
+      } else {
+        audio.volume = lastVolume || 1;
+        volumeSlider.value = String(Math.round(audio.volume * 100));
+      }
+      localStorage.setItem(LS.vol, String(audio.volume));
+      updateVolumeIcon();
+      setGlitchFromVolume();
+    });
+
+    volumeIcon.addEventListener("keydown", (e)=>{
+      if(e.key === "Enter" || e.key === " "){
+        e.preventDefault();
+        volumeIcon.click();
+      }
+    });
+
+    document.addEventListener("keydown", (e)=>{
+      if(e.code === "Space"){
+        if(document.activeElement && document.activeElement.tagName === "INPUT") return;
+        e.preventDefault();
+        togglePlay();
+      }
+      if(e.code === "ArrowRight") nextTrack();
+      if(e.code === "ArrowLeft") prevTrack();
+    });
+
+    document.addEventListener("visibilitychange", ()=>{
+      if(document.hidden){
+        if(!audio.paused){
+          audio.pause();
+          setPlayIcon();
+        }
+      }
+    });
   }
 
   function supportInit(){
@@ -2023,382 +1935,25 @@
     });
   }
 
-  // ============================
-  // ✅ PSY OVERLAY (abrir/cerrar)
-  // ============================
-  function openPsy(){
-    psy.classList.add("open");
-    psy.setAttribute("aria-hidden","false");
-    document.body.classList.add("psy-open");
-    updatePsyNow();
-
-    // intenta habilitar análisis (solo funciona tras gesto de usuario)
-    ensureAudioContext();
-    resumeAudioContext();
-    resizePsyCanvas();
-  }
-
-  function closePsy(){
-    psy.classList.remove("open");
-    psy.setAttribute("aria-hidden","true");
-    document.body.classList.remove("psy-open");
-
-    // si estaba en fullscreen, salir
-    if(document.fullscreenElement){
-      document.exitFullscreen().catch(()=>{});
-    }
-  }
-
-  function toggleFullScreen(){
-    const target = psy; // fullscreen del overlay
-    const canFS = !!(target.requestFullscreen || target.webkitRequestFullscreen);
-    if(!canFS){
-      setStatus("Full screen no disponible aquí.");
-      return;
-    }
-
-    if(document.fullscreenElement){
-      document.exitFullscreen().catch(()=>{});
-      return;
-    }
-    const req = target.requestFullscreen || target.webkitRequestFullscreen;
-    try{ req.call(target); }catch{ setStatus("No se pudo activar full screen."); }
-  }
-
-  function trackName(){
-    const raw = (tracks[currentIndex]?.textContent || "").trim();
-    return raw.replace(/^\d+\.\s*/, "") || "—";
-  }
-
-  function updatePsyNow(){
-    if(!psyNow) return;
-    if(!hasLoaded){
-      psyNow.textContent = "está sonando: —";
-      return;
-    }
-    const t = audio.duration ? `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}` : formatTime(audio.currentTime||0);
-    psyNow.textContent = `está sonando: ${trackName()} · ${t}`;
-  }
-
-  // ============================
-  // ✅ VISUALES: kaleidoscopio + lava
-  // (ANIMA SIEMPRE, con o sin beat)
-  // ============================
-  const pctx = psyCanvas.getContext("2d", { alpha: false });
-
-  const lava = document.createElement("canvas");
-  const lctx = lava.getContext("2d", { alpha: false });
-
-  const balls = Array.from({length: 16}, ()=>({
-    x: Math.random(), y: Math.random(),
-    vx:(Math.random()*2-1)*0.14,
-    vy:(Math.random()*2-1)*0.11,
-    r: 0.10 + Math.random()*0.22,
-    ph: Math.random()*Math.PI*2
-  }));
-
-  function resizePsyCanvas(){
-    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-    psyCanvas.width = Math.floor(innerWidth * dpr);
-    psyCanvas.height = Math.floor(innerHeight * dpr);
-
-    lava.width = Math.max(320, Math.floor(innerWidth * 0.65));
-    lava.height = Math.max(320, Math.floor(innerHeight * 0.65));
-  }
-  addEventListener("resize", resizePsyCanvas, { passive:true });
-
-  function drawLava(t, pump){
-    const W = lava.width, H = lava.height;
-
-    // “lava setentera”: colores cálidos + verde/azul ocasional
-    const hueA = (t*18 + pump*60) % 360;
-    const hueB = (hueA + 140 + pump*40) % 360;
-
-    const g = lctx.createLinearGradient(0,0,W,H);
-    g.addColorStop(0, `hsl(${hueA} 95% 18%)`);
-    g.addColorStop(1, `hsl(${hueB} 95% 12%)`);
-
-    lctx.globalCompositeOperation="source-over";
-    lctx.fillStyle=g;
-    lctx.fillRect(0,0,W,H);
-
-    lctx.globalCompositeOperation="screen";
-    const speed = 0.016 * (1 + pump*1.6);
-
-    for(const b of balls){
-      b.ph += 0.02 + pump*0.03;
-      b.x += b.vx * speed;
-      b.y += b.vy * speed;
-
-      if(b.x < -0.2) b.x = 1.2; if(b.x > 1.2) b.x = -0.2;
-      if(b.y < -0.2) b.y = 1.2; if(b.y > 1.2) b.y = -0.2;
-
-      const cx = (b.x + 0.04*Math.sin(b.ph)) * W;
-      const cy = (b.y + 0.04*Math.cos(b.ph*1.2)) * H;
-      const rr = b.r * Math.min(W,H) * (1 + pump*0.35);
-
-      const hh = (hueA + 90*Math.sin(b.ph*0.9)) % 360;
-      const rg = lctx.createRadialGradient(cx,cy, rr*0.06, cx,cy, rr);
-      rg.addColorStop(0, `hsla(${hh} 100% 60% .72)`);
-      rg.addColorStop(0.55, `hsla(${(hh+50)%360} 100% 52% .18)`);
-      rg.addColorStop(1, `hsla(${(hh+120)%360} 100% 40% 0)`);
-
-      lctx.fillStyle=rg;
-      lctx.beginPath();
-      lctx.arc(cx,cy, rr, 0, Math.PI*2);
-      lctx.fill();
-    }
-
-    // scanlines
-    lctx.globalCompositeOperation="multiply";
-    lctx.fillStyle="rgba(0,0,0,.11)";
-    for(let y=0;y<H;y+=3){
-      lctx.fillRect(0, y + Math.sin(t*1.7 + y*0.02)*(1.4 + pump*2.2), W, 1);
-    }
-
-    lctx.globalCompositeOperation="source-over";
-  }
-
-  function psyFrame(ms){
-    requestAnimationFrame(psyFrame);
-
-    // ANIMA SIEMPRE aunque el overlay esté cerrado
-    if(!psyCanvas.width || !psyCanvas.height) return;
-
-    const t = ms * 0.001;
-
-    // beat si se puede, si no, queda en 0 y sigue animando por tiempo
-    if(hasLoaded && !audio.paused) readBeat();
-    else beatLevel *= 0.95;
-
-    const pump = Math.max(0, Math.min(1, beatLevel)); // 0..1
-
-    drawLava(t, pump);
-
-    const w = psyCanvas.width, h = psyCanvas.height;
-
-    // fondo
-    pctx.globalCompositeOperation="source-over";
-    pctx.fillStyle="#000";
-    pctx.fillRect(0,0,w,h);
-
-    // kaleidoscopio
-    const seg = 14;
-    const ang = (Math.PI*2)/seg;
-    const spin = t*(0.35 + pump*0.55);
-    const zoom = 1.10 + 0.10*Math.sin(t*1.05) + pump*0.22;
-
-    pctx.save();
-    pctx.translate(w/2,h/2);
-    pctx.rotate(spin);
-
-    const drawW = lava.width*zoom;
-    const drawH = lava.height*zoom;
-
-    for(let i=0;i<seg;i++){
-      pctx.save();
-      pctx.rotate(i*ang);
-
-      pctx.beginPath();
-      pctx.moveTo(0,0);
-      pctx.lineTo(Math.cos(-ang/2)*Math.max(w,h), Math.sin(-ang/2)*Math.max(w,h));
-      pctx.lineTo(Math.cos( ang/2)*Math.max(w,h), Math.sin( ang/2)*Math.max(w,h));
-      pctx.closePath();
-      pctx.clip();
-
-      if(i%2) pctx.scale(-1,1);
-
-      const jx = Math.sin(t*1.7 + i) * (w*(0.014 + pump*0.02));
-      const jy = Math.cos(t*1.25 + i) * (h*(0.014 + pump*0.02));
-
-      pctx.globalCompositeOperation="screen";
-      pctx.drawImage(lava, -drawW/2 + jx, -drawH/2 + jy, drawW, drawH);
-
-      // brillo extra con el beat
-      pctx.globalCompositeOperation="lighter";
-      pctx.globalAlpha = 0.10 + pump*0.22;
-      pctx.drawImage(lava, -drawW/2 - jx*0.6, -drawH/2 - jy*0.6, drawW*1.02, drawH*1.02);
-      pctx.globalAlpha = 1;
-
-      pctx.restore();
-    }
-    pctx.restore();
-
-    // viñeta
-    pctx.globalCompositeOperation="multiply";
-    const vg = pctx.createRadialGradient(w/2,h/2, Math.min(w,h)*0.15, w/2,h/2, Math.min(w,h)*0.80);
-    vg.addColorStop(0,"rgba(0,0,0,0)");
-    vg.addColorStop(1,"rgba(0,0,0,.66)");
-    pctx.fillStyle=vg;
-    pctx.fillRect(0,0,w,h);
-    pctx.globalCompositeOperation="source-over";
-  }
-
-  requestAnimationFrame(psyFrame);
-
-  // ============================
-  // ✅ Events
-  // ============================
-  function wireEvents(){
-    prevBtn.addEventListener("click", prevTrack);
-    nextBtn.addEventListener("click", nextTrack);
-    playPauseBtn.addEventListener("click", togglePlay);
-    stopBtn.addEventListener("click", stopTrack);
-    shuffleBtn.addEventListener("click", toggleShuffle);
-    loopBtn.addEventListener("click", cycleLoop);
-    shareBtn.addEventListener("click", sharePage);
-
-    psyBtn.addEventListener("click", openPsy);
-    psyClose.addEventListener("click", closePsy);
-    psyFS.addEventListener("click", toggleFullScreen);
-
-    psyPrev.addEventListener("click", prevTrack);
-    psyNext.addEventListener("click", nextTrack);
-    psyPlay.addEventListener("click", togglePlay);
-
-    playlistEl.addEventListener("click", (e)=>{
-      const item = e.target.closest(".track");
-      if(!item) return;
-      const idx = Number(item.dataset.index);
-      if(!Number.isInteger(idx)) return;
-
-      if(idx === currentIndex && hasLoaded){
-        togglePlay();
-        return;
-      }
-      playTrack(idx);
-    });
-
-    progressContainer.addEventListener("pointerdown", onPointerDown, { passive:false });
-    progressContainer.addEventListener("pointermove", onPointerMove, { passive:false });
-    progressContainer.addEventListener("pointerup", onPointerUp);
-    progressContainer.addEventListener("pointercancel", onPointerUp);
-
-    progressContainer.addEventListener("touchstart", onTouchStart, { passive:false });
-    progressContainer.addEventListener("touchmove", onTouchMove, { passive:false });
-    progressContainer.addEventListener("touchend", onTouchEnd, { passive:false });
-    progressContainer.addEventListener("touchcancel", onTouchEnd, { passive:false });
-
-    progressContainer.addEventListener("pointerenter", ()=> { if(audio.duration) showPreview(); });
-    progressContainer.addEventListener("pointerleave", ()=> { if(!isScrubbing) hidePreview(); });
-
-    document.addEventListener("pointerup", endScrub, { passive:true });
-    document.addEventListener("pointercancel", endScrub, { passive:true });
-    document.addEventListener("touchend", endScrub, { passive:true });
-    document.addEventListener("touchcancel", endScrub, { passive:true });
-
-    audio.addEventListener("timeupdate", ()=>{
-      if(!audio.duration) return;
-      currentTimeEl.textContent = formatTime(audio.currentTime);
-      totalTimeEl.textContent = formatTime(audio.duration);
-      setProgressUI(audio.currentTime / audio.duration);
-      updatePsyNow();
-    });
-
-    audio.addEventListener("loadedmetadata", ()=>{
-      if(audio.duration) totalTimeEl.textContent = formatTime(audio.duration);
-      updatePsyNow();
-    });
-
-    audio.addEventListener("ended", ()=>{
-      if(loopMode === 1) return playTrack(currentIndex);
-      if(loopMode === 2) return nextTrack();
-      if(shuffleOn) return nextTrack();
-
-      if(currentIndex === tracks.length - 1){
-        stopTrack();
-        setStatus("Final del disco.");
-      } else {
-        nextTrack();
-      }
-    });
-
-    audio.addEventListener("error", ()=>{
-      setStatus("Error cargando audio.");
-      setPlayIcon();
-    });
-
-    audio.addEventListener("play", ()=>{
-      ensureAudioContext();
-      resumeAudioContext();
-      setPlayingClass();
-    });
-    audio.addEventListener("pause", setPlayingClass);
-    audio.addEventListener("ended", setPlayingClass);
-    audio.addEventListener("volumechange", setGlitchFromVolume);
-
-    volumeSlider.addEventListener("input", ()=>{
-      const v = Number(volumeSlider.value) / 100;
-      audio.volume = v;
-      lastVolume = v || lastVolume;
-      localStorage.setItem(LS.vol, String(v));
-      updateVolumeIcon();
-      setGlitchFromVolume();
-    });
-
-    volumeIcon.addEventListener("click", ()=>{
-      if(audio.volume > 0){
-        lastVolume = audio.volume;
-        audio.volume = 0;
-        volumeSlider.value = "0";
-      } else {
-        audio.volume = lastVolume || 1;
-        volumeSlider.value = String(Math.round(audio.volume * 100));
-      }
-      localStorage.setItem(LS.vol, String(audio.volume));
-      updateVolumeIcon();
-      setGlitchFromVolume();
-    });
-
-    volumeIcon.addEventListener("keydown", (e)=>{
-      if(e.key === "Enter" || e.key === " "){
-        e.preventDefault();
-        volumeIcon.click();
-      }
-    });
-
-    // teclas básicas (sin mostrar texto)
-    document.addEventListener("keydown", (e)=>{
-      if(e.key === "Escape"){
-        if(psy.classList.contains("open")) closePsy();
-        return;
-      }
-      if(e.code === "Space"){
-        if(document.activeElement && document.activeElement.tagName === "INPUT") return;
-        e.preventDefault();
-        togglePlay();
-      }
-      if(e.code === "ArrowRight") nextTrack();
-      if(e.code === "ArrowLeft") prevTrack();
-    });
-
-    document.addEventListener("visibilitychange", ()=>{
-      if(document.hidden){
-        if(!audio.paused){
-          audio.pause();
-          setPlayIcon();
-        }
-      }
-    });
-
-    // click fuera del overlay: no cierro (para que no se cierre sin querer)
-  }
-
-  function applyPsyFSButtonVisibility(){
-    const canFS = !!((psy.requestFullscreen || psy.webkitRequestFullscreen) && (document.exitFullscreen || document.webkitExitFullscreen));
-    if(!canFS) psyFS.style.display = "none";
-  }
-
   (function init(){
     renderIcons();
     applyStoredSettings();
     wireEvents();
     supportInit();
-    resizePsyCanvas();
-    applyPsyFSButtonVisibility();
-    updatePsyNow();
   })();
 </script>
 
 </body>
-</html>
+</html> 
+
+
+
+
+
+
+
+
+
+
+
+
