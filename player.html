@@ -35,10 +35,12 @@
     --t1: 18%;
     --t2: 50%;
     --t3: 76%;
+
+    /* Psych mode intensity */
+    --psy: .85;
   }
 
   *{ box-sizing:border-box; }
-
   html, body{ -webkit-tap-highlight-color: transparent; }
 
   button, a, .crt{
@@ -48,7 +50,6 @@
     outline: none;
     touch-action: manipulation;
   }
-
   :focus{ outline:none; }
   button:focus-visible, a:focus-visible, .crt:focus-visible{
     outline: 2px solid rgba(0,255,0,.75);
@@ -1063,13 +1064,247 @@
     100%{transform:translate(0); filter:none}
   }
 
-  @media (max-width:480px){
-    h1{ font-size:18px; }
-    .subtitle{ font-size:15px; }
-    .progress-wrapper{ gap:8px; }
-    #volume-slider{ width: 140px; }
+  /* ===========================
+     PSY MODE (overlay)
+     =========================== */
+  .psy-btn{
+    margin: 10px auto 2px;
+    width:auto;
+    height:auto;
+    padding: 10px 14px;
+    border-radius: 999px;
+    letter-spacing:.12em;
+    text-transform: uppercase;
+    font-size:12px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.14);
+    color: var(--muted);
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  }
+  .psy-btn:hover{
+    color: var(--neon);
+    border-color: rgba(0,255,0,.35);
+    box-shadow: 0 0 18px rgba(0,255,0,.14);
+    transform:none !important;
+  }
+  .psy-dot{
+    width:10px; height:10px; border-radius:999px;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(0,255,0,.55), rgba(0,0,0,0));
+    box-shadow: 0 0 14px rgba(0,255,0,.22);
   }
 
+  .psy-overlay{
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display:none;
+    background: rgba(0,0,0,.25);
+    overflow:hidden;
+    padding:
+      calc(16px + env(safe-area-inset-top))
+      calc(16px + env(safe-area-inset-right))
+      calc(16px + env(safe-area-inset-bottom))
+      calc(16px + env(safe-area-inset-left));
+  }
+  .psy-overlay.open{ display:block; }
+
+  .psy-bg{
+    position:absolute;
+    inset:-12%;
+    pointer-events:none;
+    filter: saturate(1.2) contrast(1.15) blur(0.2px);
+    transform: translateZ(0);
+    animation: psy-float 8s ease-in-out infinite;
+  }
+
+  /* Kaleidoscope layer (CSS conic gradients) */
+  .psy-kale{
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(255,255,255,.08), rgba(0,0,0,0) 55%),
+      repeating-conic-gradient(
+        from 0deg,
+        rgba(255,0,200,.25) 0 12deg,
+        rgba(0,255,200,.22) 12deg 24deg,
+        rgba(255,255,0,.20) 24deg 36deg,
+        rgba(0,150,255,.22) 36deg 48deg,
+        rgba(255,0,80,.22) 48deg 60deg
+      );
+    background-size: 100% 100%;
+    mix-blend-mode: screen;
+    opacity: calc(0.30 + (0.55 * var(--psy)));
+    filter: blur(0.4px);
+    animation: psy-spin 14s linear infinite;
+    transform-origin: 50% 50%;
+  }
+
+  /* Lava layer (blur + animated gradients) */
+  .psy-lava{
+    position:absolute;
+    inset:-10%;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(255,80,0,.45), rgba(0,0,0,0) 55%),
+      radial-gradient(circle at 80% 40%, rgba(0,255,160,.35), rgba(0,0,0,0) 55%),
+      radial-gradient(circle at 50% 75%, rgba(200,0,255,.35), rgba(0,0,0,0) 55%),
+      radial-gradient(circle at 40% 55%, rgba(255,255,0,.22), rgba(0,0,0,0) 60%);
+    filter: blur(20px) saturate(1.25);
+    mix-blend-mode: screen;
+    opacity: calc(0.22 + (0.55 * var(--psy)));
+    animation: psy-lava 9s ease-in-out infinite;
+  }
+
+  .psy-grain{
+    position:absolute;
+    inset:0;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.04) 0,
+        rgba(255,255,255,.04) 1px,
+        rgba(0,0,0,0) 3px
+      );
+    opacity:.18;
+    mix-blend-mode: overlay;
+    animation: psy-noise .18s infinite steps(2,end);
+  }
+
+  .psy-vignette{
+    position:absolute;
+    inset:0;
+    background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 40%, rgba(0,0,0,.55) 100%);
+    opacity:.85;
+    pointer-events:none;
+  }
+
+  .psy-ui{
+    position:relative;
+    height: 100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    gap: 14px;
+  }
+
+  .psy-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap: 10px;
+  }
+
+  .psy-now{
+    text-align:left;
+    max-width: 78%;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: rgba(0,0,0,.38);
+    border:1px solid rgba(255,255,255,.14);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 0 22px rgba(0,0,0,.35);
+  }
+  .psy-now .label{
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity:.95;
+    margin-bottom: 6px;
+  }
+  .psy-now .title{
+    font-size: 18px;
+    letter-spacing:.06em;
+    color: var(--ink);
+    line-height:1.15;
+    text-shadow: 0 0 18px rgba(255,255,255,.08);
+  }
+
+  .psy-top-actions{
+    display:flex;
+    gap:10px;
+  }
+
+  .psy-icon{
+    width:48px;
+    height:48px;
+    border-radius:999px;
+    background: rgba(0,0,0,.40);
+    border:1px solid rgba(255,255,255,.14);
+    color: var(--muted);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:.18s ease;
+    backdrop-filter: blur(6px);
+  }
+  .psy-icon:hover{
+    color: var(--neon);
+    border-color: rgba(0,255,0,.35);
+    box-shadow: 0 0 18px rgba(0,255,0,.14);
+    transform:none !important;
+  }
+  .psy-icon .ico{ width:20px; height:20px; }
+
+  .psy-controls{
+    display:flex;
+    justify-content:center;
+    gap:16px;
+    padding-bottom: 6px;
+  }
+
+  .psy-controls button{
+    width:64px;
+    height:64px;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.16);
+    color: var(--ink);
+    box-shadow: 0 0 20px rgba(0,0,0,.35);
+    backdrop-filter: blur(6px);
+  }
+  .psy-controls button:hover{
+    color: var(--neon);
+    border-color: rgba(0,255,0,.35);
+  }
+
+  .psy-controls #psy-play-pause{
+    background: rgba(0,255,0,.18);
+    border-color: rgba(0,255,0,.28);
+    box-shadow: 0 0 26px rgba(0,255,0,.16);
+  }
+  .psy-controls #psy-play-pause .ico{ stroke: #000; }
+  .psy-controls #psy-play-pause{
+    color:#000;
+  }
+  .psy-controls #psy-play-pause:hover{
+    box-shadow: 0 0 36px rgba(0,255,0,.22);
+  }
+
+  @keyframes psy-spin{
+    0%{ transform: rotate(0deg) scale(1.02); }
+    100%{ transform: rotate(360deg) scale(1.02); }
+  }
+
+  @keyframes psy-lava{
+    0%{ transform: translate3d(-2%, -1%, 0) scale(1.08); }
+    50%{ transform: translate3d(2.5%, 1.5%, 0) scale(1.12); }
+    100%{ transform: translate3d(-2%, -1%, 0) scale(1.08); }
+  }
+
+  @keyframes psy-float{
+    0%,100%{ transform: translate3d(0,0,0) scale(1.02); }
+    50%{ transform: translate3d(0,-1.2%,0) scale(1.02); }
+  }
+
+  @keyframes psy-noise{
+    0%{ transform: translateX(0); }
+    50%{ transform: translateX(-1px); }
+    100%{ transform: translateX(0); }
+  }
+
+  /* Animaciones reducidas */
   @media (prefers-reduced-motion: reduce){
     #cover{ animation:none !important; }
     .crt:hover #cover{ animation:none !important; }
@@ -1087,6 +1322,19 @@
       animation:none !important;
       opacity:0 !important;
     }
+
+    .psy-bg, .psy-kale, .psy-lava, .psy-grain{
+      animation:none !important;
+    }
+  }
+
+  @media (max-width:480px){
+    h1{ font-size:18px; }
+    .subtitle{ font-size:15px; }
+    .progress-wrapper{ gap:8px; }
+    #volume-slider{ width: 140px; }
+    .psy-now .title{ font-size: 16px; }
+    .psy-controls button{ width:60px; height:60px; }
   }
 </style>
 </head>
@@ -1126,6 +1374,11 @@
       <button id="shuffle-btn" class="icon-btn" aria-label="Shuffle" title="Shuffle"></button>
       <button id="loop-btn" class="icon-btn" aria-label="Loop" title="Loop"></button>
       <button id="share-btn" class="icon-btn" aria-label="Compartir" title="Compartir"></button>
+      <!-- ✅ NUEVO: MODO PSICODELICO -->
+      <button id="psy-btn" class="psy-btn" aria-label="Modo psicodélico" title="Modo psicodélico">
+        <span class="psy-dot" aria-hidden="true"></span>
+        Modo psicodélico
+      </button>
     </div>
 
     <div id="status-line"></div>
@@ -1205,6 +1458,38 @@
     <div class="sig">EMISIÓN NO AUTORIZADA · NO MIRES ATRÁS!</div>
   </main>
 
+  <!-- ===========================
+       ✅ OVERLAY PSICODELICO
+       =========================== -->
+  <div class="psy-overlay" id="psy-overlay" aria-hidden="true">
+    <div class="psy-bg" aria-hidden="true">
+      <div class="psy-kale"></div>
+      <div class="psy-lava"></div>
+      <div class="psy-grain"></div>
+      <div class="psy-vignette"></div>
+    </div>
+
+    <div class="psy-ui">
+      <div class="psy-top">
+        <div class="psy-now" aria-live="polite">
+          <div class="label">Está sonando</div>
+          <div class="title" id="psy-track-title">—</div>
+        </div>
+
+        <div class="psy-top-actions">
+          <button class="psy-icon" id="psy-fullscreen" type="button" aria-label="Pantalla completa" title="Pantalla completa"></button>
+          <button class="psy-icon" id="psy-close" type="button" aria-label="Cerrar" title="Cerrar"></button>
+        </div>
+      </div>
+
+      <div class="psy-controls" aria-label="Controles modo psicodélico">
+        <button id="psy-prev" type="button" aria-label="Anterior" title="Anterior"></button>
+        <button id="psy-play-pause" type="button" aria-label="Play/Pause" title="Play/Pause"></button>
+        <button id="psy-next" type="button" aria-label="Siguiente" title="Siguiente"></button>
+      </div>
+    </div>
+  </div>
+
 <script>
   const ICONS = {
     prev: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6v12"/><path d="M18 6l-8 6 8 6z"/></svg>`,
@@ -1218,7 +1503,10 @@
     share:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4"/><path d="M8 8l4-4 4 4"/><path d="M6 12v7a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-7"/></svg>`,
     vol3:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 8a4 4 0 0 1 0 8"/><path d="M18.5 5.5a7 7 0 0 1 0 13"/></svg>`,
     vol2:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 8a4 4 0 0 1 0 8"/></svg>`,
-    mute:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 9l5 6"/><path d="M21 9l-5 6"/></svg>`
+    mute:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M16 9l5 6"/><path d="M21 9l-5 6"/></svg>`,
+    close:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg>`,
+    fullscreen:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>`,
+    exitFullscreen:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M16 3v3a2 2 0 0 0 2 2h3"/><path d="M8 21v-3a2 2 0 0 0-2-2H3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></svg>`
   };
 
   const tvBase = "tv.webp";
@@ -1230,6 +1518,20 @@
   const sources = [
     "lospobres.mp3","vae.mp3","shows.mp3","STOP.mp3","reza.mp3",
     "depie.mp3","quemarlo.mp3","nadie.mp3","loque.mp3","lacasa.mp3","tenemos.mp3"
+  ];
+
+  const trackTitles = [
+    "Noche sintética",
+    "Volveremos a empezar",
+    "Quién llena los shows",
+    "STOP!",
+    "Reza",
+    "De pie",
+    "Quemarlo todo",
+    "Nadie sabe nada",
+    "Lo que no quiero",
+    "La casa del terror",
+    "Tenemos que hablar"
   ];
 
   const $ = (id) => document.getElementById(id);
@@ -1262,6 +1564,16 @@
 
   const tracks = Array.from(document.querySelectorAll(".track"));
 
+  /* === PSY MODE elements === */
+  const psyBtn = $("psy-btn");
+  const psyOverlay = $("psy-overlay");
+  const psyClose = $("psy-close");
+  const psyFullscreen = $("psy-fullscreen");
+  const psyPrev = $("psy-prev");
+  const psyNext = $("psy-next");
+  const psyPlayPause = $("psy-play-pause");
+  const psyTrackTitle = $("psy-track-title");
+
   let currentIndex = 0;
   let lastVolume = 1;
   let loopMode = 0; // 0=OFF,1=SONG,2=ALBUM
@@ -1277,7 +1589,10 @@
     vol: "cm_vol",
     idx: "cm_idx",
     shuffle: "cm_shuffle",
-    loop: "cm_loop"
+    loop: "cm_loop",
+
+    /* ✅ NUEVO: continuar automático donde lo dejaste */
+    time: "cm_time"
   };
 
   // ===== PRELOAD NEXT (más instantáneo) =====
@@ -1343,6 +1658,22 @@
     loopBtn.innerHTML = ICONS.loop;
     volumeIcon.innerHTML = ICONS.vol3;
     playPauseBtn.innerHTML = ICONS.play;
+
+    /* PSY icons */
+    psyPrev.innerHTML = ICONS.prev;
+    psyNext.innerHTML = ICONS.next;
+    psyPlayPause.innerHTML = ICONS.play;
+    psyClose.innerHTML = ICONS.close;
+    psyFullscreen.innerHTML = ICONS.fullscreen;
+  }
+
+  function setPsyTitle(){
+    const title = trackTitles[currentIndex] || tracks[currentIndex]?.textContent || "—";
+    psyTrackTitle.textContent = title.replace(/^\d+\.\s*/, "");
+  }
+
+  function setPsyPlayIcon(){
+    psyPlayPause.innerHTML = audio.paused ? ICONS.play : ICONS.pause;
   }
 
   /* ✅ Captura un “frame VHS” al pausar (esto hace que se note el PAUSE) */
@@ -1386,6 +1717,7 @@
     if(isPlaying) clearVhsFrame();
 
     setGlitchFromVolume();
+    setPsyPlayIcon();
   }
 
   function setPlayIcon(){
@@ -1440,6 +1772,7 @@
     tracks.forEach(t=>t.classList.remove("current"));
     const el = tracks[currentIndex];
     if(el) el.classList.add("current");
+    setPsyTitle();
   }
 
   function resetProgressUI(){
@@ -1571,6 +1904,18 @@
     hidePreview();
   }
 
+  function saveCurrentTime(){
+    if(!hasLoaded) return;
+    try{
+      const t = Number(audio.currentTime || 0);
+      localStorage.setItem(LS.time, String(Math.max(0, t)));
+    }catch{}
+  }
+
+  function clearSavedTime(){
+    try{ localStorage.removeItem(LS.time); }catch{}
+  }
+
   // ===== PLAYER (robusto) =====
   function loadTrack(index){
     currentIndex = index;
@@ -1641,6 +1986,9 @@
     ++loadId;
     cancelSeekRAF();
 
+    /* ✅ STOP: borra el tiempo guardado */
+    clearSavedTime();
+
     audio.pause();
     try { audio.currentTime = 0; } catch {}
     audio.removeAttribute("src");
@@ -1661,6 +2009,7 @@
     setPlayIcon(); // deja clases limpias
 
     document.documentElement.style.setProperty("--g", "0");
+    setPsyTitle();
   }
 
   function getRandomNextIndex(){
@@ -1754,6 +2103,7 @@
     else destroyPreloader();
 
     setGlitchFromVolume();
+    setPsyTitle();
   }
 
   function endScrub(){
@@ -1761,6 +2111,44 @@
     isScrubbing = false;
     cancelSeekRAF();
     hidePreview();
+  }
+
+  /* ===========================
+     PSY MODE logic
+     =========================== */
+  function openPsy(){
+    psyOverlay.classList.add("open");
+    psyOverlay.setAttribute("aria-hidden", "false");
+    setPsyTitle();
+    setPsyPlayIcon();
+
+    // Focus accesible al cerrar
+    psyClose.focus();
+  }
+
+  function closePsy(){
+    psyOverlay.classList.remove("open");
+    psyOverlay.setAttribute("aria-hidden", "true");
+    psyBtn.focus();
+  }
+
+  function isFullscreen(){
+    return !!document.fullscreenElement;
+  }
+
+  async function toggleFullscreen(){
+    try{
+      if(!isFullscreen()){
+        await psyOverlay.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch {}
+    updateFullscreenIcon();
+  }
+
+  function updateFullscreenIcon(){
+    psyFullscreen.innerHTML = isFullscreen() ? ICONS.exitFullscreen : ICONS.fullscreen;
   }
 
   function wireEvents(){
@@ -1771,6 +2159,22 @@
     shuffleBtn.addEventListener("click", toggleShuffle);
     loopBtn.addEventListener("click", cycleLoop);
     shareBtn.addEventListener("click", sharePage);
+
+    /* PSY */
+    psyBtn.addEventListener("click", openPsy);
+    psyClose.addEventListener("click", closePsy);
+    psyOverlay.addEventListener("click", (e)=>{
+      // click fuera de UI -> no cerrar (lo dejo “seguro”)
+      // si quieres cerrar tocando fondo, descomenta:
+      // if(e.target === psyOverlay) closePsy();
+    });
+
+    psyPrev.addEventListener("click", prevTrack);
+    psyNext.addEventListener("click", nextTrack);
+    psyPlayPause.addEventListener("click", togglePlay);
+    psyFullscreen.addEventListener("click", toggleFullscreen);
+
+    document.addEventListener("fullscreenchange", updateFullscreenIcon);
 
     playlistEl.addEventListener("click", (e)=>{
       const item = e.target.closest(".track");
@@ -1808,6 +2212,9 @@
       currentTimeEl.textContent = formatTime(audio.currentTime);
       totalTimeEl.textContent = formatTime(audio.duration);
       setProgressUI(audio.currentTime / audio.duration);
+
+      // ✅ guardar progreso (continuar automático)
+      saveCurrentTime();
     });
 
     audio.addEventListener("loadedmetadata", ()=>{
@@ -1815,6 +2222,9 @@
     });
 
     audio.addEventListener("ended", ()=>{
+      // al terminar, no tiene sentido “continuar donde lo dejaste”
+      clearSavedTime();
+
       if(loopMode === 1) return playTrack(currentIndex);
       if(loopMode === 2) return nextTrack();
       if(shuffleOn) return nextTrack();
@@ -1843,7 +2253,7 @@
       lastVolume = v || lastVolume;
       localStorage.setItem(LS.vol, String(v));
       updateVolumeIcon();
-      setGlitchFromVolume(); 
+      setGlitchFromVolume();
     });
 
     volumeIcon.addEventListener("click", ()=>{
@@ -1868,6 +2278,13 @@
     });
 
     document.addEventListener("keydown", (e)=>{
+      // Si está abierto el overlay, ESC lo cierra
+      if(e.key === "Escape" && psyOverlay.classList.contains("open") && !isFullscreen()){
+        e.preventDefault();
+        closePsy();
+        return;
+      }
+
       if(e.code === "Space"){
         if(document.activeElement && document.activeElement.tagName === "INPUT") return;
         e.preventDefault();
@@ -1935,25 +2352,38 @@
     });
   }
 
+  /* ✅ CONTINUAR AUTOMÁTICO: al cargar, si hay tiempo guardado, lo aplica al play */
+  function applyResumeTimeIfAny(){
+    const t = Number(localStorage.getItem(LS.time));
+    if(!Number.isFinite(t) || t <= 0) return;
+
+    // Pre-cargar el track guardado para poder aplicar currentTime
+    loadTrack(currentIndex);
+
+    // Aplicar al tener metadata
+    const resume = () => {
+      audio.removeEventListener("loadedmetadata", resume);
+      if(audio.duration && t < (audio.duration - 0.25)){
+        try{ audio.currentTime = t; } catch {}
+        currentTimeEl.textContent = formatTime(t);
+        setProgressUI(audio.duration ? (t / audio.duration) : 0);
+        setStatus("Continuando donde lo dejaste…");
+      } else {
+        clearSavedTime();
+      }
+    };
+    audio.addEventListener("loadedmetadata", resume);
+  }
+
   (function init(){
     renderIcons();
     applyStoredSettings();
     wireEvents();
     supportInit();
+    updateFullscreenIcon();
+    applyResumeTimeIfAny();
   })();
 </script>
 
 </body>
-</html> 
-
-
-
-
-
-
-
-
-
-
-
-
+</html>
