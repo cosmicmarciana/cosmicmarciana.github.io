@@ -1211,7 +1211,7 @@
     <div class="sig">EMISIÓN NO AUTORIZADA · NO MIRES ATRÁS!</div>
   </main>
 
-  <!-- OVERLAY PSICODÉLICO -->
+  <!-- OVERLAY PSICODÉLICO (FULLSCREEN) -->
   <div class="psy-overlay" id="psy-overlay" aria-hidden="true">
     <canvas id="psy-canvas" class="psy-canvas" aria-hidden="true"></canvas>
 
@@ -1700,7 +1700,7 @@
   }
 
   async function playCurrent(){
-    initPsyAnalyser(); // ✅ gesto usuario
+    initPsyAnalyser(); // gesto usuario
 
     if(!hasLoaded) loadTrack(currentIndex);
 
@@ -1737,7 +1737,7 @@
   function stopTrack(){
     ++loadId;
     cancelSeekRAF();
-    clearSavedTime(); // ✅ STOP borra el tiempo guardado
+    clearSavedTime();
 
     audio.pause();
     try { audio.currentTime = 0; } catch {}
@@ -1856,28 +1856,23 @@
   }
 
   /* =========================================================
-     PSY VISUALS — Opción 3: "Liquid Light Show 70s"
-     - Capas grandes tipo overhead projector
-     - Flow suave + beat “respira” (sin espasmos)
-     - Negro si no hay música
+     PSY VISUALS — Camino 2 (minimal club)
+     - negro si NO está sonando
+     - un orbe “respira” con música (SUAVE)
+     - nada de espasmos (suavizado + slew limiter)
      ========================================================= */
-
   let psyCtx = null;
   let psyRAF = 0;
   let psyRunning = false;
   let psyStart = 0;
 
-  // Audio analyser (para ritmo suave)
   let psyAudioCtx = null;
   let psyAnalyser = null;
   let psyData = null;
   let psySrcNode = null;
-  let psyAmp = 0;      // nivel suavizado
-  let psyAmpVel = 0;   // slew limiter
 
-  // Buffers para capas
-  let layerA = null, layerB = null, layerC = null;
-  let ctxA = null, ctxB = null, ctxC = null;
+  let amp = 0;      // nivel suavizado 0..1
+  let ampVel = 0;   // slew limiter
 
   function initPsyAnalyser(){
     try{
@@ -1890,7 +1885,7 @@
       if(!psyAnalyser){
         psyAnalyser = psyAudioCtx.createAnalyser();
         psyAnalyser.fftSize = 1024;
-        psyAnalyser.smoothingTimeConstant = 0.86;
+        psyAnalyser.smoothingTimeConstant = 0.88;
         psyData = new Uint8Array(psyAnalyser.frequencyBinCount);
       }
 
@@ -1905,18 +1900,33 @@
     }
   }
 
+  function clamp(n,a,b){ return Math.max(a, Math.min(b, n)); }
+
+  function psyResize(){
+    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    psyCanvas.width  = Math.floor(window.innerWidth  * dpr);
+    psyCanvas.height = Math.floor(window.innerHeight * dpr);
+    psyCtx = psyCanvas.getContext("2d", { alpha:false });
+    psyFillBlack();
+  }
+
+  function psyFillBlack(){
+    if(!psyCtx) return;
+    psyCtx.fillStyle = "#000";
+    psyCtx.fillRect(0,0,psyCanvas.width, psyCanvas.height);
+  }
+
   function psyGetLevel(){
     if(!psyAnalyser || !psyData) return 0;
 
     psyAnalyser.getByteFrequencyData(psyData);
 
-    // “bombo”/bajos
-    const bassBins = 22;
+    // mezcla de “bajos” + “energía total”
+    const bassBins = 24;
     let bass = 0;
     for(let i=0;i<bassBins;i++) bass += psyData[i];
     bass /= (bassBins * 255);
 
-    // energía total (RMS)
     let sum = 0;
     for(let i=0;i<psyData.length;i++){
       const v = psyData[i] / 255;
@@ -1924,201 +1934,128 @@
     }
     const rms = Math.sqrt(sum / psyData.length);
 
-    let raw = bass * 0.75 + rms * 0.25;
-    raw = Math.pow(Math.max(0, raw), 0.55);
+    // target suave (no “golpes”)
+    let target = bass * 0.72 + rms * 0.28;
+    target = Math.pow(Math.max(0, target), 0.60);
 
-    // suavizado + limitador para que no haya “espasmos”
-    const target = raw;
-    const diff = target - psyAmp;
-    psyAmpVel = psyAmpVel * 0.82 + diff * 0.08;
-    psyAmpVel = Math.max(-0.014, Math.min(0.014, psyAmpVel));
-    psyAmp = psyAmp + psyAmpVel;
-    psyAmp = Math.max(0, Math.min(1, psyAmp));
+    // suavizado + slew limiter (anti-espasmo)
+    const diff = target - amp;
+    ampVel = ampVel * 0.86 + diff * 0.07;
+    ampVel = clamp(ampVel, -0.012, 0.012);
+    amp = clamp(amp + ampVel, 0, 1);
 
-    return psyAmp;
+    return amp;
   }
 
-  function makeBuf(w,h){
-    const c = document.createElement("canvas");
-    c.width = w; c.height = h;
-    return c;
-  }
-
-  function psyResize(){
-    if(!psyCanvas) return;
-    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-    const w = Math.floor(window.innerWidth * dpr);
-    const h = Math.floor(window.innerHeight * dpr);
-
-    psyCanvas.width = w;
-    psyCanvas.height = h;
-
-    psyCtx = psyCanvas.getContext("2d", { alpha:false });
-    psyCtx.setTransform(1,0,0,1,0,0);
-
-    layerA = makeBuf(w,h); ctxA = layerA.getContext("2d", { alpha:false });
-    layerB = makeBuf(w,h); ctxB = layerB.getContext("2d", { alpha:false });
-    layerC = makeBuf(w,h); ctxC = layerC.getContext("2d", { alpha:false });
-
-    psyCtx.fillStyle = "#000";
-    psyCtx.fillRect(0,0,w,h);
-  }
-
-  function psyFillBlack(){
-    if(!psyCtx || !psyCanvas) return;
-    psyCtx.fillStyle = "#000";
-    psyCtx.fillRect(0,0,psyCanvas.width, psyCanvas.height);
-  }
-
-  function clamp(n,a,b){ return Math.max(a, Math.min(b, n)); }
-
-  function drawLiquidLayer(ctx, W, H, t, amp, seed){
-    // Fondo negro
-    ctx.globalCompositeOperation = "source-over";
-    ctx.fillStyle = "#000";
-    ctx.fillRect(0,0,W,H);
-
-    // “gelatina” grande: varias manchas con gradiente radial
-    ctx.globalCompositeOperation = "lighter";
-
-    const cx = W*0.5, cy = H*0.5;
-    const big = Math.min(W,H);
-
-    const pump = 0.90 + 0.55*amp;           // bombeo (audio)
-    const drift = 0.45 + 0.35*amp;          // velocidad suave
-    const k = 0.65 + 0.35*Math.sin(t*0.18); // variación lenta
-
-    const nBlobs = 6;
-    for(let i=0;i<nBlobs;i++){
-      const ii = i + seed*10.0;
-      const a = t*(0.25 + 0.08*seed)*drift + ii*1.2;
-      const b = t*(0.19 + 0.06*seed)*drift + ii*0.9;
-
-      const rx = (W*0.22 + (W*0.10*Math.sin(ii*0.7))) * (0.95 + 0.20*amp);
-      const ry = (H*0.18 + (H*0.10*Math.cos(ii*0.6))) * (0.95 + 0.20*amp);
-
-      const x = cx + Math.cos(a) * rx + Math.sin(b*0.7) * (W*0.06);
-      const y = cy + Math.sin(b) * ry + Math.cos(a*0.55) * (H*0.06);
-
-      const r = big * (0.14 + 0.03*Math.sin(ii*0.8 + t*0.2)) * pump;
-
-      // Paleta tipo “liquid light show”: ámbar, fucsia, verde ácido, cian
-      // (cada capa con distinta base)
-      const baseHue = (seed===0 ? 18 : seed===1 ? 295 : 140);
-      const hue = baseHue + (i*22) + (amp*35) + Math.sin(t*0.12 + seed)*18;
-      const sat = 88 + amp*10;
-      const l0  = 58 + amp*10;
-
-      const g = ctx.createRadialGradient(x,y, r*0.06, x,y, r);
-      g.addColorStop(0.00, `hsla(${hue}, ${sat}%, ${l0}%, ${0.80})`);
-      g.addColorStop(0.45, `hsla(${hue+25}, ${sat}%, ${l0-10}%, ${0.28 + 0.22*amp})`);
-      g.addColorStop(1.00, `hsla(${hue+55}, ${sat}%, ${l0-18}%, 0)`);
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(x,y,r,0,Math.PI*2);
-      ctx.fill();
-    }
-
-    // “placa” de líquido grande (como gel extendido)
-    const plateR = big * (0.36 + 0.05*Math.sin(t*0.15 + seed));
-    const px = cx + Math.sin(t*0.10 + seed*2.0) * (W*0.10);
-    const py = cy + Math.cos(t*0.12 + seed*1.7) * (H*0.08);
-
-    const plateHue = (seed===0 ? 35 : seed===1 ? 305 : 170) + amp*25;
-    const pg = ctx.createRadialGradient(px,py, plateR*0.08, px,py, plateR);
-    pg.addColorStop(0, `hsla(${plateHue}, 92%, ${60+amp*10}%, ${0.42})`);
-    pg.addColorStop(0.55, `hsla(${plateHue+30}, 92%, ${50+amp*8}%, ${0.14})`);
-    pg.addColorStop(1, `hsla(${plateHue+65}, 92%, ${45}%, 0)`);
-    ctx.fillStyle = pg;
-    ctx.beginPath();
-    ctx.arc(px,py,plateR,0,Math.PI*2);
-    ctx.fill();
-
-    // No dejar bordes duros: blur suave
-    ctx.globalCompositeOperation = "source-over";
-  }
-
-  function psyDrawLiquidShow(t){
-    const ctx = psyCtx;
-    const W = psyCanvas.width;
-    const H = psyCanvas.height;
-
-    // ✅ si no hay música → negro absoluto
+  function psyDrawOrb(t){
+    // ✅ si NO está sonando → negro (sin “nada”)
     if(!hasLoaded || audio.paused || !audio.src){
       psyFillBlack();
       return;
     }
 
-    const amp = psyGetLevel(); // 0..1 suavizado
+    const ctx = psyCtx;
+    const W = psyCanvas.width;
+    const H = psyCanvas.height;
 
-    // 1) Dibujamos capas en buffers
-    drawLiquidLayer(ctxA, W, H, t, amp, 0);
-    drawLiquidLayer(ctxB, W, H, t + 7.3, amp*0.92, 1);
-    drawLiquidLayer(ctxC, W, H, t + 13.8, amp*0.88, 2);
+    const a = psyGetLevel();
 
-    // 2) Componemos al canvas principal
+    // fondo: negro con “respiración” mínima
     ctx.fillStyle = "#000";
     ctx.fillRect(0,0,W,H);
 
-    // Base blur + saturación (bloom)
-    const bloom = 18 + 32*amp;
-    const contrast = 1.10 + 0.70*amp;
-    const sat = 1.10 + 0.95*amp;
+    const cx = W * (0.5 + Math.sin(t*0.12) * 0.02);
+    const cy = H * (0.52 + Math.cos(t*0.10) * 0.02);
 
+    const base = Math.min(W,H);
+    const r = base * (0.16 + 0.08*a);              // tamaño
+    const glow = base * (0.32 + 0.16*a);           // halo
+    const wob = 0.010 + 0.020*a;                   // micro movimiento
+
+    // “orbe” con gradientes: centro caliente + borde frío
+    const hue = 155 + 65*Math.sin(t*0.10) + 55*a;  // verde->cian->lima
+    const hue2 = hue + 55;
+
+    // halo grande (bloom)
     ctx.save();
-    ctx.filter = `blur(${Math.round(bloom)}px) contrast(${contrast.toFixed(2)}) saturate(${sat.toFixed(2)})`;
     ctx.globalCompositeOperation = "screen";
-    ctx.globalAlpha = 0.95;
-    ctx.drawImage(layerA,0,0);
-    ctx.globalAlpha = 0.90;
-    ctx.drawImage(layerB,0,0);
-    ctx.globalAlpha = 0.88;
-    ctx.drawImage(layerC,0,0);
+    ctx.globalAlpha = 0.70 + 0.22*a;
+    ctx.filter = `blur(${Math.round(18 + 48*a)}px)`;
+
+    let g1 = ctx.createRadialGradient(cx,cy, r*0.05, cx,cy, glow);
+    g1.addColorStop(0.00, `hsla(${hue}, 95%, ${62+10*a}%, 0.95)`);
+    g1.addColorStop(0.50, `hsla(${hue2}, 95%, ${50+8*a}%, 0.22)`);
+    g1.addColorStop(1.00, `hsla(${hue2+60}, 95%, 45%, 0)`);
+    ctx.fillStyle = g1;
+    ctx.beginPath();
+    ctx.arc(cx,cy,glow,0,Math.PI*2);
+    ctx.fill();
     ctx.restore();
 
-    // 3) Añadimos una capa “más definida” encima (sin tanto blur) para que haya detalle
+    // núcleo más definido
     ctx.save();
-    ctx.filter = `blur(${Math.round(6 + 10*amp)}px) saturate(${(1.05 + 0.45*amp).toFixed(2)})`;
     ctx.globalCompositeOperation = "screen";
-    ctx.globalAlpha = 0.55 + 0.20*amp;
-    ctx.drawImage(layerA,0,0);
-    ctx.globalAlpha = 0.50 + 0.18*amp;
-    ctx.drawImage(layerB,0,0);
+    ctx.globalAlpha = 0.92;
+    ctx.filter = `blur(${Math.round(5 + 10*a)}px) contrast(${(1.15 + 0.55*a).toFixed(2)}) saturate(${(1.10 + 0.80*a).toFixed(2)})`;
+
+    const innerX = cx + Math.sin(t*0.9) * (W*wob);
+    const innerY = cy + Math.cos(t*0.8) * (H*wob);
+
+    let g2 = ctx.createRadialGradient(innerX,innerY, r*0.08, innerX,innerY, r);
+    g2.addColorStop(0.00, `hsla(${hue-10}, 98%, ${62+10*a}%, 1)`);
+    g2.addColorStop(0.45, `hsla(${hue+20}, 98%, ${50+8*a}%, 0.45)`);
+    g2.addColorStop(1.00, `hsla(${hue+70}, 98%, 45%, 0)`);
+    ctx.fillStyle = g2;
+    ctx.beginPath();
+    ctx.arc(innerX,innerY,r,0,Math.PI*2);
+    ctx.fill();
     ctx.restore();
 
-    // 4) “Proyector” setentero: ligeras sombras / viñeta
+    // “textura” mínima: anillos suaves (muy club, nada screensaver)
     ctx.save();
-    const cx = W*0.5, cy = H*0.5;
-    const vg = ctx.createRadialGradient(cx,cy, Math.min(W,H)*0.12, cx,cy, Math.min(W,H)*0.78);
-    vg.addColorStop(0, "rgba(0,0,0,0)");
-    vg.addColorStop(1, "rgba(0,0,0,0.70)");
-    ctx.globalCompositeOperation = "source-over";
-    ctx.fillStyle = vg;
-    ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation = "screen";
+    ctx.globalAlpha = 0.10 + 0.12*a;
+    ctx.filter = `blur(${Math.round(1 + 4*a)}px)`;
+
+    for(let i=0;i<5;i++){
+      const rr = r * (0.55 + i*0.22) * (0.96 + 0.06*Math.sin(t*0.8 + i));
+      ctx.strokeStyle = `hsla(${hue2 + i*16}, 95%, ${55}%, ${0.22})`;
+      ctx.lineWidth = Math.max(1, Math.round(base * 0.0012));
+      ctx.beginPath();
+      ctx.arc(cx,cy,rr,0,Math.PI*2);
+      ctx.stroke();
+    }
     ctx.restore();
 
-    // 5) Scanlines/grano MUY leve (para que no se vea “digital”)
+    // grano/scanlines MUY leve (anti-digital)
     ctx.save();
     ctx.globalCompositeOperation = "overlay";
-    ctx.globalAlpha = 0.08 + 0.08*amp;
+    ctx.globalAlpha = 0.06 + 0.08*a;
 
     const step = 2;
     for(let y=0;y<H;y+=step){
-      const a = (y % 4 === 0) ? 0.06 : 0.03;
-      ctx.fillStyle = `rgba(255,255,255,${a})`;
+      const al = (y % 4 === 0) ? 0.05 : 0.02;
+      ctx.fillStyle = `rgba(255,255,255,${al})`;
       ctx.fillRect(0,y,W,1);
     }
+    ctx.restore();
+
+    // viñeta suave
+    ctx.save();
+    const vg = ctx.createRadialGradient(cx,cy, base*0.10, cx,cy, base*0.90);
+    vg.addColorStop(0, "rgba(0,0,0,0)");
+    vg.addColorStop(1, "rgba(0,0,0,0.80)");
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = vg;
+    ctx.fillRect(0,0,W,H);
     ctx.restore();
   }
 
   function psyLoop(){
     if(!psyRunning) return;
     psyRAF = requestAnimationFrame(psyLoop);
-
     const t = (performance.now() - psyStart) * 0.001;
-    if(!psyCtx) return;
-
-    psyDrawLiquidShow(t);
+    psyDrawOrb(t);
   }
 
   function startPsy(){
