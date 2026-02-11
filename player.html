@@ -342,6 +342,9 @@
   border-radius:999px;
   transform: translate(-50%,-50%);
   z-index: 6;
+  opacity: 0;
+  pointer-events: none;
+
   cursor:pointer;
   pointer-events:auto;
 
@@ -362,6 +365,12 @@
 
 
 }
+  body.psy-unlocked .tv-psy-hotspot{
+  opacity: .9;
+  pointer-events: auto;
+  animation: tv-btn-idle 3.6s ease-in-out infinite;
+}
+
 
 
   /* Botón visible (el “punto” real) */
@@ -2025,6 +2034,8 @@
       if(myId !== loadId) return;
 
       setPlayIcon();
+      document.body.classList.add("psy-unlocked");
+
     } catch(e){
       setPlayIcon();
       setStatus("Pulsa Play para iniciar.");
@@ -2411,6 +2422,7 @@
 
 </body>
 </html>
+
 
 
 
