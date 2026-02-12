@@ -1,6 +1,6 @@
 {
   "name": "La casa del terror",
-  "short_name": "Cosmic Marciana",
+  "short_name": "La casa del terror",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
