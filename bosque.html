@@ -221,40 +221,6 @@ body{
   color:var(--muted);
 }
 
-/* ====== PWA INSTALL (solo añadido) ====== */
-.pwa-install{
-  margin-top:14px;
-  display:none; /* se muestra solo si hay beforeinstallprompt y no está instalada */
-}
-
-.pwa-install .pwa-copy{
-  margin: 0 auto 10px;
-  max-width: 520px;
-  font-size: 13px;
-  line-height: 1.55;
-  color: rgba(240,234,223,.82);
-  text-shadow: 0 0 18px rgba(0,0,0,.45);
-}
-
-#pwa-install-btn{
-  font-size:11px;
-  letter-spacing:.22em;
-  text-transform:lowercase;
-  padding:10px 16px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.25);
-  background: rgba(0,0,0,.16);
-  color:var(--muted);
-  cursor:pointer;
-  backdrop-filter: blur(6px);
-  transition:.25s ease;
-}
-
-#pwa-install-btn:hover{
-  border-color: rgba(255,255,255,.45);
-  transform: translateY(-1px);
-}
-
 /* animaciones */
 @keyframes liquid-drift{
   0%,100%{ transform: translate(0,0) scale(1); }
@@ -298,12 +264,6 @@ body{
   </p>
 
   <button id="breath-btn">respira</button>
-
-  <!-- ✅ PWA: bloque de instalar (solo añadido) -->
-  <div class="pwa-install" id="pwa-install">
-    <p class="pwa-copy">La casa quiere quedarse en tu teléfono.<br>Así no perderás el camino.</p>
-    <button id="pwa-install-btn" type="button">instalar la casa del terror</button>
-  </div>
 </main>
 
 <div class="bottom">
@@ -476,56 +436,6 @@ btn.addEventListener('click', async () => {
 // si toca antes en móvil, intenta arrancar videos
 window.addEventListener('pointerdown', ()=>{ if(!playing) kickVideos(); }, { once:true });
 </script>
-
-<!-- ✅ PWA install logic (solo añadido) -->
-<script>
-(function(){
-  const box = document.getElementById("pwa-install");
-  const btn = document.getElementById("pwa-install-btn");
-  if(!box || !btn) return;
-
-  const LS_INSTALLED = "cm_pwa_installed";
-  let deferredPrompt = null;
-
-  function isStandalone(){
-    return window.matchMedia && window.matchMedia("(display-mode: standalone)").matches
-      || window.navigator.standalone === true;
-  }
-
-  function hide(){ box.style.display = "none"; }
-  function show(){ box.style.display = "block"; }
-
-  // Si está instalada o estamos dentro de la app -> no mostrar
-  if(isStandalone() || localStorage.getItem(LS_INSTALLED) === "1"){
-    hide();
-    return;
-  }
-
-  window.addEventListener("beforeinstallprompt", (e) => {
-    // Guardamos el prompt y mostramos CTA
-    e.preventDefault();
-    deferredPrompt = e;
-    show();
-  });
-
-  window.addEventListener("appinstalled", () => {
-    localStorage.setItem(LS_INSTALLED, "1");
-    deferredPrompt = null;
-    hide();
-  });
-
-  btn.addEventListener("click", async () => {
-    if(!deferredPrompt) return;
-    try{
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice;
-    }catch{}
-    deferredPrompt = null;
-    // Si se instaló, appinstalled lo ocultará; si no, lo dejamos como está
-  });
-})();
-</script>
-
 <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
@@ -536,3 +446,9 @@ window.addEventListener('pointerdown', ()=>{ if(!playing) kickVideos(); }, { onc
 
 </body>
 </html>
+
+
+
+
+
+
