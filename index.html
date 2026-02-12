@@ -152,6 +152,11 @@
         drop-shadow(0 0 12px rgba(0,255,0,.18));
     }
 
+    /* ✅ SOLO EL TRIÁNGULO SE VUELVE ROJO EN HOVER */
+    .secret-shroom:hover svg .tri{
+      stroke: red;
+    }
+
     /* ===========================
        VHS GLITCH SOLO EN LA PANTALLA (INDEX)
        Se activa con body.tuning
@@ -589,9 +594,11 @@
       <!-- 🍄 SETA PEGATINA SECRETA (clicable) -->
       <a class="secret-shroom" href="bosque.html" aria-label="entre los árboles">
         <svg viewBox="0 0 64 64" aria-hidden="true">
-          <!-- Triángulo -->
-          <path d="M32 8 L56 52 L8 52 Z"/>
-          <!-- Ojo dentro -->
+          <!-- Triángulo (solo esto se pone rojo en hover) -->
+          <g class="tri">
+            <path d="M32 8 L56 52 L8 52 Z"/>
+          </g>
+          <!-- Ojo (se queda igual) -->
           <path d="M18 34c4.5-6.5 23.5-6.5 28 0c-4.5 6.5-23.5 6.5-28 0z"/>
           <circle cx="32" cy="34" r="3.2"/>
         </svg>
@@ -802,14 +809,6 @@
   });
 })();
   </script>
-<script>
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("/sw.js").catch(()=>{});
-    });
-  }
-</script>
 
 </body>
 </html>
-
