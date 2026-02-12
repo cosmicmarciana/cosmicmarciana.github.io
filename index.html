@@ -111,55 +111,79 @@
       animation: crt-glitch .35s steps(2,end);
     }
 
-    /* ===== GOTA SECRETA (PEGATINA EN LA TV) ===== */
+    /* ===== ENTRADA SECRETA (SIN ICONO) ===== */
     .secret-shroom{
       position:absolute;
       right:10%;
       bottom:10.5%;
-      display:inline-flex;
+      width:54px;
+      height:54px;
+      border-radius:999px;
+      display:flex;
       align-items:center;
       justify-content:center;
-      opacity:.50;              /* antes .22 -> ahora visible pero discreto */
-      transform: rotate(-5deg); /* un toque “pegatina” */
-      transition:.25s ease;
       text-decoration:none;
       user-select:none;
-      z-index:5; /* por encima de la imagen */
+      z-index:5;
+      opacity:.22;               /* muy secreto */
+      transform: rotate(-4deg);
+      transition:.25s ease;
+    }
+
+    /* “punto de señal” */
+    .secret-shroom::before{
+      content:"";
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.55);
+      box-shadow:
+        0 0 10px rgba(255,176,0,.10),
+        0 0 18px rgba(0,255,0,.06);
+      animation: signal-pulse 3.6s ease-in-out infinite;
+    }
+
+    /* texto fantasma: aparece al hover */
+    .secret-shroom::after{
+      content:"ENTRE LOS ÁRBOLES";
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform: translate(-50%,-50%) translateY(18px);
+      font-size:10px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color: rgba(234,234,234,.85);
+      opacity:0;
+      white-space:nowrap;
+      text-shadow:
+        0 0 10px rgba(0,255,0,.18),
+        0 0 18px rgba(255,176,0,.10);
+      transition:.22s ease;
+      pointer-events:none;
     }
 
     .secret-shroom:hover{
-      opacity:.90;
-      transform: rotate(-3deg) translateY(-1px) scale(1.05);
+      opacity:.9;
+      transform: rotate(-3deg) scale(1.02);
     }
 
-    .secret-shroom svg{
-      width:42px;               /* antes 30px */
-      height:42px;              /* antes 30px */
-      fill:none;
-      stroke: var(--ink);
-      stroke-width:2.4;
-      stroke-linecap:round;
-      stroke-linejoin:round;
-      transform-origin:center;
-      filter:
-        drop-shadow(0 0 6px rgba(255,176,0,.20))
-        drop-shadow(0 0 14px rgba(255,74,0,.12));
-
-      /* movimiento “lava” suave */
-      animation: lava-float 3.8s ease-in-out infinite;
+    .secret-shroom:hover::before{
+      background: rgba(0,255,0,.75);
+      box-shadow:
+        0 0 14px rgba(0,255,0,.26),
+        0 0 26px rgba(0,255,0,.18),
+        0 0 18px rgba(255,176,0,.12);
     }
 
-    .secret-shroom:hover svg{
-      stroke: var(--neon);
-      filter:
-        drop-shadow(0 0 12px rgba(0,255,0,.32))
-        drop-shadow(0 0 22px rgba(0,255,0,.18))
-        drop-shadow(0 0 16px rgba(255,176,0,.12));
+    .secret-shroom:hover::after{
+      opacity:.95;
+      transform: translate(-50%,-50%) translateY(16px);
     }
 
-    @keyframes lava-float{
-      0%,100%{ transform: translateY(0) rotate(-1deg) scale(1); opacity:.85; }
-      50%{ transform: translateY(-1.5px) rotate(1deg) scale(1.03); opacity:1; }
+    @keyframes signal-pulse{
+      0%,100%{ transform: scale(1); opacity:.85; }
+      50%{ transform: scale(1.25); opacity:1; }
     }
 
     /* ===========================
@@ -309,41 +333,19 @@
     .tear.t2{ top: 48%; height: 8%; }
     .tear.t3{ top: 72%; height: 12%; }
 
-    @keyframes vhs-track{
-      0%   { transform: translateY(-10%); }
-      100% { transform: translateY(780%); }
-    }
-    @keyframes vhs-noise{
-      0%   { transform: translateX(0); filter:none; }
-      50%  { transform: translateX(calc(-1px - (4px * var(--g)))); filter: contrast(1.08); }
-      100% { transform: translateX(0); filter:none; }
-    }
+    @keyframes vhs-track{ 0%{transform:translateY(-10%)} 100%{transform:translateY(780%)} }
+    @keyframes vhs-noise{ 0%{transform:translateX(0);filter:none} 50%{transform:translateX(calc(-1px - (4px * var(--g))));filter:contrast(1.08)} 100%{transform:translateX(0);filter:none} }
     @keyframes vhs-global-jitter{
-      0%   { transform: translate(0,0); }
-      25%  { transform: translate(calc(-1px - (4px * var(--g))), 0); }
-      50%  { transform: translate(calc(1px + (5px * var(--g))), calc(-1px - (3px * var(--g)))); }
-      75%  { transform: translate(calc(-1px - (3px * var(--g))), calc(1px + (3px * var(--g)))); }
-      100% { transform: translate(0,0); }
+      0%{transform:translate(0,0)}
+      25%{transform:translate(calc(-1px - (4px * var(--g))),0)}
+      50%{transform:translate(calc(1px + (5px * var(--g))),calc(-1px - (3px * var(--g))))}
+      75%{transform:translate(calc(-1px - (3px * var(--g))),calc(1px + (3px * var(--g))))}
+      100%{transform:translate(0,0)}
     }
-    @keyframes vhs-vertical-float{
-      0%,100%{ transform: translateY(0); }
-      50%{ transform: translateY(calc(-1px - (6px * var(--g)))); }
-    }
-    @keyframes vhs-tear{
-      0%   { transform: translateX(calc(-4px - (22px * var(--g)))); }
-      50%  { transform: translateX(calc( 6px + (26px * var(--g)))); }
-      100% { transform: translateX(calc(-3px - (18px * var(--g)))); }
-    }
-    @keyframes chroma-r{
-      0%{ transform: translateX(calc(-1px - (5px * var(--g)))); }
-      50%{ transform: translateX(calc(-2px - (9px * var(--g)))); }
-      100%{ transform: translateX(calc(-1px - (5px * var(--g)))); }
-    }
-    @keyframes chroma-b{
-      0%{ transform: translateX(calc(1px + (6px * var(--g)))); }
-      50%{ transform: translateX(calc(2px + (10px * var(--g)))); }
-      100%{ transform: translateX(calc(1px + (6px * var(--g)))); }
-    }
+    @keyframes vhs-vertical-float{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(calc(-1px - (6px * var(--g))))} }
+    @keyframes vhs-tear{ 0%{transform:translateX(calc(-4px - (22px * var(--g))))} 50%{transform:translateX(calc(6px + (26px * var(--g))))} 100%{transform:translateX(calc(-3px - (18px * var(--g))))} }
+    @keyframes chroma-r{ 0%{transform:translateX(calc(-1px - (5px * var(--g))))} 50%{transform:translateX(calc(-2px - (9px * var(--g))))} 100%{transform:translateX(calc(-1px - (5px * var(--g))))} }
+    @keyframes chroma-b{ 0%{transform:translateX(calc(1px + (6px * var(--g))))} 50%{transform:translateX(calc(2px + (10px * var(--g))))} 100%{transform:translateX(calc(1px + (6px * var(--g))))} }
 
     /* ===== TEXTO ===== */
     .text{
@@ -436,9 +438,7 @@
       stroke-width:1.6;
     }
 
-    .links.icons a:hover svg{
-      stroke:var(--neon);
-    }
+    .links.icons a:hover svg{ stroke:var(--neon); }
 
     /* ===== FIRMA CON GLITCH SUAVE ===== */
     .sig{
@@ -470,10 +470,7 @@
       animation: sig-glitch-2 7s infinite;
     }
 
-    .sig .hit{
-      color:var(--ink);
-      opacity:.9;
-    }
+    .sig .hit{ color:var(--ink); opacity:.9; }
 
     /* ===== OVERLAY activar sonido (solo si el navegador bloquea) ===== */
     .sound-gate{
@@ -532,41 +529,17 @@
     }
 
     /* ===== ANIMACIONES ===== */
-    @keyframes crt-flicker{
-      0%{filter:brightness(1)}
-      50%{filter:brightness(.97)}
-      100%{filter:brightness(1)}
-    }
-
-    @keyframes crt-glitch{
-      0%{transform:none}
-      50%{transform:translateX(1px)}
-      100%{transform:none}
-    }
-
-    @keyframes whisper-jitter{
-      0%{transform:none}
-      50%{transform:translate(.5px,-.5px)}
-      100%{transform:none}
-    }
-
-    @keyframes whisper-glitch-1{
-      12%{clip-path:inset(20% 0 60% 0)}
-      14%{clip-path:inset(0)}
-    }
-
-    @keyframes whisper-glitch-2{
-      18%{clip-path:inset(60% 0 10% 0)}
-      20%{clip-path:inset(0)}
-    }
-
+    @keyframes crt-flicker{ 0%{filter:brightness(1)} 50%{filter:brightness(.97)} 100%{filter:brightness(1)} }
+    @keyframes crt-glitch{ 0%{transform:none} 50%{transform:translateX(1px)} 100%{transform:none} }
+    @keyframes whisper-jitter{ 0%{transform:none} 50%{transform:translate(.5px,-.5px)} 100%{transform:none} }
+    @keyframes whisper-glitch-1{ 12%{clip-path:inset(20% 0 60% 0)} 14%{clip-path:inset(0)} }
+    @keyframes whisper-glitch-2{ 18%{clip-path:inset(60% 0 10% 0)} 20%{clip-path:inset(0)} }
     @keyframes sig-glitch-1{
       0%,92%{transform:none; clip-path:inset(0)}
       93%{transform:translateX(1px); clip-path:inset(40% 0 30% 0)}
       94%{transform:none; clip-path:inset(0)}
       100%{transform:none}
     }
-
     @keyframes sig-glitch-2{
       0%,88%{transform:none; clip-path:inset(0)}
       89%{transform:translateX(-1px); clip-path:inset(60% 0 15% 0)}
@@ -586,6 +559,7 @@
     @media (prefers-reduced-motion: reduce){
       *{ animation:none !important; }
       body.tuning .vhs{ opacity:0 !important; }
+      .secret-shroom::before{ animation:none !important; }
     }
   </style>
 </head>
@@ -596,15 +570,8 @@
     <div class="crt" aria-label="Televisor CRT">
       <img src="tv.webp" alt="Televisor CRT con Cosmic Marciana – La casa del terror" class="hero" />
 
-      <!-- 💧 GOTA (clicable) -->
-      <a class="secret-shroom" href="bosque.html" aria-label="entre los árboles">
-        <svg viewBox="0 0 64 64" aria-hidden="true">
-          <!-- gota / lava -->
-          <path d="M32 8C24 20 18 28 18 38a14 14 0 0 0 28 0C46 28 40 20 32 8z"/>
-          <!-- detalle suave interior -->
-          <path d="M26 40c2-3 6-3 8 0"/>
-        </svg>
-      </a>
+      <!-- ✅ ENTRADA SECRETA (clicable, sin icono) -->
+      <a class="secret-shroom" href="bosque.html" aria-label="entre los árboles"></a>
 
       <!-- ✅ OVERLAY VHS SOLO EN LA PANTALLA -->
       <div class="tv-screen" aria-hidden="true">
@@ -647,7 +614,6 @@
 
   </main>
 
-  <!-- Overlay: solo aparece si el navegador BLOQUEA el audio -->
   <div class="sound-gate" id="sound-gate" aria-hidden="true">
     <div class="sound-card">
       <div class="sound-title">SEÑAL DE AUDIO BLOQUEADA</div>
@@ -659,16 +625,14 @@
     </div>
   </div>
 
-  <!-- ===== VHS/TV TUNING NOISE (WebAudio) + VHS GLITCH SYNC ===== -->
   <script>
 (() => {
   const tv = document.querySelector(".crt");
   if (!tv) return;
 
-  // === AJUSTES RÁPIDOS ===
-  const NOISE_TYPE = "PINK"; // "WHITE" o "PINK"
-  const VOLUME_ON  = 0.5;   // sube/baja (0.25 - 0.5 suele ir bien)
-  const HUM_ON     = true;  // hum CRT suave (true/false)
+  const NOISE_TYPE = "PINK";
+  const VOLUME_ON  = 0.5;
+  const HUM_ON     = true;
 
   let ctx, master, noiseSrc, noiseGain, hp, lp, humGain;
   let running = false;
@@ -687,7 +651,6 @@
     return buf;
   }
 
-  // Pink-ish simple: integra el white (suena más “cálido”)
   function makePinkBuffer(seconds = 2.5){
     const len = Math.floor(ctx.sampleRate * seconds);
     const buf = ctx.createBuffer(1, len, ctx.sampleRate);
@@ -787,25 +750,18 @@
     setGlitch(false);
   }
 
-  function toggle(){
-    running ? stop() : start();
-  }
+  function toggle(){ running ? stop() : start(); }
 
-  // Desktop: hover (solo si no estamos en touchMode)
   tv.addEventListener("pointerenter", () => { if(!touchMode) start(); }, { passive:true });
   tv.addEventListener("pointerleave", () => { if(!touchMode) stop();  }, { passive:true });
 
-  // Móvil: TAP ON / TAP OFF
   tv.addEventListener("touchstart", (e) => {
-    // ✅ Si tocas la gota, NO activar la tele (deja el link funcionar)
     if (e.target.closest && e.target.closest(".secret-shroom")) return;
-
     touchMode = true;
     e.preventDefault();
     toggle();
   }, { passive:false });
 
-  // Si se oculta la pestaña, cortar
   document.addEventListener("visibilitychange", () => {
     if(document.hidden) stop();
   });
