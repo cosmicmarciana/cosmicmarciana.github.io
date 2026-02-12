@@ -1636,7 +1636,28 @@
   }
   function setPsyPlayIcon(){ psyPlayPause.innerHTML = audio.paused ? ICONS.play : ICONS.pause; }
 
-  // ✅ Media Session "rollo Spoti":
+  // ========= Media Session (más robusto en Android) =========
+  function safeSetPositionState(){
+    if(!('mediaSession' in navigator)) return;
+    if(typeof navigator.mediaSession.setPositionState !== "function") return;
+    if(!audio || !Number.isFinite(audio.duration) || audio.duration <= 0) return;
+
+    try{
+      navigator.mediaSession.setPositionState({
+        duration: audio.duration,
+        playbackRate: audio.playbackRate || 1,
+        position: Math.max(0, Math.min(audio.currentTime || 0, audio.duration))
+      });
+    }catch{}
+  }
+
+  function safeSetPlaybackState(){
+    if(!('mediaSession' in navigator)) return;
+    try{
+      navigator.mediaSession.playbackState = (hasLoaded && !audio.paused) ? "playing" : (hasLoaded ? "paused" : "none");
+    }catch{}
+  }
+
   // Línea 1: artist  -> Cosmic Marciana
   // Línea 2: album   -> La casa del terror
   // Línea 3: title   -> "N. Título"
@@ -1657,12 +1678,41 @@
         ]
       });
 
-      navigator.mediaSession.setActionHandler("play", togglePlay);
-      navigator.mediaSession.setActionHandler("pause", togglePlay);
+      // Handlers SIN toggle raro
+      navigator.mediaSession.setActionHandler("play", ()=>{ playCurrent(); });
+      navigator.mediaSession.setActionHandler("pause", ()=>{ audio.pause(); setPlayIcon(); safeSetPlaybackState(); });
+      navigator.mediaSession.setActionHandler("stop", ()=>{ stopTrack(); });
+
       navigator.mediaSession.setActionHandler("previoustrack", prevTrack);
       navigator.mediaSession.setActionHandler("nexttrack", nextTrack);
+
+      navigator.mediaSession.setActionHandler("seekto", (details)=>{
+        if(!audio.duration) return;
+        if(typeof details.seekTime === "number"){
+          audio.currentTime = Math.max(0, Math.min(details.seekTime, audio.duration));
+          safeSetPositionState();
+        }
+      });
+
+      navigator.mediaSession.setActionHandler("seekbackward", (details)=>{
+        if(!audio.duration) return;
+        const off = (details && details.seekOffset) ? details.seekOffset : 10;
+        audio.currentTime = Math.max(0, (audio.currentTime || 0) - off);
+        safeSetPositionState();
+      });
+
+      navigator.mediaSession.setActionHandler("seekforward", (details)=>{
+        if(!audio.duration) return;
+        const off = (details && details.seekOffset) ? details.seekOffset : 10;
+        audio.currentTime = Math.min(audio.duration, (audio.currentTime || 0) + off);
+        safeSetPositionState();
+      });
     }catch{}
+
+    safeSetPlaybackState();
+    safeSetPositionState();
   }
+  // =========================================================
 
   function freezeVhsFrame(){
     const r = (min, max) => (min + Math.random() * (max - min));
@@ -1724,6 +1774,8 @@
     setGlitchFromVolume();
     setPsyPlayIcon();
     syncPsyVideo();
+
+    safeSetPlaybackState();
   }
 
   function setPlayIcon(){
@@ -1783,6 +1835,7 @@
   function seekToPct(pct){
     if(!audio.duration) return;
     audio.currentTime = clamp01(pct) * audio.duration;
+    safeSetPositionState();
   }
 
   function updatePreview(clientX){
@@ -1920,6 +1973,7 @@
         currentTimeEl.textContent = formatTime(t);
         setProgressUI(audio.duration ? (t / audio.duration) : 0);
         setStatus("Continuando donde lo dejaste…");
+        safeSetPositionState();
       } else {
         clearSavedTime();
       }
@@ -1967,7 +2021,7 @@
     hasLoaded = true;
     setPlayingClass();
 
-    updateMediaSession();            // ✅ aquí
+    updateMediaSession();
     primePreload(getNextIndexLinear());
   }
 
@@ -2000,7 +2054,9 @@
       setPlayIcon();
       document.body.classList.add("psy-unlocked");
 
-      updateMediaSession(); // ✅ por si el sistema quiere refrescar estado
+      updateMediaSession();
+      safeSetPlaybackState();
+      safeSetPositionState();
     } catch(e){
       setPlayIcon();
       setStatus("Pulsa Play para iniciar.");
@@ -2017,6 +2073,7 @@
     else{
       audio.pause();
       setPlayIcon();
+      safeSetPlaybackState();
     }
   }
 
@@ -2049,9 +2106,11 @@
 
     try{ psyVideo.pause(); }catch{}
 
-    // ✅ limpiar Media Session al STOP
     if('mediaSession' in navigator){
-      try{ navigator.mediaSession.metadata = null; }catch{}
+      try{
+        navigator.mediaSession.metadata = null;
+        navigator.mediaSession.playbackState = "none";
+      }catch{}
     }
   }
 
@@ -2112,15 +2171,25 @@
   }
 
   function applyStoredSettings(){
-    const v = Number(localStorage.getItem(LS.vol));
-    if(Number.isFinite(v) && v >= 0 && v <= 1){
-      audio.volume = v;
-      volumeSlider.value = String(Math.round(v * 100));
-      lastVolume = v || 1;
-    } else {
+    // ✅ si NO hay volumen guardado, fijamos 1 y lo guardamos
+    const raw = localStorage.getItem(LS.vol);
+    if(raw == null){
       audio.volume = 1;
       volumeSlider.value = "100";
       lastVolume = 1;
+      try{ localStorage.setItem(LS.vol, "1"); }catch{}
+    } else {
+      const v = Number(raw);
+      if(Number.isFinite(v) && v >= 0 && v <= 1){
+        audio.volume = v;
+        volumeSlider.value = String(Math.round(v * 100));
+        lastVolume = v || 1;
+      } else {
+        audio.volume = 1;
+        volumeSlider.value = "100";
+        lastVolume = 1;
+        try{ localStorage.setItem(LS.vol, "1"); }catch{}
+      }
     }
 
     const idx = Number(localStorage.getItem(LS.idx));
@@ -2147,7 +2216,8 @@
 
     setGlitchFromVolume();
 
-    updateMediaSession(); // ✅ por si el sistema lo pide al volver
+    updateMediaSession();
+    safeSetPlaybackState();
   }
 
   function openPsy(){
@@ -2185,6 +2255,15 @@
       else await document.exitFullscreen();
     }catch{}
     updateFullscreenIcon();
+  }
+
+  // throttling de positionState para no spamear
+  let _posTick = 0;
+  function tickPositionState(){
+    const now = performance.now();
+    if(now - _posTick < 900) return;
+    _posTick = now;
+    safeSetPositionState();
   }
 
   function wireEvents(){
@@ -2233,10 +2312,17 @@
       totalTimeEl.textContent = formatTime(audio.duration);
       setProgressUI(audio.currentTime / audio.duration);
       saveCurrentTime();
+      tickPositionState();
     });
 
     audio.addEventListener("loadedmetadata", ()=>{
       if(audio.duration) totalTimeEl.textContent = formatTime(audio.duration);
+      safeSetPositionState();
+      updateMediaSession();
+    });
+
+    audio.addEventListener("seeked", ()=>{
+      safeSetPositionState();
     });
 
     audio.addEventListener("ended", ()=>{
@@ -2257,11 +2343,11 @@
     audio.addEventListener("error", ()=>{
       setStatus("Error cargando audio.");
       setPlayIcon();
+      safeSetPlaybackState();
     });
 
-    audio.addEventListener("play", setPlayingClass);
-    audio.addEventListener("pause", setPlayingClass);
-    audio.addEventListener("ended", setPlayingClass);
+    audio.addEventListener("play", ()=>{ setPlayingClass(); updateMediaSession(); });
+    audio.addEventListener("pause", ()=>{ setPlayingClass(); updateMediaSession(); });
     audio.addEventListener("volumechange", setGlitchFromVolume);
 
     volumeSlider.addEventListener("input", ()=>{
@@ -2309,9 +2395,6 @@
       if(e.code === "ArrowRight") nextTrack();
       if(e.code === "ArrowLeft") prevTrack();
     });
-
-    // ✅ IMPORTANTE: ya NO pausamos al cambiar de pestaña.
-    // (Antes aquí había un visibilitychange que pausaba el audio.)
 
     // ✅ ABRIR MODO: click en el botón redondo de la tele
     tvPsyHotspot.addEventListener("click", openPsy);
@@ -2383,9 +2466,9 @@
     setPsyTitle();
     applyResumeTimeIfAny();
     ensurePsyVideoReady();
+    updateMediaSession();
   })();
 </script>
 
 </body>
 </html>
-
