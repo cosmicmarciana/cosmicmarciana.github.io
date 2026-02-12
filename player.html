@@ -941,18 +941,6 @@
     opacity:.9;
   }
 
-  /* ✅ PWA button: mismo look que café pero más discreto */
-  .support-btn.pwa-btn{
-    margin-top: 10px;
-    background: rgba(0,0,0,.22);
-    border-color: rgba(255,255,255,.14);
-    animation: none;
-    box-shadow: none;
-  }
-  .support-btn.pwa-btn:hover{
-    box-shadow: 0 0 18px rgba(0,255,0,.16);
-  }
-
   /* ===== MODAL ===== */
   .modal{
     position: fixed;
@@ -1411,15 +1399,6 @@
         ¿Me invitas a un café? <span class="coffee" aria-hidden="true">☕</span>
       </button>
 
-      <!-- ✅ Botón PWA (solo aparece si el navegador permite instalar) -->
-      <button class="support-btn pwa-btn" id="pwa-open" type="button" hidden>
-        Instalar la transmisión <span aria-hidden="true">📲</span>
-      </button>
-
-      <div class="support-note" id="pwa-note" hidden>
-        Si no te sale el instalador, abre el menú del navegador → “Añadir a pantalla de inicio”.
-      </div>
-
       <div class="support-note">
         La casa del terror está abierta. Descarga el disco sin pedir permiso.
       </div>
@@ -1430,6 +1409,14 @@
       <a class="download-link" href="la-casa-del-terror.zip" download>
         ⬇ Descargar el disco (ZIP)
       </a>
+
+      <!-- ✅ BOTÓN PWA (solo aparece si se puede instalar y NO está instalada / NO estás en la app) -->
+      <button class="download-link" id="pwa-install-open" type="button" hidden>
+        📲 Instalar la app
+      </button>
+      <div class="download-note" id="pwa-install-note" hidden>
+        (Se instala como app en tu móvil, sin tienda)
+      </div>
     </div>
 
     <div class="modal" id="support-modal" aria-hidden="true">
@@ -1455,24 +1442,26 @@
       </div>
     </div>
 
-    <!-- ✅ MODAL INSTALAR APP -->
-    <div class="modal" id="pwa-modal" aria-hidden="true">
-      <div class="modal-card" role="dialog" aria-modal="true" aria-label="Instalar app">
-        <button class="modal-close" id="pwa-close" type="button" aria-label="Cerrar">
+    <!-- ✅ MODAL PWA -->
+    <div class="modal" id="pwa-install-modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-label="Instalar La casa del terror">
+        <button class="modal-close" id="pwa-install-close" type="button" aria-label="Cerrar">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M6 6l12 12M18 6L6 18"></path>
           </svg>
         </button>
 
-        <div class="modal-title">Instalar la transmisión</div>
-        <div class="modal-text" id="pwa-modal-text">
-          Instala <strong>Cosmic Marciana</strong> como app para abrir “La casa del terror” desde el icono del móvil.
+        <div class="modal-title">Instalar la app</div>
+        <div class="modal-text">
+          La casa del terror se puede instalar como una app en tu móvil.
+          <br><br>
+          <strong>No ocupa casi nada y funciona a pantalla completa.</strong>
         </div>
 
         <div class="support-row">
-          <div class="support-label">App</div>
-          <div class="support-value">Añadir a pantalla</div>
-          <button class="copy-btn" id="pwa-install" type="button">Instalar</button>
+          <div class="support-label">Instalación</div>
+          <div class="support-value">Añadir a tu pantalla</div>
+          <button class="copy-btn" id="pwa-install-go" type="button">Instalar</button>
         </div>
       </div>
     </div>
@@ -1679,10 +1668,7 @@
   }
   function setPsyPlayIcon(){ psyPlayPause.innerHTML = audio.paused ? ICONS.play : ICONS.pause; }
 
-  // ✅ Media Session "rollo Spoti":
-  // Línea 1: artist  -> Cosmic Marciana
-  // Línea 2: album   -> La casa del terror
-  // Línea 3: title   -> "N. Título"
+  // ✅ Media Session "rollo Spoti"
   function updateMediaSession(){
     if(!('mediaSession' in navigator)) return;
 
@@ -1705,6 +1691,114 @@
       navigator.mediaSession.setActionHandler("previoustrack", prevTrack);
       navigator.mediaSession.setActionHandler("nexttrack", nextTrack);
     }catch{}
+  }
+
+  // ✅ PWA INSTALL (ARREGLO: no mostrar si está instalada / no mostrar dentro de la app)
+  function pwaInstallInit(){
+    const openBtn = document.getElementById("pwa-install-open");
+    const note = document.getElementById("pwa-install-note");
+    const modal = document.getElementById("pwa-install-modal");
+    const closeBtn = document.getElementById("pwa-install-close");
+    const goBtn = document.getElementById("pwa-install-go");
+
+    if(!openBtn || !note || !modal || !closeBtn || !goBtn) return;
+
+    let deferredPrompt = null;
+
+    function isStandalone(){
+      const mql = window.matchMedia && window.matchMedia("(display-mode: standalone)").matches;
+      const ios = ("standalone" in navigator) && navigator.standalone;
+      return !!(mql || ios);
+    }
+
+    async function isProbablyInstalled(){
+      if(isStandalone()) return true;
+      if("getInstalledRelatedApps" in navigator){
+        try{
+          const apps = await navigator.getInstalledRelatedApps();
+          if(Array.isArray(apps) && apps.length) return true;
+        }catch{}
+      }
+      return false;
+    }
+
+    function hideAll(){
+      openBtn.hidden = true;
+      note.hidden = true;
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden","true");
+    }
+
+    function open(){
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden","false");
+      goBtn.focus();
+    }
+    function close(){
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden","true");
+      openBtn.focus();
+    }
+
+    // ✅ En la app instalada o ya instalada -> nunca enseñar
+    (async ()=>{
+      if(await isProbablyInstalled()){
+        hideAll();
+      }
+    })();
+
+    window.addEventListener("beforeinstallprompt", (e)=>{
+      e.preventDefault();
+      deferredPrompt = e;
+
+      // ✅ Si estamos dentro de la app instalada, no enseñes nada
+      if(isStandalone()){
+        hideAll();
+        return;
+      }
+
+      openBtn.hidden = false;
+      note.hidden = false;
+    });
+
+    window.addEventListener("appinstalled", ()=>{
+      deferredPrompt = null;
+      hideAll();
+    });
+
+    openBtn.addEventListener("click", ()=>{
+      // ✅ Si por lo que sea estás en standalone, no abras nada
+      if(isStandalone()) return;
+      open();
+    });
+
+    closeBtn.addEventListener("click", close);
+
+    modal.addEventListener("click", (e)=>{
+      if(e.target === modal) close();
+    });
+
+    document.addEventListener("keydown", (e)=>{
+      if(e.key === "Escape" && modal.classList.contains("open")) close();
+    });
+
+    goBtn.addEventListener("click", async ()=>{
+      if(!deferredPrompt) return;
+
+      try{
+        deferredPrompt.prompt();
+        const choice = await deferredPrompt.userChoice;
+        deferredPrompt = null;
+
+        // Si lo rechaza, el navegador ya no vuelve a dispararlo durante un tiempo:
+        // aquí solo ocultamos UI para no molestar.
+        hideAll();
+
+        // (si en el futuro vuelve a estar disponible, beforeinstallprompt lo volverá a encender)
+      }catch{
+        hideAll();
+      }
+    });
   }
 
   function freezeVhsFrame(){
@@ -2010,7 +2104,7 @@
     hasLoaded = true;
     setPlayingClass();
 
-    updateMediaSession();            // ✅ aquí
+    updateMediaSession();
     primePreload(getNextIndexLinear());
   }
 
@@ -2043,7 +2137,7 @@
       setPlayIcon();
       document.body.classList.add("psy-unlocked");
 
-      updateMediaSession(); // ✅ por si el sistema quiere refrescar estado
+      updateMediaSession();
     } catch(e){
       setPlayIcon();
       setStatus("Pulsa Play para iniciar.");
@@ -2092,7 +2186,6 @@
 
     try{ psyVideo.pause(); }catch{}
 
-    // ✅ limpiar Media Session al STOP
     if('mediaSession' in navigator){
       try{ navigator.mediaSession.metadata = null; }catch{}
     }
@@ -2190,7 +2283,7 @@
 
     setGlitchFromVolume();
 
-    updateMediaSession(); // ✅ por si el sistema lo pide al volver
+    updateMediaSession();
   }
 
   function openPsy(){
@@ -2353,9 +2446,6 @@
       if(e.code === "ArrowLeft") prevTrack();
     });
 
-    // ✅ IMPORTANTE: ya NO pausamos al cambiar de pestaña.
-    // (Antes aquí había un visibilitychange que pausaba el audio.)
-
     // ✅ ABRIR MODO: click en el botón redondo de la tele
     tvPsyHotspot.addEventListener("click", openPsy);
 
@@ -2417,121 +2507,12 @@
     });
   }
 
-  // ✅ PWA botón PRO (captura beforeinstallprompt + fallback)
-  function pwaInstallInit(){
-    const openBtn = document.getElementById("pwa-open");
-    const note = document.getElementById("pwa-note");
-    const modal = document.getElementById("pwa-modal");
-    const closeBtn = document.getElementById("pwa-close");
-    const installBtn = document.getElementById("pwa-install");
-    const modalText = document.getElementById("pwa-modal-text");
-
-    if(!openBtn || !modal || !closeBtn || !installBtn) return;
-
-    let deferredPrompt = null;
-
-    const LS_PWA = {
-      dismissedAt: "cm_pwa_dismissed_at"
-    };
-
-    function open(){
-      modal.classList.add("open");
-      modal.setAttribute("aria-hidden","false");
-      closeBtn.focus();
-    }
-
-    function close(){
-      modal.classList.remove("open");
-      modal.setAttribute("aria-hidden","true");
-      openBtn.focus();
-    }
-
-    openBtn.addEventListener("click", open);
-    closeBtn.addEventListener("click", close);
-    modal.addEventListener("click", (e)=>{ if(e.target === modal) close(); });
-
-    document.addEventListener("keydown", (e)=>{
-      if(e.key === "Escape" && modal.classList.contains("open")) close();
-    });
-
-    // ✅ 1) Si el navegador permite instalación: enseñamos botón
-    window.addEventListener("beforeinstallprompt", (e)=>{
-      e.preventDefault();
-      deferredPrompt = e;
-
-      openBtn.hidden = false;
-      note.hidden = true;
-
-      if(modalText){
-        modalText.innerHTML = `Instala <strong>Cosmic Marciana</strong> como app para abrir “La casa del terror” desde el icono del móvil.`;
-      }
-    });
-
-    // ✅ 2) Si ya está instalada: ocultamos todo
-    window.addEventListener("appinstalled", ()=>{
-      deferredPrompt = null;
-      openBtn.hidden = true;
-      note.hidden = true;
-      try{ localStorage.removeItem(LS_PWA.dismissedAt); }catch{}
-      close();
-    });
-
-    // ✅ 3) Fallback manual (si lo rechazó o no hay prompt disponible)
-    function showManualInstall(){
-      openBtn.hidden = false;
-      note.hidden = false;
-
-      if(modalText){
-        modalText.innerHTML =
-          `Si el instalador no aparece, puedes hacerlo manual:<br>` +
-          `• Android/Chrome: menú ⋮ → <strong>“Añadir a pantalla de inicio”</strong><br>` +
-          `• iPhone/Safari: compartir → <strong>“Añadir a pantalla de inicio”</strong>`;
-      }
-    }
-
-    // Si ya lo rechazó antes, mostramos instrucciones por X días
-    try{
-      const dismissedAt = Number(localStorage.getItem(LS_PWA.dismissedAt) || "0");
-      if(dismissedAt){
-        const days = 10;
-        const maxAge = days * 24 * 60 * 60 * 1000;
-        if(Date.now() - dismissedAt < maxAge){
-          showManualInstall();
-        }else{
-          localStorage.removeItem(LS_PWA.dismissedAt);
-        }
-      }
-    }catch{}
-
-    installBtn.addEventListener("click", async ()=>{
-      if(!deferredPrompt){
-        showManualInstall();
-        return;
-      }
-
-      try{
-        deferredPrompt.prompt();
-        const choice = await deferredPrompt.userChoice;
-        if(choice && choice.outcome === "dismissed"){
-          try{ localStorage.setItem(LS_PWA.dismissedAt, String(Date.now())); }catch{}
-          deferredPrompt = null;
-          showManualInstall();
-        }else{
-          deferredPrompt = null;
-        }
-      }catch{
-        deferredPrompt = null;
-        showManualInstall();
-      }
-    });
-  }
-
   (function init(){
     renderIcons();
     applyStoredSettings();
     wireEvents();
     supportInit();
-    pwaInstallInit(); // ✅ NUEVO
+    pwaInstallInit();          // ✅ ARREGLO PWA AQUÍ
     updateFullscreenIcon();
     setPsyTitle();
     applyResumeTimeIfAny();
