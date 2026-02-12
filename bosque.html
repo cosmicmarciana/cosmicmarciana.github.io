@@ -433,8 +433,16 @@ btn.addEventListener('click', async () => {
 // si toca antes en móvil, intenta arrancar videos
 window.addEventListener('pointerdown', ()=>{ if(!playing) kickVideos(); }, { once:true });
 </script>
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/sw.js").catch(()=>{});
+    });
+  }
+</script>
 
 </body>
 </html>
+
 
 
