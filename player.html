@@ -2354,7 +2354,6 @@
     });
 
     // ✅ IMPORTANTE: ya NO pausamos al cambiar de pestaña.
-    // (Antes aquí había un visibilitychange que pausaba el audio.)
 
     // ✅ ABRIR MODO: click en el botón redondo de la tele
     tvPsyHotspot.addEventListener("click", openPsy);
@@ -2417,7 +2416,7 @@
     });
   }
 
-  // ✅ PWA botón PRO (captura beforeinstallprompt + fallback)
+  // ✅ PWA botón PRO (captura beforeinstallprompt + fallback) — ARREGLADO para NO mostrar si ya está instalada / en standalone
   function pwaInstallInit(){
     const openBtn = document.getElementById("pwa-open");
     const note = document.getElementById("pwa-note");
@@ -2431,10 +2430,25 @@
     let deferredPrompt = null;
 
     const LS_PWA = {
-      dismissedAt: "cm_pwa_dismissed_at"
+      dismissedAt: "cm_pwa_dismissed_at",
+      installed: "cm_pwa_installed" // ✅ NUEVO
     };
 
+    function isStandalone(){
+      const m = window.matchMedia && window.matchMedia("(display-mode: standalone)").matches;
+      const ios = window.navigator.standalone === true; // iOS A2HS
+      return !!(m || ios);
+    }
+
+    function hideAllPwaUI(){
+      openBtn.hidden = true;
+      note.hidden = true;
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden","true");
+    }
+
     function open(){
+      if (isStandalone()) return;
       modal.classList.add("open");
       modal.setAttribute("aria-hidden","false");
       closeBtn.focus();
@@ -2446,38 +2460,9 @@
       openBtn.focus();
     }
 
-    openBtn.addEventListener("click", open);
-    closeBtn.addEventListener("click", close);
-    modal.addEventListener("click", (e)=>{ if(e.target === modal) close(); });
-
-    document.addEventListener("keydown", (e)=>{
-      if(e.key === "Escape" && modal.classList.contains("open")) close();
-    });
-
-    // ✅ 1) Si el navegador permite instalación: enseñamos botón
-    window.addEventListener("beforeinstallprompt", (e)=>{
-      e.preventDefault();
-      deferredPrompt = e;
-
-      openBtn.hidden = false;
-      note.hidden = true;
-
-      if(modalText){
-        modalText.innerHTML = `Instala <strong>Cosmic Marciana</strong> como app para abrir “La casa del terror” desde el icono del móvil.`;
-      }
-    });
-
-    // ✅ 2) Si ya está instalada: ocultamos todo
-    window.addEventListener("appinstalled", ()=>{
-      deferredPrompt = null;
-      openBtn.hidden = true;
-      note.hidden = true;
-      try{ localStorage.removeItem(LS_PWA.dismissedAt); }catch{}
-      close();
-    });
-
-    // ✅ 3) Fallback manual (si lo rechazó o no hay prompt disponible)
     function showManualInstall(){
+      if (isStandalone()) return;
+
       openBtn.hidden = false;
       note.hidden = false;
 
@@ -2489,7 +2474,67 @@
       }
     }
 
-    // Si ya lo rechazó antes, mostramos instrucciones por X días
+    // ✅ 0) Si estamos dentro de la app instalada: ocultar y salir
+    if (isStandalone()){
+      try{ localStorage.setItem(LS_PWA.installed, "1"); }catch{}
+      hideAllPwaUI();
+      return;
+    }
+
+    // ✅ 0.1) Si ya sabemos (persistente) que está instalada: ocultar y salir
+    try{
+      if (localStorage.getItem(LS_PWA.installed) === "1"){
+        hideAllPwaUI();
+        return;
+      }
+    }catch{}
+
+    // ✅ 0.2) Chrome/Android: detectar si ya está instalada aunque abras en navegador
+    if (navigator.getInstalledRelatedApps){
+      navigator.getInstalledRelatedApps().then(apps => {
+        if (apps && apps.length){
+          try{ localStorage.setItem(LS_PWA.installed, "1"); }catch{}
+          hideAllPwaUI();
+        }
+      }).catch(()=>{});
+    }
+
+    openBtn.addEventListener("click", open);
+    closeBtn.addEventListener("click", close);
+    modal.addEventListener("click", (e)=>{ if(e.target === modal) close(); });
+
+    document.addEventListener("keydown", (e)=>{
+      if(e.key === "Escape" && modal.classList.contains("open")) close();
+    });
+
+    // ✅ 1) Si el navegador permite instalación: enseñamos botón (solo si NO está instalada)
+    window.addEventListener("beforeinstallprompt", (e)=>{
+      try{
+        if (localStorage.getItem(LS_PWA.installed) === "1") return;
+      }catch{}
+
+      e.preventDefault();
+      deferredPrompt = e;
+
+      openBtn.hidden = false;
+      note.hidden = true;
+
+      if(modalText){
+        modalText.innerHTML = `Instala <strong>Cosmic Marciana</strong> como app para abrir “La casa del terror” desde el icono del móvil.`;
+      }
+    });
+
+    // ✅ 2) Si ya está instalada: ocultamos todo (y persistimos)
+    window.addEventListener("appinstalled", ()=>{
+      deferredPrompt = null;
+      try{
+        localStorage.setItem(LS_PWA.installed, "1");
+        localStorage.removeItem(LS_PWA.dismissedAt);
+      }catch{}
+      hideAllPwaUI();
+    });
+
+    // ✅ 3) Fallback manual (si lo rechazó o no hay prompt disponible)
     try{
       const dismissedAt = Number(localStorage.getItem(LS_PWA.dismissedAt) || "0");
       if(dismissedAt){
@@ -2524,6 +2569,14 @@
         showManualInstall();
       }
     });
+
+    // ✅ 4) Si cambia a standalone (por si acaso)
+    window.matchMedia("(display-mode: standalone)")?.addEventListener("change", (ev)=>{
+      if (ev.matches){
+        try{ localStorage.setItem(LS_PWA.installed, "1"); }catch{}
+        hideAllPwaUI();
+      }
+    });
   }
 
   (function init(){
@@ -2541,5 +2594,3 @@
 
 </body>
 </html>
-
- 
