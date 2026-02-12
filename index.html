@@ -111,7 +111,7 @@
       animation: crt-glitch .35s steps(2,end);
     }
 
-    /* ===== PORTAL SECRETO (PEGATINA EN LA TV) ===== */
+    /* ===== GOTA SECRETA (PEGATINA EN LA TV) ===== */
     .secret-shroom{
       position:absolute;
       right:10%;
@@ -119,8 +119,8 @@
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      opacity:.55;              /* visible pero discreto */
-      transform: rotate(-4deg);
+      opacity:.50;              /* antes .22 -> ahora visible pero discreto */
+      transform: rotate(-5deg); /* un toque “pegatina” */
       transition:.25s ease;
       text-decoration:none;
       user-select:none;
@@ -128,13 +128,13 @@
     }
 
     .secret-shroom:hover{
-      opacity:.9;
-      transform: rotate(-3deg) scale(1.05);
+      opacity:.90;
+      transform: rotate(-3deg) translateY(-1px) scale(1.05);
     }
 
     .secret-shroom svg{
-      width:42px;
-      height:42px;
+      width:42px;               /* antes 30px */
+      height:42px;              /* antes 30px */
       fill:none;
       stroke: var(--ink);
       stroke-width:2.4;
@@ -142,29 +142,24 @@
       stroke-linejoin:round;
       transform-origin:center;
       filter:
-        drop-shadow(0 0 8px rgba(255,176,0,.18))
+        drop-shadow(0 0 6px rgba(255,176,0,.20))
         drop-shadow(0 0 14px rgba(255,74,0,.12));
-      animation:
-        portal-rotate 18s linear infinite,
-        portal-breathe 4s ease-in-out infinite;
+
+      /* movimiento “lava” suave */
+      animation: lava-float 3.8s ease-in-out infinite;
     }
 
     .secret-shroom:hover svg{
       stroke: var(--neon);
-      animation-duration: 10s, 3s; /* más rápido en hover */
       filter:
-        drop-shadow(0 0 12px rgba(0,255,0,.35))
-        drop-shadow(0 0 22px rgba(0,255,0,.25));
+        drop-shadow(0 0 12px rgba(0,255,0,.32))
+        drop-shadow(0 0 22px rgba(0,255,0,.18))
+        drop-shadow(0 0 16px rgba(255,176,0,.12));
     }
 
-    @keyframes portal-rotate{
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-    }
-
-    @keyframes portal-breathe{
-      0%,100%{ opacity:.9; }
-      50%{ opacity:1; }
+    @keyframes lava-float{
+      0%,100%{ transform: translateY(0) rotate(-1deg) scale(1); opacity:.85; }
+      50%{ transform: translateY(-1.5px) rotate(1deg) scale(1.03); opacity:1; }
     }
 
     /* ===========================
@@ -591,7 +586,6 @@
     @media (prefers-reduced-motion: reduce){
       *{ animation:none !important; }
       body.tuning .vhs{ opacity:0 !important; }
-      .secret-shroom svg{ animation:none !important; }
     }
   </style>
 </head>
@@ -602,15 +596,13 @@
     <div class="crt" aria-label="Televisor CRT">
       <img src="tv.webp" alt="Televisor CRT con Cosmic Marciana – La casa del terror" class="hero" />
 
-      <!-- 🌪️ PORTAL SECRETO (clicable) -->
+      <!-- 💧 GOTA (clicable) -->
       <a class="secret-shroom" href="bosque.html" aria-label="entre los árboles">
         <svg viewBox="0 0 64 64" aria-hidden="true">
-          <path d="
-            M32 12
-            a20 20 0 1 1 -1 0
-            a12 12 0 1 0 1 0
-            a4 4 0 1 1 -1 0
-          "/>
+          <!-- gota / lava -->
+          <path d="M32 8C24 20 18 28 18 38a14 14 0 0 0 28 0C46 28 40 20 32 8z"/>
+          <!-- detalle suave interior -->
+          <path d="M26 40c2-3 6-3 8 0"/>
         </svg>
       </a>
 
@@ -805,7 +797,7 @@
 
   // Móvil: TAP ON / TAP OFF
   tv.addEventListener("touchstart", (e) => {
-    // ✅ Si tocas el portal, NO activar la tele (deja el link funcionar)
+    // ✅ Si tocas la gota, NO activar la tele (deja el link funcionar)
     if (e.target.closest && e.target.closest(".secret-shroom")) return;
 
     touchMode = true;
