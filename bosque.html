@@ -7,6 +7,20 @@
 <link rel="manifest" href="site.webmanifest">
 <meta name="theme-color" content="#00ff00">
 <link rel="icon" href="favicon.ico">
+/* micro aparición suave */
+.sig{
+  opacity: 0;
+  transform: translateY(4px);
+  animation: sigFade 2.4s ease-out forwards;
+  animation-delay: 1.2s;
+}
+
+@keyframes sigFade{
+  to{
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 <style>
 :root{
@@ -295,3 +309,4 @@ body{
 
 </body>
 </html>
+
