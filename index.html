@@ -111,7 +111,7 @@
       animation: crt-glitch .35s steps(2,end);
     }
 
-    /* ===== SETA SECRETA (PEGATINA EN LA TV) ===== */
+    /* ===== PORTAL SECRETO (PEGATINA EN LA TV) ===== */
     .secret-shroom{
       position:absolute;
       right:10%;
@@ -119,8 +119,8 @@
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      opacity:.22;
-      transform: rotate(-6deg);
+      opacity:.6;                 /* antes .22 */
+      transform: rotate(-4deg);    /* antes -6deg */
       transition:.25s ease;
       text-decoration:none;
       user-select:none;
@@ -128,13 +128,13 @@
     }
 
     .secret-shroom:hover{
-      opacity:.75;
-      transform: rotate(-4deg) translateY(-1px);
+      opacity:.85;
+      transform: rotate(-3deg) translateY(-1px);
     }
 
     .secret-shroom svg{
-      width:30px;
-      height:30px;
+      width:44px;                 /* antes 30px */
+      height:44px;                /* antes 30px */
       fill:none;
       stroke: var(--ink);
       stroke-width:2.2;
@@ -143,18 +143,20 @@
       filter:
         drop-shadow(0 0 6px rgba(255,176,0,.22))
         drop-shadow(0 0 14px rgba(255,74,0,.14));
+      animation: portal-breathe 3.6s ease-in-out infinite;
     }
 
     .secret-shroom:hover svg{
+      stroke: var(--neon);
       filter:
-        drop-shadow(0 0 10px rgba(255,176,0,.35))
-        drop-shadow(0 0 20px rgba(255,74,0,.22))
-        drop-shadow(0 0 12px rgba(0,255,0,.18));
+        drop-shadow(0 0 10px rgba(0,255,0,.28))
+        drop-shadow(0 0 20px rgba(0,255,0,.18))
+        drop-shadow(0 0 18px rgba(255,176,0,.12));
     }
 
-    /* ✅ SOLO EL TRIÁNGULO SE VUELVE ROJO EN HOVER */
-    .secret-shroom:hover svg .tri{
-      stroke: red;
+    @keyframes portal-breathe{
+      0%,100%{ transform: scale(1); opacity: .95; }
+      50%{ transform: scale(1.04); opacity: 1; }
     }
 
     /* ===========================
@@ -591,16 +593,17 @@
     <div class="crt" aria-label="Televisor CRT">
       <img src="tv.webp" alt="Televisor CRT con Cosmic Marciana – La casa del terror" class="hero" />
 
-      <!-- 🍄 SETA PEGATINA SECRETA (clicable) -->
+      <!-- 🌪️ PORTAL SECRETO (clicable) -->
       <a class="secret-shroom" href="bosque.html" aria-label="entre los árboles">
         <svg viewBox="0 0 64 64" aria-hidden="true">
-          <!-- Triángulo (solo esto se pone rojo en hover) -->
-          <g class="tri">
-            <path d="M32 8 L56 52 L8 52 Z"/>
-          </g>
-          <!-- Ojo (se queda igual) -->
-          <path d="M18 34c4.5-6.5 23.5-6.5 28 0c-4.5 6.5-23.5 6.5-28 0z"/>
-          <circle cx="32" cy="34" r="3.2"/>
+          <!-- anillo/portal -->
+          <path d="M32 14c10 0 18 8 18 18s-8 18-18 18-18-8-18-18 8-18 18-18z"/>
+          <!-- espiral lava -->
+          <path d="M32 22c6 0 10 4 10 9s-4 9-10 9-10-4-10-9c0-3 2-6 5-7"/>
+          <path d="M34 27c3 0 5 2 5 4.5S37 36 34 36s-5-2-5-4.5c0-1.5 1-3 2.5-3.7"/>
+          <!-- ondas relax (sonido) -->
+          <path d="M16 34c2-2 4-2 6 0"/>
+          <path d="M42 34c2-2 4-2 6 0"/>
         </svg>
       </a>
 
@@ -795,7 +798,7 @@
 
   // Móvil: TAP ON / TAP OFF
   tv.addEventListener("touchstart", (e) => {
-    // ✅ Si tocas la seta, NO activar la tele (deja el link funcionar)
+    // ✅ Si tocas el portal, NO activar la tele (deja el link funcionar)
     if (e.target.closest && e.target.closest(".secret-shroom")) return;
 
     touchMode = true;
