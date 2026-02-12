@@ -2417,167 +2417,114 @@
   }
 
   // ✅ PWA botón PRO (captura beforeinstallprompt + fallback) — ARREGLADO para NO mostrar si ya está instalada / en standalone
-  function pwaInstallInit(){
-    const openBtn = document.getElementById("pwa-open");
-    const note = document.getElementById("pwa-note");
-    const modal = document.getElementById("pwa-modal");
-    const closeBtn = document.getElementById("pwa-close");
-    const installBtn = document.getElementById("pwa-install");
-    const modalText = document.getElementById("pwa-modal-text");
+function pwaInstallInit(){
+  const openBtn    = document.getElementById("pwa-open");
+  const note       = document.getElementById("pwa-note");
+  const modal      = document.getElementById("pwa-modal");
+  const closeBtn   = document.getElementById("pwa-close");
+  const installBtn = document.getElementById("pwa-install");
+  const modalText  = document.getElementById("pwa-modal-text");
+  if(!openBtn || !note || !modal || !closeBtn || !installBtn) return;
 
-    if(!openBtn || !modal || !closeBtn || !installBtn) return;
+  let deferredPrompt = null;
 
-    let deferredPrompt = null;
+  const LS_PWA = {
+    dismissedAt: "cm_pwa_dismissed_at",
+    installed:   "cm_pwa_installed"
+  };
 
-    const LS_PWA = {
-      dismissedAt: "cm_pwa_dismissed_at",
-      installed: "cm_pwa_installed" // ✅ NUEVO
-    };
+  function hideAll(){
+    openBtn.hidden = true;
+    note.hidden = true;
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden","true");
+  }
 
-    function isStandalone(){
-      const m = window.matchMedia && window.matchMedia("(display-mode: standalone)").matches;
-      const ios = window.navigator.standalone === true; // iOS A2HS
-      return !!(m || ios);
+  function open(){
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden","false");
+    closeBtn.focus();
+  }
+  function close(){
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden","true");
+    openBtn.focus();
+  }
+
+  openBtn.addEventListener("click", open);
+  closeBtn.addEventListener("click", close);
+  modal.addEventListener("click", (e)=>{ if(e.target === modal) close(); });
+  document.addEventListener("keydown", (e)=>{
+    if(e.key === "Escape" && modal.classList.contains("open")) close();
+  });
+
+  function isStandalone(){
+    const mql = window.matchMedia && window.matchMedia("(display-mode: standalone)");
+    return (mql && mql.matches) || !!window.navigator.standalone;
+  }
+
+  try{
+    if(isStandalone() || localStorage.getItem(LS_PWA.installed) === "1"){
+      hideAll();
+      return;
     }
+  }catch{}
 
-    function hideAllPwaUI(){
-      openBtn.hidden = true;
-      note.hidden = true;
-      modal.classList.remove("open");
-      modal.setAttribute("aria-hidden","true");
+  window.addEventListener("beforeinstallprompt", (e)=>{
+    if(isStandalone()){ hideAll(); return; }
+
+    e.preventDefault();
+    deferredPrompt = e;
+
+    openBtn.hidden = false;
+    note.hidden = true;
+
+    if(modalText){
+      modalText.innerHTML =
+        `Instala <strong>Cosmic Marciana</strong> como app para abrir “La casa del terror” desde el icono.`;
     }
+  });
 
-    function open(){
-      if (isStandalone()) return;
-      modal.classList.add("open");
-      modal.setAttribute("aria-hidden","false");
-      closeBtn.focus();
-    }
+  window.addEventListener("appinstalled", ()=>{
+    deferredPrompt = null;
+    try{ localStorage.setItem(LS_PWA.installed, "1"); }catch{}
+    try{ localStorage.removeItem(LS_PWA.dismissedAt); }catch{}
+    hideAll();
+  });
 
-    function close(){
-      modal.classList.remove("open");
-      modal.setAttribute("aria-hidden","true");
-      openBtn.focus();
-    }
+  installBtn.addEventListener("click", async ()=>{
+    if(isStandalone()){ hideAll(); return; }
 
-    function showManualInstall(){
-      if (isStandalone()) return;
-
-      openBtn.hidden = false;
-      note.hidden = false;
-
-      if(modalText){
-        modalText.innerHTML =
-          `Si el instalador no aparece, puedes hacerlo manual:<br>` +
-          `• Android/Chrome: menú ⋮ → <strong>“Añadir a pantalla de inicio”</strong><br>` +
-          `• iPhone/Safari: compartir → <strong>“Añadir a pantalla de inicio”</strong>`;
-      }
-    }
-
-    // ✅ 0) Si estamos dentro de la app instalada: ocultar y salir
-    if (isStandalone()){
-      try{ localStorage.setItem(LS_PWA.installed, "1"); }catch{}
-      hideAllPwaUI();
+    if(!deferredPrompt){
+      hideAll();
       return;
     }
 
-    // ✅ 0.1) Si ya sabemos (persistente) que está instalada: ocultar y salir
     try{
-      if (localStorage.getItem(LS_PWA.installed) === "1"){
-        hideAllPwaUI();
-        return;
-      }
-    }catch{}
+      deferredPrompt.prompt();
+      const choice = await deferredPrompt.userChoice;
 
-    // ✅ 0.2) Chrome/Android: detectar si ya está instalada aunque abras en navegador
-    if (navigator.getInstalledRelatedApps){
-      navigator.getInstalledRelatedApps().then(apps => {
-        if (apps && apps.length){
-          try{ localStorage.setItem(LS_PWA.installed, "1"); }catch{}
-          hideAllPwaUI();
-        }
-      }).catch(()=>{});
-    }
-
-    openBtn.addEventListener("click", open);
-    closeBtn.addEventListener("click", close);
-    modal.addEventListener("click", (e)=>{ if(e.target === modal) close(); });
-
-    document.addEventListener("keydown", (e)=>{
-      if(e.key === "Escape" && modal.classList.contains("open")) close();
-    });
-
-    // ✅ 1) Si el navegador permite instalación: enseñamos botón (solo si NO está instalada)
-    window.addEventListener("beforeinstallprompt", (e)=>{
-      try{
-        if (localStorage.getItem(LS_PWA.installed) === "1") return;
-      }catch{}
-
-      e.preventDefault();
-      deferredPrompt = e;
-
-      openBtn.hidden = false;
-      note.hidden = true;
-
-      if(modalText){
-        modalText.innerHTML = `Instala <strong>Cosmic Marciana</strong> como app para abrir “La casa del terror” desde el icono del móvil.`;
-      }
-    });
-
-    // ✅ 2) Si ya está instalada: ocultamos todo (y persistimos)
-    window.addEventListener("appinstalled", ()=>{
-      deferredPrompt = null;
-      try{
-        localStorage.setItem(LS_PWA.installed, "1");
-        localStorage.removeItem(LS_PWA.dismissedAt);
-      }catch{}
-      hideAllPwaUI();
-    });
-
-    // ✅ 3) Fallback manual (si lo rechazó o no hay prompt disponible)
-    try{
-      const dismissedAt = Number(localStorage.getItem(LS_PWA.dismissedAt) || "0");
-      if(dismissedAt){
-        const days = 10;
-        const maxAge = days * 24 * 60 * 60 * 1000;
-        if(Date.now() - dismissedAt < maxAge){
-          showManualInstall();
-        }else{
-          localStorage.removeItem(LS_PWA.dismissedAt);
-        }
-      }
-    }catch{}
-
-    installBtn.addEventListener("click", async ()=>{
-      if(!deferredPrompt){
-        showManualInstall();
-        return;
-      }
-
-      try{
-        deferredPrompt.prompt();
-        const choice = await deferredPrompt.userChoice;
-        if(choice && choice.outcome === "dismissed"){
-          try{ localStorage.setItem(LS_PWA.dismissedAt, String(Date.now())); }catch{}
-          deferredPrompt = null;
-          showManualInstall();
-        }else{
-          deferredPrompt = null;
-        }
-      }catch{
-        deferredPrompt = null;
-        showManualInstall();
-      }
-    });
-
-    // ✅ 4) Si cambia a standalone (por si acaso)
-    window.matchMedia("(display-mode: standalone)")?.addEventListener("change", (ev)=>{
-      if (ev.matches){
+      if(choice && choice.outcome === "accepted"){
         try{ localStorage.setItem(LS_PWA.installed, "1"); }catch{}
-        hideAllPwaUI();
+        hideAll();
+      } else {
+        try{ localStorage.setItem(LS_PWA.dismissedAt, String(Date.now())); }catch{}
+        hideAll();
       }
-    });
+
+      deferredPrompt = null;
+    }catch{
+      deferredPrompt = null;
+      hideAll();
+    }
+  });
+
+  const mql = window.matchMedia && window.matchMedia("(display-mode: standalone)");
+  if(mql && mql.addEventListener){
+    mql.addEventListener("change", ()=>{ if(isStandalone()) hideAll(); });
   }
+}
+
 
   (function init(){
     renderIcons();
@@ -2594,3 +2541,4 @@
 
 </body>
 </html>
+
