@@ -941,6 +941,18 @@
     opacity:.9;
   }
 
+  /* ✅ PWA button: mismo look que café pero más discreto */
+  .support-btn.pwa-btn{
+    margin-top: 10px;
+    background: rgba(0,0,0,.22);
+    border-color: rgba(255,255,255,.14);
+    animation: none;
+    box-shadow: none;
+  }
+  .support-btn.pwa-btn:hover{
+    box-shadow: 0 0 18px rgba(0,255,0,.16);
+  }
+
   /* ===== MODAL ===== */
   .modal{
     position: fixed;
@@ -1399,6 +1411,15 @@
         ¿Me invitas a un café? <span class="coffee" aria-hidden="true">☕</span>
       </button>
 
+      <!-- ✅ Botón PWA (solo aparece si el navegador permite instalar) -->
+      <button class="support-btn pwa-btn" id="pwa-open" type="button" hidden>
+        Instalar la transmisión <span aria-hidden="true">📲</span>
+      </button>
+
+      <div class="support-note" id="pwa-note" hidden>
+        Si no te sale el instalador, abre el menú del navegador → “Añadir a pantalla de inicio”.
+      </div>
+
       <div class="support-note">
         La casa del terror está abierta. Descarga el disco sin pedir permiso.
       </div>
@@ -1430,6 +1451,28 @@
           <div class="support-label">Bizum</div>
           <div class="support-value" id="bizum-number">+34 623 190 151</div>
           <button class="copy-btn" id="copy-bizum" type="button">Copiar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ MODAL INSTALAR APP -->
+    <div class="modal" id="pwa-modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-label="Instalar app">
+        <button class="modal-close" id="pwa-close" type="button" aria-label="Cerrar">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18"></path>
+          </svg>
+        </button>
+
+        <div class="modal-title">Instalar la transmisión</div>
+        <div class="modal-text" id="pwa-modal-text">
+          Instala <strong>Cosmic Marciana</strong> como app para abrir “La casa del terror” desde el icono del móvil.
+        </div>
+
+        <div class="support-row">
+          <div class="support-label">App</div>
+          <div class="support-value">Añadir a pantalla</div>
+          <button class="copy-btn" id="pwa-install" type="button">Instalar</button>
         </div>
       </div>
     </div>
@@ -1661,57 +1704,6 @@
       navigator.mediaSession.setActionHandler("pause", togglePlay);
       navigator.mediaSession.setActionHandler("previoustrack", prevTrack);
       navigator.mediaSession.setActionHandler("nexttrack", nextTrack);
-
-      // (Opcional pero ayuda en Android)
-      navigator.mediaSession.setActionHandler("seekto", (details)=>{
-        if(!audio.duration) return;
-        if(details && typeof details.seekTime === "number"){
-          audio.currentTime = Math.max(0, Math.min(details.seekTime, audio.duration));
-          updatePositionState(true);
-        }
-      });
-      navigator.mediaSession.setActionHandler("seekbackward", (details)=>{
-        const step = (details && details.seekOffset) ? details.seekOffset : 10;
-        if(!audio.duration) return;
-        audio.currentTime = Math.max(0, audio.currentTime - step);
-        updatePositionState(true);
-      });
-      navigator.mediaSession.setActionHandler("seekforward", (details)=>{
-        const step = (details && details.seekOffset) ? details.seekOffset : 10;
-        if(!audio.duration) return;
-        audio.currentTime = Math.min(audio.duration, audio.currentTime + step);
-        updatePositionState(true);
-      });
-
-    }catch{}
-  }
-
-  // ✅ Position State para que el lockscreen NO se quede clavado
-  function canSetPositionState(){
-    return ('mediaSession' in navigator) && typeof navigator.mediaSession.setPositionState === "function";
-  }
-
-  function updatePositionState(force=false){
-    if(!canSetPositionState()) return;
-    if(!hasLoaded || !audio.src) return;
-    if(!Number.isFinite(audio.duration) || audio.duration <= 0) return;
-    if(!Number.isFinite(audio.currentTime)) return;
-
-    const pos = Math.max(0, Math.min(audio.currentTime, audio.duration));
-    const dur = audio.duration;
-
-    const now = performance.now();
-    if(!force){
-      if(updatePositionState._t && (now - updatePositionState._t) < 850) return;
-    }
-    updatePositionState._t = now;
-
-    try{
-      navigator.mediaSession.setPositionState({
-        duration: dur,
-        position: pos,
-        playbackRate: audio.paused ? 0 : (audio.playbackRate || 1)
-      });
     }catch{}
   }
 
@@ -1775,8 +1767,6 @@
     setGlitchFromVolume();
     setPsyPlayIcon();
     syncPsyVideo();
-
-    updatePositionState(true); // ✅ importante al cambiar play/pause
   }
 
   function setPlayIcon(){
@@ -1836,7 +1826,6 @@
   function seekToPct(pct){
     if(!audio.duration) return;
     audio.currentTime = clamp01(pct) * audio.duration;
-    updatePositionState(true); // ✅ fuerza refresh en lockscreen
   }
 
   function updatePreview(clientX){
@@ -1974,7 +1963,6 @@
         currentTimeEl.textContent = formatTime(t);
         setProgressUI(audio.duration ? (t / audio.duration) : 0);
         setStatus("Continuando donde lo dejaste…");
-        updatePositionState(true);
       } else {
         clearSavedTime();
       }
@@ -2055,8 +2043,7 @@
       setPlayIcon();
       document.body.classList.add("psy-unlocked");
 
-      updateMediaSession();      // ✅ refresca metadata/handlers
-      updatePositionState(true); // ✅ refresca barra lockscreen
+      updateMediaSession(); // ✅ por si el sistema quiere refrescar estado
     } catch(e){
       setPlayIcon();
       setStatus("Pulsa Play para iniciar.");
@@ -2073,7 +2060,6 @@
     else{
       audio.pause();
       setPlayIcon();
-      updatePositionState(true);
     }
   }
 
@@ -2109,9 +2095,6 @@
     // ✅ limpiar Media Session al STOP
     if('mediaSession' in navigator){
       try{ navigator.mediaSession.metadata = null; }catch{}
-    }
-    if(canSetPositionState()){
-      try{ navigator.mediaSession.setPositionState({ duration: 0, position: 0, playbackRate: 0 }); }catch{}
     }
   }
 
@@ -2293,13 +2276,10 @@
       totalTimeEl.textContent = formatTime(audio.duration);
       setProgressUI(audio.currentTime / audio.duration);
       saveCurrentTime();
-
-      updatePositionState(false); // ✅ NUEVO: mantiene fina la barra lockscreen
     });
 
     audio.addEventListener("loadedmetadata", ()=>{
       if(audio.duration) totalTimeEl.textContent = formatTime(audio.duration);
-      updatePositionState(true); // ✅ NUEVO
     });
 
     audio.addEventListener("ended", ()=>{
@@ -2374,6 +2354,7 @@
     });
 
     // ✅ IMPORTANTE: ya NO pausamos al cambiar de pestaña.
+    // (Antes aquí había un visibilitychange que pausaba el audio.)
 
     // ✅ ABRIR MODO: click en el botón redondo de la tele
     tvPsyHotspot.addEventListener("click", openPsy);
@@ -2436,25 +2417,127 @@
     });
   }
 
+  // ✅ PWA botón PRO (captura beforeinstallprompt + fallback)
+  function pwaInstallInit(){
+    const openBtn = document.getElementById("pwa-open");
+    const note = document.getElementById("pwa-note");
+    const modal = document.getElementById("pwa-modal");
+    const closeBtn = document.getElementById("pwa-close");
+    const installBtn = document.getElementById("pwa-install");
+    const modalText = document.getElementById("pwa-modal-text");
+
+    if(!openBtn || !modal || !closeBtn || !installBtn) return;
+
+    let deferredPrompt = null;
+
+    const LS_PWA = {
+      dismissedAt: "cm_pwa_dismissed_at"
+    };
+
+    function open(){
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden","false");
+      closeBtn.focus();
+    }
+
+    function close(){
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden","true");
+      openBtn.focus();
+    }
+
+    openBtn.addEventListener("click", open);
+    closeBtn.addEventListener("click", close);
+    modal.addEventListener("click", (e)=>{ if(e.target === modal) close(); });
+
+    document.addEventListener("keydown", (e)=>{
+      if(e.key === "Escape" && modal.classList.contains("open")) close();
+    });
+
+    // ✅ 1) Si el navegador permite instalación: enseñamos botón
+    window.addEventListener("beforeinstallprompt", (e)=>{
+      e.preventDefault();
+      deferredPrompt = e;
+
+      openBtn.hidden = false;
+      note.hidden = true;
+
+      if(modalText){
+        modalText.innerHTML = `Instala <strong>Cosmic Marciana</strong> como app para abrir “La casa del terror” desde el icono del móvil.`;
+      }
+    });
+
+    // ✅ 2) Si ya está instalada: ocultamos todo
+    window.addEventListener("appinstalled", ()=>{
+      deferredPrompt = null;
+      openBtn.hidden = true;
+      note.hidden = true;
+      try{ localStorage.removeItem(LS_PWA.dismissedAt); }catch{}
+      close();
+    });
+
+    // ✅ 3) Fallback manual (si lo rechazó o no hay prompt disponible)
+    function showManualInstall(){
+      openBtn.hidden = false;
+      note.hidden = false;
+
+      if(modalText){
+        modalText.innerHTML =
+          `Si el instalador no aparece, puedes hacerlo manual:<br>` +
+          `• Android/Chrome: menú ⋮ → <strong>“Añadir a pantalla de inicio”</strong><br>` +
+          `• iPhone/Safari: compartir → <strong>“Añadir a pantalla de inicio”</strong>`;
+      }
+    }
+
+    // Si ya lo rechazó antes, mostramos instrucciones por X días
+    try{
+      const dismissedAt = Number(localStorage.getItem(LS_PWA.dismissedAt) || "0");
+      if(dismissedAt){
+        const days = 10;
+        const maxAge = days * 24 * 60 * 60 * 1000;
+        if(Date.now() - dismissedAt < maxAge){
+          showManualInstall();
+        }else{
+          localStorage.removeItem(LS_PWA.dismissedAt);
+        }
+      }
+    }catch{}
+
+    installBtn.addEventListener("click", async ()=>{
+      if(!deferredPrompt){
+        showManualInstall();
+        return;
+      }
+
+      try{
+        deferredPrompt.prompt();
+        const choice = await deferredPrompt.userChoice;
+        if(choice && choice.outcome === "dismissed"){
+          try{ localStorage.setItem(LS_PWA.dismissedAt, String(Date.now())); }catch{}
+          deferredPrompt = null;
+          showManualInstall();
+        }else{
+          deferredPrompt = null;
+        }
+      }catch{
+        deferredPrompt = null;
+        showManualInstall();
+      }
+    });
+  }
+
   (function init(){
     renderIcons();
     applyStoredSettings();
     wireEvents();
     supportInit();
+    pwaInstallInit(); // ✅ NUEVO
     updateFullscreenIcon();
     setPsyTitle();
     applyResumeTimeIfAny();
     ensurePsyVideoReady();
   })();
 </script>
-<script>
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("/sw.js").catch(()=>{});
-    });
-  }
-</script>
 
 </body>
 </html>
-
