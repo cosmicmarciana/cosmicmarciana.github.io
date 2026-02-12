@@ -1661,6 +1661,57 @@
       navigator.mediaSession.setActionHandler("pause", togglePlay);
       navigator.mediaSession.setActionHandler("previoustrack", prevTrack);
       navigator.mediaSession.setActionHandler("nexttrack", nextTrack);
+
+      // (Opcional pero ayuda en Android)
+      navigator.mediaSession.setActionHandler("seekto", (details)=>{
+        if(!audio.duration) return;
+        if(details && typeof details.seekTime === "number"){
+          audio.currentTime = Math.max(0, Math.min(details.seekTime, audio.duration));
+          updatePositionState(true);
+        }
+      });
+      navigator.mediaSession.setActionHandler("seekbackward", (details)=>{
+        const step = (details && details.seekOffset) ? details.seekOffset : 10;
+        if(!audio.duration) return;
+        audio.currentTime = Math.max(0, audio.currentTime - step);
+        updatePositionState(true);
+      });
+      navigator.mediaSession.setActionHandler("seekforward", (details)=>{
+        const step = (details && details.seekOffset) ? details.seekOffset : 10;
+        if(!audio.duration) return;
+        audio.currentTime = Math.min(audio.duration, audio.currentTime + step);
+        updatePositionState(true);
+      });
+
+    }catch{}
+  }
+
+  // ✅ Position State para que el lockscreen NO se quede clavado
+  function canSetPositionState(){
+    return ('mediaSession' in navigator) && typeof navigator.mediaSession.setPositionState === "function";
+  }
+
+  function updatePositionState(force=false){
+    if(!canSetPositionState()) return;
+    if(!hasLoaded || !audio.src) return;
+    if(!Number.isFinite(audio.duration) || audio.duration <= 0) return;
+    if(!Number.isFinite(audio.currentTime)) return;
+
+    const pos = Math.max(0, Math.min(audio.currentTime, audio.duration));
+    const dur = audio.duration;
+
+    const now = performance.now();
+    if(!force){
+      if(updatePositionState._t && (now - updatePositionState._t) < 850) return;
+    }
+    updatePositionState._t = now;
+
+    try{
+      navigator.mediaSession.setPositionState({
+        duration: dur,
+        position: pos,
+        playbackRate: audio.paused ? 0 : (audio.playbackRate || 1)
+      });
     }catch{}
   }
 
@@ -1724,6 +1775,8 @@
     setGlitchFromVolume();
     setPsyPlayIcon();
     syncPsyVideo();
+
+    updatePositionState(true); // ✅ importante al cambiar play/pause
   }
 
   function setPlayIcon(){
@@ -1783,6 +1836,7 @@
   function seekToPct(pct){
     if(!audio.duration) return;
     audio.currentTime = clamp01(pct) * audio.duration;
+    updatePositionState(true); // ✅ fuerza refresh en lockscreen
   }
 
   function updatePreview(clientX){
@@ -1920,6 +1974,7 @@
         currentTimeEl.textContent = formatTime(t);
         setProgressUI(audio.duration ? (t / audio.duration) : 0);
         setStatus("Continuando donde lo dejaste…");
+        updatePositionState(true);
       } else {
         clearSavedTime();
       }
@@ -2000,7 +2055,8 @@
       setPlayIcon();
       document.body.classList.add("psy-unlocked");
 
-      updateMediaSession(); // ✅ por si el sistema quiere refrescar estado
+      updateMediaSession();      // ✅ refresca metadata/handlers
+      updatePositionState(true); // ✅ refresca barra lockscreen
     } catch(e){
       setPlayIcon();
       setStatus("Pulsa Play para iniciar.");
@@ -2017,6 +2073,7 @@
     else{
       audio.pause();
       setPlayIcon();
+      updatePositionState(true);
     }
   }
 
@@ -2052,6 +2109,9 @@
     // ✅ limpiar Media Session al STOP
     if('mediaSession' in navigator){
       try{ navigator.mediaSession.metadata = null; }catch{}
+    }
+    if(canSetPositionState()){
+      try{ navigator.mediaSession.setPositionState({ duration: 0, position: 0, playbackRate: 0 }); }catch{}
     }
   }
 
@@ -2233,10 +2293,13 @@
       totalTimeEl.textContent = formatTime(audio.duration);
       setProgressUI(audio.currentTime / audio.duration);
       saveCurrentTime();
+
+      updatePositionState(false); // ✅ NUEVO: mantiene fina la barra lockscreen
     });
 
     audio.addEventListener("loadedmetadata", ()=>{
       if(audio.duration) totalTimeEl.textContent = formatTime(audio.duration);
+      updatePositionState(true); // ✅ NUEVO
     });
 
     audio.addEventListener("ended", ()=>{
@@ -2311,7 +2374,6 @@
     });
 
     // ✅ IMPORTANTE: ya NO pausamos al cambiar de pestaña.
-    // (Antes aquí había un visibilitychange que pausaba el audio.)
 
     // ✅ ABRIR MODO: click en el botón redondo de la tele
     tvPsyHotspot.addEventListener("click", openPsy);
@@ -2387,6 +2449,4 @@
 </script>
 
 </body>
-</html> 
-
-
+</html>
