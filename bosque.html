@@ -4,8 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Entre los árboles</title>
-<link rel="manifest" href="site.webmanifest">
+  <link rel="manifest" href="site.webmanifest">
 <meta name="theme-color" content="#00ff00">
+
 <link rel="icon" href="favicon.ico">
 
 <style>
@@ -179,7 +180,7 @@ body{
   100% { transform: scale(1); opacity: 0.65; }
 }
 
-/* ===== BLOQUE INFERIOR (más visible pero zen) ===== */
+/* ===== BLOQUE INFERIOR ===== */
 .bottom{
   position:fixed;
   bottom:22px;
@@ -187,78 +188,37 @@ body{
   transform:translateX(-50%);
   z-index:6;
   text-align:center;
-  width: min(92vw, 520px);
 }
 
-/* link "regresa" con pill pro */
+/* flecha minimal (igual que tu versión original) */
 .bottom a{
-  display:inline-flex;
-  align-items:center;
-  gap:.55em;
-  margin-bottom:12px;
-
+  display:inline-block;
+  margin-bottom:14px;
   font-size:11px;
   letter-spacing:.22em;
   text-transform:lowercase;
-
-  color: rgba(246,242,233,.90);
+  color:rgba(240,234,223,.75);
   text-decoration:none;
-
-  padding:8px 14px;
-  border-radius:999px;
-
-  background: rgba(0,0,0,.22);
-  border: 1px solid rgba(255,255,255,.22);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-
-  transition: transform .22s ease, border-color .22s ease, background .22s ease, color .22s ease;
+  padding:6px 8px;
+  transition:.25s ease;
 }
 
 .bottom a:hover{
+  color:rgba(240,234,223,1);
   transform: translateY(-1px);
-  border-color: rgba(255,255,255,.38);
-  background: rgba(0,0,0,.30);
-  color: rgba(246,242,233,1);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 1px;
 }
 
-.bottom a:focus-visible{
-  outline: none;
-  border-color: rgba(255,255,255,.55);
-}
-
-/* ===== FIRMA ===== */
+/* ===== FIRMA NERD ADAPTATIVA (RESTAURADA) ===== */
 .sig{
-  display:inline-block;
-  padding:8px 12px;
-
   white-space: nowrap;
-  font-size: clamp(10px, 2.2vw, 12px);
-  letter-spacing: clamp(.10em, .3vw, .20em);
+  font-size: clamp(9px, 2.2vw, 11.5px);
+  letter-spacing: clamp(.08em, .3vw, .18em);
+  opacity:.65;
   text-transform:uppercase;
-
-  color: rgba(240,234,223,.82);
-  opacity: 1;
-
-  border-top: 1px solid rgba(255,255,255,.12);
-  background: linear-gradient(to bottom, rgba(0,0,0,.10), rgba(0,0,0,0));
-  border-radius: 12px;
-}
-
-/* si quieres micro aparición suave, descomenta esto:
-.sig{
-  opacity: 0;
-  transform: translateY(4px);
-  animation: sigFade 2.4s ease-out forwards;
-  animation-delay: 1.2s;
-}
-@keyframes sigFade{
-  to{ opacity: 1; transform: translateY(0); }
-}
-*/
-
-@media (max-width: 360px){
-  .sig{ white-space: normal; line-height: 1.4; }
+  color:var(--muted);
 }
 
 /* animaciones */
@@ -476,7 +436,6 @@ btn.addEventListener('click', async () => {
 // si toca antes en móvil, intenta arrancar videos
 window.addEventListener('pointerdown', ()=>{ if(!playing) kickVideos(); }, { once:true });
 </script>
-
 <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
@@ -487,3 +446,9 @@ window.addEventListener('pointerdown', ()=>{ if(!playing) kickVideos(); }, { onc
 
 </body>
 </html>
+
+
+
+
+
+
