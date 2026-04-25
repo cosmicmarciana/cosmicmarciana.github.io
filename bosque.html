@@ -6,7 +6,6 @@
 <title>Entre los árboles</title>
 <link rel="manifest" href="site.webmanifest">
 <meta name="theme-color" content="#00ff00">
-
 <link rel="icon" href="favicon.ico">
 
 <style>
@@ -42,13 +41,13 @@ body{
   background:#000;
 }
 
+/* ===== VIDEO ===== */
 .bg{
   position:fixed;
   inset:0;
   z-index:-2;
   overflow:hidden;
   pointer-events:none;
-  background:#000;
 }
 
 .bg video{
@@ -59,42 +58,22 @@ body{
   object-fit:cover;
   transform: scale(var(--v-zoom));
   filter: brightness(var(--v-bri)) saturate(var(--v-sat)) contrast(var(--v-con));
-  will-change: transform, filter, opacity;
 }
 
 #v2{
   opacity: var(--v2-alpha);
   mix-blend-mode: overlay;
   filter: contrast(1.10) saturate(0.98);
-  animation: v2-float 30s ease-in-out infinite;
 }
 
-@keyframes v2-float{
-  0%,100%{ transform: scale(calc(var(--v-zoom) * 1.005)) translate(0,0); }
-  50%{ transform: scale(calc(var(--v-zoom) * 1.015)) translate(.6%, -.4%); }
-}
-
+/* ===== FX ===== */
 .liquid{
   position:fixed;
   inset:-30%;
   z-index:-1;
   pointer-events:none;
   opacity:.10;
-  filter: blur(18px) saturate(1.02) brightness(1);
-  animation: slow-rotate 180s infinite linear;
-}
-
-.liquid::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    radial-gradient(circle at 20% 30%, var(--pink), transparent 50%),
-    radial-gradient(circle at 70% 25%, var(--orange), transparent 52%),
-    radial-gradient(circle at 30% 70%, var(--green), transparent 56%),
-    radial-gradient(circle at 75% 65%, var(--blue), transparent 54%),
-    radial-gradient(circle at 50% 50%, var(--violet), transparent 58%),
-    radial-gradient(circle at 55% 40%, var(--yellow), transparent 48%);
+  filter: blur(18px);
 }
 
 .grain{
@@ -121,6 +100,7 @@ body{
     radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 45%, rgba(0,0,0,.40) 84%);
 }
 
+/* ===== CONTENIDO ===== */
 .wrap{
   position:relative;
   z-index:5;
@@ -133,7 +113,6 @@ body{
   font-size:16px;
   line-height:1.7;
   color:var(--muted);
-  margin:0;
   text-shadow: 0 0 22px rgba(0,0,0,.45);
 }
 
@@ -156,64 +135,70 @@ body{
   color:var(--muted);
   cursor:pointer;
   backdrop-filter: blur(6px);
-  transition:.3s ease;
-  animation: breathing 7s ease-in-out infinite;
 }
 
-#breath-btn:hover{
-  border-color: rgba(255,255,255,.45);
-  transform: translateY(-1px);
-}
-
-@keyframes breathing {
-  0% { transform: scale(1); opacity: 0.65; }
-  50% { transform: scale(1.06); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.65; }
-}
-
-/* ===== BLOQUE INFERIOR MEJORADO ===== */
+/* ===== BLOQUE INFERIOR FINO ===== */
 .bottom{
   position:fixed;
-  bottom:22px;
+  bottom:24px;
   left:50%;
   transform:translateX(-50%);
   z-index:10;
   text-align:center;
+  width:100%;
+  padding:0 18px;
+}
 
-  padding:12px 18px;
-  border-radius:999px;
-  background:rgba(0,0,0,.32);
-  backdrop-filter: blur(8px);
-  box-shadow:0 0 28px rgba(0,0,0,.35);
+/* degradado suave para contraste */
+.bottom::before{
+  content:"";
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  height:160px;
+  z-index:-1;
+  pointer-events:none;
+  background:linear-gradient(
+    to top,
+    rgba(0,0,0,.55),
+    rgba(0,0,0,.25) 45%,
+    rgba(0,0,0,0)
+  );
 }
 
 .bottom a{
   display:inline-block;
   margin-bottom:12px;
   font-size:12px;
-  letter-spacing:.22em;
+  letter-spacing:.24em;
   text-transform:lowercase;
-  color:rgba(246,242,233,.95);
+  color:rgba(246,242,233,.92);
   text-decoration:none;
   padding:6px 8px;
   transition:.25s ease;
-  text-shadow:0 0 12px rgba(0,0,0,.9);
+  text-shadow:
+    0 0 8px rgba(0,0,0,.95),
+    0 0 18px rgba(0,0,0,.8);
 }
 
 .bottom a:hover{
-  transform: translateY(-1px);
-  text-decoration: underline;
-  text-underline-offset: 6px;
+  color:rgba(246,242,233,1);
+  transform:translateY(-1px);
+  text-decoration:underline;
+  text-underline-offset:6px;
 }
 
 .sig{
-  white-space: nowrap;
-  font-size: clamp(10px, 2.4vw, 12.5px);
-  letter-spacing: clamp(.08em, .3vw, .18em);
-  opacity:.95;
+  white-space:nowrap;
+  font-size:clamp(9.5px, 2.2vw, 11.5px);
+  letter-spacing:clamp(.09em, .32vw, .19em);
+  opacity:.9;
   text-transform:uppercase;
-  color:rgba(246,242,233,.95);
-  text-shadow:0 0 12px rgba(0,0,0,.9);
+  color:rgba(246,242,233,.88);
+  text-shadow:
+    0 0 8px rgba(0,0,0,.95),
+    0 0 18px rgba(0,0,0,.8);
 }
 </style>
 </head>
@@ -221,7 +206,7 @@ body{
 <body>
 
 <div class="bg">
-  <video id="v1" autoplay muted loop playsinline>
+  <video autoplay muted loop playsinline>
     <source src="lava.mp4" type="video/mp4">
   </video>
 
