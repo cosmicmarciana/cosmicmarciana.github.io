@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Entre los árboles</title>
-  <link rel="manifest" href="site.webmanifest">
+<link rel="manifest" href="site.webmanifest">
 <meta name="theme-color" content="#00ff00">
 
 <link rel="icon" href="favicon.ico">
@@ -21,7 +21,6 @@
   --blue:#7ad7ff;
   --violet:#b388ff;
 
-  /* ===== VIDEO: lava debajo + super8 prota moderado ===== */
   --v-bri: 0.92;
   --v-sat: 0.95;
   --v-con: 1.06;
@@ -43,7 +42,6 @@ body{
   background:#000;
 }
 
-/* ===== FONDO VIDEO (2 mp4) ===== */
 .bg{
   position:fixed;
   inset:0;
@@ -53,7 +51,6 @@ body{
   background:#000;
 }
 
-/* lava base */
 .bg video{
   position:absolute;
   inset:-3%;
@@ -65,7 +62,6 @@ body{
   will-change: transform, filter, opacity;
 }
 
-/* super8 más prota sin pasarse */
 #v2{
   opacity: var(--v2-alpha);
   mix-blend-mode: overlay;
@@ -78,7 +74,6 @@ body{
   50%{ transform: scale(calc(var(--v-zoom) * 1.015)) translate(.6%, -.4%); }
 }
 
-/* ===== LIQUID MINIMO ===== */
 .liquid{
   position:fixed;
   inset:-30%;
@@ -128,7 +123,6 @@ body{
     radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 45%, rgba(0,0,0,.40) 84%);
 }
 
-/* ===== CONTENIDO CENTRAL ===== */
 .wrap{
   position:relative;
   z-index:5;
@@ -152,7 +146,6 @@ body{
   color:var(--ink);
 }
 
-/* botón respira */
 #breath-btn{
   margin-top:20px;
   font-size:11px;
@@ -180,7 +173,7 @@ body{
   100% { transform: scale(1); opacity: 0.65; }
 }
 
-/* ===== BLOQUE INFERIOR ===== */
+/* ===== BLOQUE INFERIOR VHS / SEÑAL ===== */
 .bottom{
   position:fixed;
   bottom:22px;
@@ -190,42 +183,84 @@ body{
   text-align:center;
 }
 
-/* flecha minimal (igual que tu versión original) */
 .bottom a{
   display:inline-block;
   margin-bottom:14px;
-  font-size:11px;
-  letter-spacing:.22em;
+  font-size:12px;
+  letter-spacing:.26em;
   text-transform:lowercase;
-  color:rgba(240,234,223,.75);
+  color:#fff;
   text-decoration:none;
   padding:6px 8px;
   transition:.25s ease;
+  opacity:.9;
+  mix-blend-mode:screen;
+  text-shadow:
+    0 0 6px rgba(255,255,255,.38),
+    0 0 16px rgba(255,255,255,.22);
+  animation: vhs-signal 5.5s infinite steps(1);
 }
 
 .bottom a:hover{
-  color:rgba(240,234,223,1);
+  opacity:1;
   transform: translateY(-1px);
   text-decoration: underline;
   text-underline-offset: 6px;
   text-decoration-thickness: 1px;
 }
 
-/* ===== FIRMA NERD ADAPTATIVA (RESTAURADA) ===== */
 .sig{
   white-space: nowrap;
-  font-size: clamp(9px, 2.2vw, 11.5px);
-  letter-spacing: clamp(.08em, .3vw, .18em);
-  opacity:.65;
+  font-size: clamp(10px, 2.3vw, 12px);
+  letter-spacing: clamp(.12em, .34vw, .22em);
+  opacity:.82;
   text-transform:uppercase;
-  color:var(--muted);
+  color:#fff;
+  mix-blend-mode:screen;
+  text-shadow:
+    0 0 6px rgba(255,255,255,.35),
+    0 0 18px rgba(255,255,255,.20);
+  animation: vhs-signal 6.5s infinite steps(1);
 }
 
-/* animaciones */
+/* parpadeo analógico muy sutil */
+@keyframes vhs-signal{
+  0%, 91%, 100%{
+    transform:translate(0,0);
+    filter:none;
+    opacity:.84;
+  }
+
+  92%{
+    transform:translate(.6px,-.4px);
+    filter:blur(.15px);
+    opacity:.62;
+  }
+
+  93%{
+    transform:translate(-.7px,.3px);
+    filter:blur(.25px);
+    opacity:.95;
+  }
+
+  94%{
+    transform:translate(.3px,.2px);
+    filter:none;
+    opacity:.72;
+  }
+
+  95%{
+    transform:translate(0,0);
+    filter:none;
+    opacity:.88;
+  }
+}
+
 @keyframes liquid-drift{
   0%,100%{ transform: translate(0,0) scale(1); }
   50%{ transform: translate(-3%,2%) scale(1.04); }
 }
+
 @keyframes slow-rotate{
   0%{ transform: rotate(0deg); }
   100%{ transform: rotate(360deg); }
@@ -235,6 +270,7 @@ body{
   .liquid, .liquid::before{ animation:none !important; }
   #breath-btn{ animation:none !important; }
   #v2{ animation:none !important; }
+  .bottom a, .sig{ animation:none !important; }
 }
 </style>
 </head>
@@ -242,12 +278,10 @@ body{
 <body>
 
 <div class="bg" aria-hidden="true">
-  <!-- lava base (debajo) -->
   <video id="v1" autoplay muted loop playsinline preload="auto">
     <source src="lava.mp4" type="video/mp4">
   </video>
 
-  <!-- super8 prota moderado -->
   <video id="v2" autoplay muted loop playsinline preload="auto">
     <source src="super8.mp4" type="video/mp4">
   </video>
@@ -284,12 +318,10 @@ const v2 = document.getElementById('v2');
 
 let playing = false;
 
-/* ===== Audio reactive ===== */
 let audioCtx, analyser, sourceNode, data;
 let reactiveReady = false;
 let rafId = null;
 
-// bases (lava debajo + super8 más presente, zen)
 const baseVid = { bri: 0.92, sat: 0.95, con: 1.06, zoom: 1.045, v2a: 0.34 };
 const baseLiquid = { op: 0.10 };
 
@@ -323,16 +355,14 @@ function reactiveLoop(){
   if(!analyser) return;
 
   const e = getEnergy();
-  const n = Math.min(1, Math.pow(e, 0.88)); // zen
+  const n = Math.min(1, Math.pow(e, 0.88));
 
-  // vídeo: micro respiración
   document.documentElement.style.setProperty('--v-bri', (baseVid.bri + n*0.07).toFixed(3));
   document.documentElement.style.setProperty('--v-sat', (baseVid.sat + n*0.15).toFixed(3));
   document.documentElement.style.setProperty('--v-con', (baseVid.con + n*0.05).toFixed(3));
   document.documentElement.style.setProperty('--v-zoom', (baseVid.zoom + n*0.007).toFixed(4));
   document.documentElement.style.setProperty('--v2-alpha', (baseVid.v2a + n*0.05).toFixed(3));
 
-  // liquid mínimo, solo “vida”
   if(liquid){
     liquid.style.opacity = (baseLiquid.op + n*0.03).toFixed(3);
   }
@@ -351,7 +381,6 @@ function stopReactive(){
     rafId = null;
   }
 
-  // vuelve a base
   document.documentElement.style.setProperty('--v-bri', String(baseVid.bri));
   document.documentElement.style.setProperty('--v-sat', String(baseVid.sat));
   document.documentElement.style.setProperty('--v-con', String(baseVid.con));
@@ -361,7 +390,6 @@ function stopReactive(){
   if(liquid) liquid.style.opacity = String(baseLiquid.op);
 }
 
-/* ===== fades (sin pisarse) ===== */
 let fadeTimer = null;
 
 function clearFade(){
@@ -399,7 +427,6 @@ function fadeOut(duration=1000){
   }, step);
 }
 
-/* ===== autoplay-friendly: videos muted ===== */
 function kickVideos(){
   [v1, v2].forEach(v=>{
     if(!v) return;
@@ -409,7 +436,6 @@ function kickVideos(){
   });
 }
 
-/* ===== BOTÓN TOGGLE: respira / silencio ===== */
 btn.addEventListener('click', async () => {
   if(!playing){
     initAudioReactive();
@@ -433,9 +459,9 @@ btn.addEventListener('click', async () => {
   }
 });
 
-// si toca antes en móvil, intenta arrancar videos
 window.addEventListener('pointerdown', ()=>{ if(!playing) kickVideos(); }, { once:true });
 </script>
+
 <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
