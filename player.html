@@ -916,7 +916,7 @@
 
   .signal-btn::before,
   .signal-btn::after{
-    content: "MANTENER LA SEÑAL";
+    content: "APOYAR EL VINILO";
     position:absolute;
     inset:0;
     display:flex;
@@ -1324,15 +1324,15 @@
 
     <div class="support">
       <button class="support-btn signal-btn" id="support-btn" type="button">
-        MANTENER LA SEÑAL
+        Apoyar el vinilo 💿
       </button>
 
       <div class="support-note" id="signal-status">
-        La casa del terror está abierta.
+        El vinilo está en camino. Si quieres apoyar el proyecto, puedes hacer una aportación libre por Bizum.
       </div>
 
       <div class="download-note">
-        Descarga el disco sin pedir permiso.
+        No es una preventa ni una obligación. Es una forma de apoyar a Cosmic Marciana.
       </div>
 
       <a class="download-link" href="https://github.com/cosmicmarciana/cosmicmarciana.github.io/releases/download/v1.0/la-casa-del-terror.zip" target="_blank">
@@ -2242,7 +2242,7 @@
       const bizum = "+34623190151";
 
       btn.classList.add("glitch");
-      status.textContent = "Transmitiendo señal…";
+      status.textContent = "Copiando Bizum…";
 
       setTimeout(()=>{
         btn.classList.remove("glitch");
@@ -2251,17 +2251,17 @@
       try{
         if(navigator.clipboard && window.isSecureContext){
           await navigator.clipboard.writeText(bizum);
-          status.textContent = "Señal transmitida. Bizum copiado.";
+          status.textContent = "Bizum copiado. Aportación libre para apoyar el vinilo 💚";
         } else {
-          window.prompt("Envía señal a este número:", bizum);
+          window.prompt("Copia este número de Bizum:", bizum);
           status.textContent = "Copia manual necesaria.";
         }
       }catch{
-        status.textContent = "Error en la transmisión.";
+        status.textContent = "No se pudo copiar el Bizum automáticamente.";
       }
 
       setTimeout(()=>{
-        status.textContent = "La casa del terror está abierta.";
+        status.textContent = "El vinilo está en camino. Si quieres apoyar el proyecto, puedes hacer una aportación libre por Bizum.";
       }, 2800);
     });
   }
