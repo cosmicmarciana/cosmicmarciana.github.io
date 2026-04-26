@@ -1103,16 +1103,7 @@
     isolation:isolate;
   }
 
-  .vinyl-card::before{
-    content:"";
-    position:absolute;
-    inset:-42%;
-    background: conic-gradient(from 0deg, transparent, rgba(0,255,0,.11), transparent, rgba(255,43,43,.07), transparent);
-    opacity:.55;
-    animation: vinyl-pirate-scan 11s linear infinite;
-    pointer-events:none;
-    z-index:-1;
-  }
+ 
 
   .vinyl-card::after{
     content:"";
@@ -1125,7 +1116,7 @@
     opacity:.22;
   }
 
-  @keyframes vinyl-pirate-scan{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
+ 
 
   .vinyl-close{
     position:absolute;
@@ -1484,6 +1475,11 @@
     .psy-now .title{ font-size:16px; }
     .psy-controls button{ width:60px; height:60px; }
   }
+  .vinyl-card::before{
+  display: none !important;
+  animation: none !important;
+  content: none !important;
+}
 </style>
 </head>
 
