@@ -858,7 +858,7 @@
     accent-color: var(--neon);
   }
 
-  /* ===== SUPPORT / SIGNAL ===== */
+  /* ===== SUPPORT (CAFÉ) ===== */
   .support{
     margin: 18px auto 10px;
     width: min(720px, 100%);
@@ -906,58 +906,6 @@
   }
   .support-btn:active{ transform:none !important; }
 
-  .signal-btn{
-    position: relative;
-    overflow: hidden;
-    font-weight: 800;
-    letter-spacing: .18em;
-    text-transform: uppercase;
-  }
-
-  .signal-btn::before,
-  .signal-btn::after{
-    content: "APOYAR EL VINILO";
-    position:absolute;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    pointer-events:none;
-    opacity:0;
-  }
-
-  .signal-btn::before{
-    color:#00ff00;
-    transform: translate(-2px,0);
-    text-shadow: 0 0 14px rgba(0,255,0,.55);
-  }
-
-  .signal-btn::after{
-    color:#ffffff;
-    transform: translate(2px,0);
-    text-shadow: 0 0 12px rgba(255,255,255,.35);
-  }
-
-  .signal-btn.glitch::before{
-    opacity:.75;
-    animation: signal-glitch-1 .2s steps(2,end) infinite;
-  }
-  .signal-btn.glitch::after{
-    opacity:.65;
-    animation: signal-glitch-2 .2s steps(2,end) infinite;
-  }
-
-  @keyframes signal-glitch-1{
-    0%{ transform:translate(-2px,0); clip-path: inset(0 0 65% 0); }
-    50%{ transform:translate(-7px,1px); clip-path: inset(35% 0 25% 0); }
-    100%{ transform:translate(-2px,0); clip-path: inset(70% 0 0 0); }
-  }
-  @keyframes signal-glitch-2{
-    0%{ transform:translate(2px,0); clip-path: inset(60% 0 0 0); }
-    50%{ transform:translate(7px,-1px); clip-path: inset(10% 0 55% 0); }
-    100%{ transform:translate(2px,0); clip-path: inset(0 0 70% 0); }
-  }
-
   .support-note{
     margin-top:10px;
     font-size:12px;
@@ -991,6 +939,130 @@
     font-size:12px;
     color: var(--muted);
     opacity:.9;
+  }
+
+  /* ===== MODAL ===== */
+  .modal{
+    position: fixed;
+    inset: 0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding: 18px;
+    background: rgba(0,0,0,.55);
+    z-index: 999;
+  }
+  .modal.open{ display:flex; }
+
+  .modal-card{
+    width: min(560px, 100%);
+    border-radius: 16px;
+    background: rgba(10,8,8,.95);
+    border: 1px solid rgba(255,255,255,.12);
+    box-shadow: 0 0 34px rgba(0,0,0,.55);
+    padding: 16px 16px 14px;
+    text-align:left;
+    position: relative;
+  }
+
+  .modal-close{
+    position:absolute;
+    top:10px;
+    right:10px;
+
+    width:48px !important;
+    height:48px !important;
+    padding:0 !important;
+
+    border-radius:999px;
+    background: rgba(255,255,255,.08) !important;
+    border:1px solid rgba(255,255,255,.16) !important;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+    color: var(--muted) !important;
+
+    box-shadow:none !important;
+    transform:none !important;
+
+    z-index:5;
+    pointer-events:auto;
+    touch-action: manipulation;
+  }
+  .modal-close:hover{
+    border-color: rgba(0,255,0,.45) !important;
+    color: var(--neon) !important;
+  }
+  .modal-close svg{
+    width:18px;
+    height:18px;
+    display:block;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:2.2;
+    stroke-linecap:round;
+    pointer-events:none !important;
+  }
+
+  .modal-title{
+    font-size:14px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color: var(--ink);
+    opacity:.95;
+    margin: 4px 0 8px;
+  }
+
+  .modal-text{
+    font-size:13px;
+    color: var(--muted);
+    line-height:1.45;
+    margin-bottom:12px;
+  }
+
+  .support-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:12px;
+    background: rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.08);
+  }
+
+  .support-label{
+    font-size:12px;
+    color: var(--muted);
+    letter-spacing:.10em;
+    text-transform:uppercase;
+  }
+
+  .support-value{
+    font-size:13px;
+    color: var(--ink);
+    flex:1;
+    text-align:center;
+  }
+
+  .copy-btn{
+    padding: 10px 12px;
+    border-radius: 999px;
+    border:1px solid rgba(0,255,0,.28);
+    background: rgba(0,255,0,.10);
+    color: var(--ink);
+    cursor:pointer;
+    transition:.18s ease;
+    white-space:nowrap;
+    width:auto;
+    height:auto;
+  }
+  .copy-btn:hover{
+    color: var(--neon);
+    border-color: rgba(0,255,0,.5);
   }
 
   /* Playlist */
@@ -1323,21 +1395,64 @@
     </div>
 
     <div class="support">
-      <button class="support-btn signal-btn" id="support-btn" type="button">
-        Apoyar el vinilo 💿
+      <button class="support-btn" id="support-open" type="button">
+        Vinilo en proceso <span class="coffee" aria-hidden="true">💿</span>
       </button>
 
-      <div class="support-note" id="signal-status">
-        El vinilo está en camino. Si quieres apoyar el proyecto, puedes hacer una aportación libre por Bizum.
+      <div class="support-note">
+        La casa del terror está abierta. Descarga el disco sin pedir permiso.
       </div>
-
       <div class="download-note">
-        No es una preventa ni una obligación. Es una forma de apoyar a Cosmic Marciana.
+        Puedes ayudar a que el vinilo exista. 💚
       </div>
 
       <a class="download-link" href="https://github.com/cosmicmarciana/cosmicmarciana.github.io/releases/download/v1.0/la-casa-del-terror.zip" target="_blank">
         ⬇ Descargar el disco (ZIP)
       </a>
+    </div>
+
+    <div class="modal" id="support-modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-label="Colabora con Cosmic Marciana">
+        <button class="modal-close" id="support-close" type="button" aria-label="Cerrar">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18"></path>
+          </svg>
+        </button>
+
+        <div class="modal-title">Apoya la transmisión</div>
+        <div class="modal-text">
+          La casa del terror sigue emitiendo…
+          <br>
+          pero necesita tomar forma física.
+           <br><br>
+          Las voces quieren salir del espectro.
+           <br> 
+          El vinilo está intentando existir.
+           <br><br>
+          Si formas parte, se materializa.
+           <br><br>
+          Mantén la señal por bizum.
+          <br> 
+          Cuando gire en un tocadiscos,
+           <br> 
+tú estarás ahí.
+          <br><br>
+          Aportación libre - cada señal cuenta
+          <br><br>
+          Si colaboras, deja tu nombre o alias.
+          <br>
+          La casa sabrá quien eres y saldrás en los créditos del vinilo.
+          
+          <br><br>
+          <strong>Gracias por no apagar esto. 💚</strong>
+        </div>
+
+        <div class="support-row">
+          <div class="support-label">Bizum</div>
+          <div class="support-value" id="bizum-number">+34 623 190 151</div>
+          <button class="copy-btn" id="copy-bizum" type="button">Copiar</button>
+        </div>
+      </div>
     </div>
 
     <audio id="audio" preload="metadata" playsinline></audio>
@@ -2233,36 +2348,50 @@
   }
 
   function supportInit(){
-    const btn = document.getElementById("support-btn");
-    const status = document.getElementById("signal-status");
+    const openBtn = document.getElementById("support-open");
+    const modal = document.getElementById("support-modal");
+    const closeBtn = document.getElementById("support-close");
+    const copyBtn = document.getElementById("copy-bizum");
+    const bizumEl = document.getElementById("bizum-number");
 
-    if(!btn || !status) return;
+    if(!openBtn || !modal || !closeBtn) return;
 
-    btn.addEventListener("click", async ()=>{
-      const bizum = "+34623190151";
+    function open(){
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden","false");
+      closeBtn.focus();
+    }
+    function close(){
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden","true");
+      openBtn.focus();
+    }
 
-      btn.classList.add("glitch");
-      status.textContent = "Copiando Bizum…";
+    openBtn.addEventListener("click", open);
+    closeBtn.addEventListener("click", close);
 
-      setTimeout(()=>{
-        btn.classList.remove("glitch");
-      }, 600);
+    modal.addEventListener("click", (e)=>{
+      if(e.target === modal) close();
+    });
+
+    document.addEventListener("keydown", (e)=>{
+      if(e.key === "Escape" && modal.classList.contains("open")) close();
+    });
+
+    copyBtn?.addEventListener("click", async ()=>{
+      const txt = (bizumEl?.textContent || "").trim();
+      if(!txt) return;
 
       try{
         if(navigator.clipboard && window.isSecureContext){
-          await navigator.clipboard.writeText(bizum);
-          status.textContent = "Bizum copiado. Aportación libre para apoyar el vinilo 💚";
-        } else {
-          window.prompt("Copia este número de Bizum:", bizum);
-          status.textContent = "Copia manual necesaria.";
+          await navigator.clipboard.writeText(txt);
+          copyBtn.textContent = "Copiado";
+          setTimeout(()=> copyBtn.textContent = "Copiar", 900);
+          return;
         }
-      }catch{
-        status.textContent = "No se pudo copiar el Bizum automáticamente.";
-      }
+      } catch {}
 
-      setTimeout(()=>{
-        status.textContent = "El vinilo está en camino. Si quieres apoyar el proyecto, puedes hacer una aportación libre por Bizum.";
-      }, 2800);
+      window.prompt("Copia este Bizum:", txt);
     });
   }
 
@@ -2286,4 +2415,8 @@
 </script>
 
 </body>
-</html>
+</html> 
+
+
+
+
