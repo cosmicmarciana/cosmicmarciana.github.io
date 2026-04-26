@@ -1065,163 +1065,6 @@
     border-color: rgba(0,255,0,.5);
   }
 
-
-
-  /* ===== TIENDA PIRATA / VINILO ===== */
-  .vinyl-modal{
-    position: fixed;
-    inset: 0;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding: 18px;
-    background:
-      radial-gradient(circle at 50% 42%, rgba(0,255,0,.13), rgba(0,0,0,0) 38%),
-      repeating-linear-gradient(to bottom, rgba(255,255,255,.025) 0, rgba(255,255,255,.025) 1px, transparent 3px),
-      rgba(0,0,0,.76);
-    z-index: 1800;
-  }
-  .vinyl-modal.open{ display:flex; }
-
-  .vinyl-card{
-    width: min(720px, 100%);
-    max-height: calc(100vh - 36px);
-    overflow:auto;
-    border-radius: 18px;
-    background:
-      radial-gradient(circle at 50% 18%, rgba(0,255,0,.12), rgba(0,0,0,0) 38%),
-      linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.018)),
-      rgba(10,8,8,.97);
-    border: 1px solid rgba(0,255,0,.42);
-    box-shadow:
-      0 0 44px rgba(0,255,0,.22),
-      0 0 100px rgba(0,0,0,.85),
-      inset 0 0 30px rgba(255,255,255,.035);
-    padding: 18px 18px 16px;
-    text-align:center;
-    position: relative;
-    isolation:isolate;
-  }
-
- 
-
-  .vinyl-card::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    border-radius:18px;
-    pointer-events:none;
-    background: repeating-linear-gradient(to bottom, rgba(255,255,255,.035) 0, rgba(255,255,255,.035) 1px, transparent 3px, transparent 6px);
-    mix-blend-mode:overlay;
-    opacity:.22;
-  }
-
- 
-
-  .vinyl-close{
-    position:absolute;
-    top:12px;
-    right:12px;
-    width:46px !important;
-    height:46px !important;
-    border-radius:999px;
-    background: rgba(0,0,0,.52) !important;
-    border:1px solid rgba(255,255,255,.18) !important;
-    color: var(--muted) !important;
-    box-shadow:none !important;
-    transform:none !important;
-    z-index:3;
-  }
-  .vinyl-close:hover{
-    color: var(--neon) !important;
-    border-color: rgba(0,255,0,.58) !important;
-    box-shadow: 0 0 18px rgba(0,255,0,.18) !important;
-  }
-
-  .vinyl-stamp{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    margin: 4px auto 12px;
-    padding: 7px 12px;
-    border-radius:999px;
-    border:1px solid rgba(0,255,0,.42);
-    background: rgba(0,0,0,.38);
-    color: var(--neon);
-    box-shadow:0 0 20px rgba(0,255,0,.18);
-    font-size:11px;
-    letter-spacing:.18em;
-    text-transform:uppercase;
-  }
-
-  .vinyl-img{
-    width:100%;
-    max-width:640px;
-    display:block;
-    margin:0 auto 15px;
-    border-radius:14px;
-    box-shadow: 0 0 32px rgba(0,0,0,.75), 0 0 32px rgba(0,255,0,.11);
-    user-select:none;
-    -webkit-user-drag:none;
-  }
-
-  .vinyl-title{
-    margin: 0 0 9px;
-    font-size: 19px;
-    line-height:1.1;
-    font-weight:900;
-    letter-spacing:.18em;
-    text-transform:uppercase;
-    color: var(--ink);
-    text-shadow:0 0 20px rgba(0,255,0,.16);
-  }
-
-  .vinyl-text{
-    color:var(--muted);
-    font-size:13px;
-    line-height:1.45;
-    margin:0 auto 16px;
-    max-width:560px;
-  }
-
-  .vinyl-buy-link{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    padding: 13px 22px;
-    border-radius:999px;
-    border:1px solid rgba(0,255,0,.62);
-    background:rgba(0,255,0,.13);
-    color:var(--ink);
-    text-decoration:none;
-    font-weight:900;
-    letter-spacing:.08em;
-    text-transform:uppercase;
-    box-shadow: 0 0 20px rgba(0,255,0,.23), inset 0 0 14px rgba(0,255,0,.08);
-    transition:.18s ease;
-  }
-  .vinyl-buy-link:hover{
-    color:var(--neon);
-    border-color:rgba(0,255,0,.86);
-    box-shadow:0 0 36px rgba(0,255,0,.36);
-  }
-
-  .vinyl-smallprint{
-    margin-top:14px;
-    color:var(--muted);
-    opacity:.72;
-    font-size:11px;
-    letter-spacing:.12em;
-    text-transform:uppercase;
-  }
-
-  @media (max-width:560px){
-    .vinyl-card{ padding:14px; }
-    .vinyl-title{ font-size:16px; letter-spacing:.13em; }
-    .vinyl-text{ font-size:12px; }
-    .vinyl-stamp{ font-size:10px; letter-spacing:.12em; padding-right:50px; }
-  }
-
   /* Playlist */
   .playlist{
     margin:18px auto 0;
@@ -1475,14 +1318,210 @@
     .psy-now .title{ font-size:16px; }
     .psy-controls button{ width:60px; height:60px; }
   }
-  .vinyl-card::before{
-  display: none !important;
-  animation: none !important;
-  content: none !important;
-}
-  .support-btn {
-  margin-top: 14px;
-}
+
+
+  /* ===== TIENDA PIRATA: VINILO + LIBRO ===== */
+  .signal-arrow{
+    margin: 14px auto 8px;
+    text-align:center;
+    color: var(--neon);
+    font-size: 18px;
+    line-height: 1;
+    opacity: .75;
+    text-shadow: 0 0 10px rgba(0,255,0,.55);
+    animation: signal-blink 1.8s infinite steps(2,end);
+    user-select:none;
+  }
+
+  @keyframes signal-blink{
+    0%   { opacity:.18; transform: translateY(0); filter:brightness(.8); }
+    9%   { opacity:.95; transform: translateY(1px); filter:brightness(1.35); }
+    13%  { opacity:.26; }
+    22%  { opacity:.82; }
+    24%  { opacity:.12; transform: translateY(0); }
+    42%  { opacity:.70; transform: translateY(1px); }
+    65%  { opacity:.32; }
+    74%  { opacity:1; transform: translateY(-1px); filter:brightness(1.5); }
+    77%  { opacity:.22; }
+    100% { opacity:.62; transform: translateY(0); filter:brightness(1); }
+  }
+
+  .pirate-modal{
+    position:fixed;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    background:
+      radial-gradient(circle at 50% 42%, rgba(0,255,0,.10), rgba(0,0,0,0) 38%),
+      rgba(0,0,0,.74);
+    z-index:1400;
+  }
+
+  .pirate-modal.open{ display:flex; }
+
+  .pirate-card{
+    width:min(720px,100%);
+    max-height: calc(100vh - 36px);
+    overflow:auto;
+    padding:18px;
+    border-radius:18px;
+    position:relative;
+    text-align:center;
+    background:
+      repeating-linear-gradient(to bottom, rgba(255,255,255,.022) 0, rgba(255,255,255,.022) 1px, transparent 3px),
+      radial-gradient(circle at 50% 10%, rgba(0,255,0,.10), transparent 42%),
+      rgba(9,8,8,.97);
+    border:1px solid rgba(0,255,0,.38);
+    box-shadow:
+      0 0 44px rgba(0,255,0,.20),
+      0 0 90px rgba(0,0,0,.74),
+      inset 0 0 34px rgba(255,255,255,.035);
+  }
+
+  .pirate-close{
+    position:absolute;
+    top:12px;
+    right:12px;
+    width:44px !important;
+    height:44px !important;
+    border-radius:999px;
+    background:rgba(0,0,0,.52) !important;
+    border:1px solid rgba(255,255,255,.18) !important;
+    color:var(--muted) !important;
+    box-shadow:none !important;
+    transform:none !important;
+    z-index:2;
+  }
+
+  .pirate-close:hover{
+    color:var(--neon) !important;
+    border-color:rgba(0,255,0,.55) !important;
+  }
+
+  .pirate-stamp{
+    display:inline-block;
+    margin:4px 52px 12px;
+    padding:6px 10px;
+    border:1px solid rgba(0,255,0,.35);
+    border-radius:999px;
+    color:var(--neon);
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    background:rgba(0,0,0,.34);
+    box-shadow:0 0 18px rgba(0,255,0,.16);
+  }
+
+  .pirate-product{
+    padding: 10px 0 18px;
+  }
+
+  .pirate-img{
+    width:100%;
+    max-width:640px;
+    display:block;
+    margin:0 auto 16px;
+    border-radius:13px;
+    box-shadow:0 0 30px rgba(0,0,0,.72);
+  }
+
+  .pirate-title{
+    margin-bottom:8px;
+    font-size:18px;
+    font-weight:900;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--ink);
+  }
+
+  .pirate-text{
+    font-size:13px;
+    color:var(--muted);
+    line-height:1.45;
+    margin-bottom:16px;
+  }
+
+  .pirate-cta,
+  .book-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:13px 22px;
+    border-radius:999px;
+    border:1px solid rgba(0,255,0,.62);
+    background:rgba(0,255,0,.13);
+    color:var(--ink);
+    text-decoration:none;
+    font-weight:900;
+    letter-spacing:.09em;
+    box-shadow:
+      0 0 20px rgba(0,255,0,.24),
+      inset 0 0 14px rgba(0,255,0,.08);
+  }
+
+  .pirate-cta:hover,
+  .book-btn:hover{
+    color:var(--neon);
+    box-shadow:0 0 34px rgba(0,255,0,.36);
+  }
+
+  .pirate-divider{
+    margin: 22px auto 18px;
+    width:min(420px, 82%);
+    height:1px;
+    background:linear-gradient(90deg, transparent, rgba(0,255,0,.34), transparent);
+  }
+
+  .book-block{
+    padding: 4px 0 2px;
+  }
+
+  .book-img{
+    width:100%;
+    max-width:310px;
+    display:block;
+    margin:8px auto 14px;
+    border-radius:10px;
+    box-shadow:
+      0 0 28px rgba(0,0,0,.68),
+      0 0 18px rgba(0,255,0,.16);
+  }
+
+  .book-title{
+    font-size:15px;
+    font-weight:900;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--ink);
+    margin-bottom:8px;
+  }
+
+  .book-text{
+    font-size:13px;
+    color:var(--muted);
+    line-height:1.45;
+    margin-bottom:15px;
+  }
+
+  .pirate-smallprint{
+    margin-top:16px;
+    font-size:11px;
+    color:var(--muted);
+    opacity:.72;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+  }
+
+  @media (max-width:560px){
+    .pirate-card{ padding:14px; }
+    .pirate-stamp{ margin-right:48px; margin-left:8px; font-size:10px; }
+    .pirate-title{ font-size:15px; }
+    .pirate-text,.book-text{ font-size:12px; }
+    .book-img{ max-width:260px; }
+  }
+
 </style>
 </head>
 
@@ -1558,47 +1597,70 @@
       <div class="track" data-index="9">10. STOP!</div>
       <div class="track" data-index="10">11. ¿Quién llena los shows?</div>
     </div>
+
     <div class="support">
-     <div class="support-note">
-        La casa del terror está abierta. Descarga el disco sin pedir permiso. 💚
+      <div class="support-note">
+        La casa del terror está abierta. Descarga el disco sin pedir permiso.
       </div>
-     <a class="download-link" href="https://github.com/cosmicmarciana/cosmicmarciana.github.io/releases/download/v1.0/la-casa-del-terror.zip" target="_blank">
+
+      <a class="download-link" href="https://github.com/cosmicmarciana/cosmicmarciana.github.io/releases/download/v1.0/la-casa-del-terror.zip" target="_blank">
         ⬇ Descargar el disco (ZIP)
       </a>
-    <div class="download-note">
-        Si quieres el vinilo… entra en la tienda pirata. 
+
+      <div class="download-note">
+        Si quieres el vinilo… busca la señal de la tienda pirata. 💚
       </div>
-      <button class="support-btn" id="vinyl-open" type="button">
-        Tienda pirata <span class="coffee" aria-hidden="true">☠️</span>
+
+      <div class="signal-arrow" aria-hidden="true">▼</div>
+
+      <button class="support-btn" id="pirate-open" type="button">
+        Tienda pirata <span class="coffee" aria-hidden="true">☠</span>
       </button>
-      </div>
+    </div>
 
-      
+    <div class="pirate-modal" id="pirate-modal" aria-hidden="true">
+      <div class="pirate-card" role="dialog" aria-modal="true" aria-label="Tienda pirata">
+        <button class="pirate-close" id="pirate-close" type="button" aria-label="Cerrar">✕</button>
 
-    <div class="vinyl-modal" id="vinyl-modal" aria-hidden="true">
-      <div class="vinyl-card" role="dialog" aria-modal="true" aria-label="Edición en vinilo La casa del terror">
-        <button class="vinyl-close" id="vinyl-close" type="button" aria-label="Cerrar">✕</button>
+        <div class="pirate-stamp">EMISIÓN PIRATA · CM-401</div>
 
-        
+        <section class="pirate-product" aria-label="Vinilo La casa del terror">
+          <img src="./vinilo-la-casa.png?v=7" class="pirate-img" alt="Vinilo La casa del terror">
 
-        <img src="vinilo-la-casa.png" class="vinyl-img" alt="Vinilo La casa del terror">
+          <div class="pirate-title">Edición en vinilo</div>
 
-        <div class="vinyl-title">Edición en vinilo CM-△01</div>
+          <div class="pirate-text">
+            La casa del terror ha tomado forma física.<br>
+            Prensado terrestre próximamente disponible.<br>
+            No hay tienda oficial. Solo una señal abierta.
+          </div>
 
-        <div class="vinyl-text">
-          La casa del terror ha tomado forma física.<br>
-          Prensado terrestre próximamente disponible.<br><br>
-          No hay tienda oficial.<br>
-          Solo una señal abierta.
-        </div>
+          <a href="#" class="pirate-cta" id="vinyl-buy">
+            CONSEGUIR EL VINILO
+          </a>
+        </section>
 
-        <!-- Cuando tengas el link real, cambia el href="#" por tu URL de compra. -->
-        <a href="#" class="vinyl-buy-link" id="vinyl-buy" target="_blank" rel="noopener">
-          Conseguir el vinilo
-        </a>
+        <div class="pirate-divider" aria-hidden="true"></div>
+        <div class="signal-arrow" aria-hidden="true">▼</div>
 
-        <div class="vinyl-smallprint">
-          Sin filtros · Sin miedo · Sin permiso
+        <section class="book-block" aria-label="Libro El hombre invisible">
+          <img src="./libro.png?v=1" class="book-img" alt="Libro El hombre invisible">
+
+          <div class="book-title">El hombre invisible</div>
+
+          <div class="book-text">
+            Una señal paralela.<br>
+            Una historia que no debía materializarse.<br>
+            Pero lo hizo.
+          </div>
+
+          <a href="#" class="book-btn" id="book-buy" target="_blank">
+            CONSEGUIR EL LIBRO
+          </a>
+        </section>
+
+        <div class="pirate-smallprint">
+          Transmisión no autorizada · Sin filtros · Sin miedo · Sin permiso
         </div>
       </div>
     </div>
@@ -2495,11 +2557,12 @@
     document.addEventListener("fullscreenchange", updateFullscreenIcon);
   }
 
-  function vinylInit(){
-    const openBtn = document.getElementById("vinyl-open");
-    const modal = document.getElementById("vinyl-modal");
-    const closeBtn = document.getElementById("vinyl-close");
-    const buyLink = document.getElementById("vinyl-buy");
+  function pirateInit(){
+    const openBtn = document.getElementById("pirate-open");
+    const modal = document.getElementById("pirate-modal");
+    const closeBtn = document.getElementById("pirate-close");
+    const vinylBuy = document.getElementById("vinyl-buy");
+    const bookBuy = document.getElementById("book-buy");
 
     if(!openBtn || !modal || !closeBtn) return;
 
@@ -2526,12 +2589,14 @@
       if(e.key === "Escape" && modal.classList.contains("open")) close();
     });
 
-    buyLink?.addEventListener("click", (e)=>{
-      const href = buyLink.getAttribute("href");
-      if(!href || href === "#"){
-        e.preventDefault();
-        setStatus("Link de compra próximamente.");
-      }
+    vinylBuy?.addEventListener("click", (e)=>{
+      e.preventDefault();
+      setStatus("Vinilo próximamente disponible.");
+    });
+
+    bookBuy?.addEventListener("click", (e)=>{
+      e.preventDefault();
+      setStatus("Libro próximamente disponible.");
     });
   }
 
@@ -2539,7 +2604,7 @@
     renderIcons();
     applyStoredSettings();
     wireEvents();
-    vinylInit();
+    pirateInit();
     updateFullscreenIcon();
     setPsyTitle();
     applyResumeTimeIfAny();
