@@ -2,22 +2,11 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>PRÓXIMAMENTE | La Casa del Terror</title>
-
+<title>La Casa del Terror - Próximamente</title>
 <style>
-  :root {
-    --neon: #00ff00;
-    --ink: #eaeaea;
-    --blood: #ff2b2b;
-  }
-
   body {
     margin: 0;
-    padding: 0;
-    background: #050303;
-    color: var(--ink);
-    font-family: Arial, sans-serif;
+    background: #000;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -25,137 +14,66 @@
     overflow: hidden;
   }
 
-  /* Tu textura de fondo original */
-  .bg {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    background: linear-gradient(180deg, #1a1412, #0e0a09 50%, #050303);
-  }
-
-  .wrap {
-    width: 100%;
-    max-width: 500px;
-    text-align: center;
-    padding: 20px;
-  }
-
-  /* LA TELEVISIÓN (Tu estructura original) */
-  .crt {
+  .tv-container {
     position: relative;
-    width: fit-content;
-    margin: 0 auto 30px;
-    isolation: isolate;
-  }
-
-  /* La imagen de la tele vacía (o con la portada) */
-  #cover-tv {
     width: 100%;
-    max-width: 420px;
-    border-radius: 12px;
+    max-width: 600px; /* Ajusta el tamaño de la tele aquí */
+  }
+
+  /* TU TELE (t1.jpg) */
+  .tv-frame {
+    width: 100%;
     display: block;
-    filter: drop-shadow(0 0 20px rgba(0,0,0,0.8));
-    animation: tv-flicker 4s infinite;
+    position: relative;
+    z-index: 2;
   }
 
-  /* LA PANTALLA VHS (Donde va tu portada) */
-  .tv-screen {
+  /* TU PORTADA (portada.jpg) DENTRO DEL HUECO */
+  .screen-content {
     position: absolute;
-    left: 17.63%;
-    top: 22.75%;
-    width: 62.99%;
-    height: 46.83%;
+    /* Ajustes para que encaje justo en el cristal de t1.jpg */
+    top: 21%; 
+    left: 17%;
+    width: 64%;
+    height: 48%;
+    z-index: 1;
     overflow: hidden;
-    z-index: 3;
-    border-radius: 4px;
     background: #000;
+    border-radius: 50% / 10%; /* Curvatura para imitar el cristal */
   }
 
-  .portada-vhs {
+  .portada-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0.8; /* Un poco de transparencia para que el ruido se note más */
-    filter: contrast(1.2) brightness(0.9);
+    filter: brightness(0.8) contrast(1.2);
   }
 
-  /* Efecto de líneas CRT */
-  .tv-screen::before {
-    content: "";
+  /* Efecto extra de "tele encendida" */
+  .overlay {
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(to bottom, rgba(255,255,255,.05) 0px, transparent 2px);
-    z-index: 4;
+    background: repeating-linear-gradient(
+      rgba(255,255,255,0.03) 0px,
+      transparent 2px
+    );
+    z-index: 3;
     pointer-events: none;
-  }
-
-  /* Glitch de interferencia */
-  .vhs-noise {
-    position: absolute;
-    inset: 0;
-    background: url('https://media.giphy.com/media/oEI9uWUicKgS2UzSre/giphy.gif'); /* Ruido estático opcional */
-    opacity: 0.1;
-    z-index: 5;
-    mix-blend-mode: screen;
-    pointer-events: none;
-  }
-
-  /* Textos */
-  .title {
-    color: var(--blood);
-    font-size: 20px;
-    font-weight: 800;
-    letter-spacing: .25em;
-    text-transform: uppercase;
-    margin-bottom: 5px;
-    animation: red-flicker 3s infinite;
-  }
-
-  .status {
-    display: inline-block;
-    margin-top: 15px;
-    padding: 10px 20px;
-    border: 1px solid var(--neon);
-    color: var(--neon);
-    border-radius: 999px;
-    font-size: 12px;
-    letter-spacing: 2px;
-    box-shadow: 0 0 15px rgba(0,255,0,0.1);
-  }
-
-  @keyframes tv-flicker {
-    0%, 100% { filter: brightness(1); }
-    50% { filter: brightness(0.98); }
-  }
-
-  @keyframes red-flicker {
-    0%, 100% { opacity: 1; }
-    80% { opacity: 0.8; }
-    85% { opacity: 1; text-shadow: 0 0 10px var(--blood); }
   }
 </style>
 </head>
 <body>
 
-<div class="bg"></div>
-
-<div class="wrap">
-  
-  <div class="crt">
-    <!-- Aquí usamos la misma imagen de la TV que ya tienes en tu carpeta -->
-    <img src="portada.jpg" id="cover-tv" alt="TV">
+  <div class="tv-container">
+    <!-- Capa de la tele -->
+    <img src="t1.jpg" class="tv-frame">
     
-    <!-- Este es el hueco de la pantalla donde "metemos" la portada -->
-    <div class="tv-screen">
-      <img src="portada.jpg" class="portada-vhs">
-      <div class="vhs-noise"></div>
+    <!-- Capa de la portada dentro -->
+    <div class="screen-content">
+      <img src="portada.jpg" class="portada-img">
+      <div class="overlay"></div>
     </div>
   </div>
-
-  <div class="title">Señal entrante...</div>
-  <div class="status">PRÓXIMAMENTE EN PLATAFORMAS</div>
-
-</div>
 
 </body>
 </html>
