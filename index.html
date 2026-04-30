@@ -2,11 +2,20 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>La Casa del Terror - Próximamente</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>PRÓXIMAMENTE | La Casa del Terror</title>
+
 <style>
+  :root {
+    --neon: #00ff00;
+    --blood: #ff2b2b;
+  }
+
   body {
     margin: 0;
-    background: #000;
+    background: #050303;
+    color: #eaeaea;
+    font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -14,64 +23,106 @@
     overflow: hidden;
   }
 
-  .tv-container {
-    position: relative;
-    width: 100%;
-    max-width: 600px; /* Ajusta el tamaño de la tele aquí */
+  /* Fondo oscuro con degradado */
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(circle at center, #1a1412 0%, #050303 100%);
   }
 
-  /* TU TELE (t1.webp) */
+  /* CONTENEDOR DE LA TELE */
+  .tv-box {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  /* LA IMAGEN DE TU TELE (tele.webp) */
   .tv-frame {
     width: 100%;
     display: block;
     position: relative;
-    z-index: 2;
+    z-index: 5; /* Por encima de la portada */
+    pointer-events: none;
+    filter: drop-shadow(0 0 30px rgba(0,0,0,0.8));
   }
 
-  /* TU PORTADA (portada.jpg) DENTRO DEL HUECO */
-  .screen-content {
+  /* EL HUECO DE LA PANTALLA (Donde se ve portada.jpg) */
+  .screen {
     position: absolute;
-    /* Ajustes para que encaje justo en el cristal de t1.webp */
-    top: 21%; 
-    left: 17%;
-    width: 64%;
-    height: 48%;
-    z-index: 1;
+    top: 21%;    /* Ajuste para el cristal de tu tele */
+    left: 17.5%;
+    width: 63%;
+    height: 48.5%;
+    z-index: 1;  /* Por debajo del marco de la tele */
     overflow: hidden;
     background: #000;
-    border-radius: 50% / 10%; /* Curvatura para imitar el cristal */
+    border-radius: 50% / 15%; /* Curvatura tipo tubo de imagen */
   }
 
-  .portada-img {
+  .portada {
     width: 100%;
     height: 100%;
     object-fit: cover;
     filter: brightness(0.8) contrast(1.2);
+    animation: signal-noise 0.2s infinite alternate;
   }
 
-  /* Efecto extra de "tele encendida" */
+  /* Efecto de rayas y ruido */
   .overlay {
     position: absolute;
     inset: 0;
     background: repeating-linear-gradient(
-      rgba(255,255,255,0.03) 0px,
-      transparent 2px
+      transparent 0px,
+      rgba(255, 255, 255, 0.05) 1px,
+      transparent 3px
     );
-    z-index: 3;
+    z-index: 6;
     pointer-events: none;
+  }
+
+  .footer-text {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .glitch-red {
+    color: var(--blood);
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    font-weight: bold;
+    font-size: 14px;
+    text-shadow: 2px 2px #000;
+  }
+
+  @keyframes signal-noise {
+    from { transform: translateX(0.5px); }
+    to { transform: translateX(-0.5px); }
   }
 </style>
 </head>
 <body>
 
-  <div class="tv-container">
-    <!-- Capa de la tele -->
-    <img src="t1.webp" class="tv-frame">
-    
-    <!-- Capa de la portada dentro -->
-    <div class="screen-content">
-      <img src="portada.jpg" class="portada-img">
+  <div class="bg"></div>
+
+  <div class="container">
+    <div class="tv-box">
+      <!-- Capa 1: Tu portada debajo -->
+      <div class="screen">
+        <img src="portada.jpg" class="portada">
+      </div>
+
+      <!-- Capa 2: Tu tele encima -->
+      <img src="tele.webp" class="tv-frame">
+
+      <!-- Capa 3: Rayas de interferencia -->
       <div class="overlay"></div>
+    </div>
+
+    <div class="footer-text">
+      <p class="glitch-red">SEÑAL INTERRUMPIDA... PRÓXIMAMENTE</p>
     </div>
   </div>
 
