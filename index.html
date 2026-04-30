@@ -3,91 +3,104 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>PRÓXIMAMENTE | La Casa del Terror</title>
-    <!-- IMPORTAMOS TUS FUENTES -->
-    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
-    
+    <title>PRÓXIMAMENTE</title>
     <style>
-        :root {
-            --neon: #00ff00;
-            --blood: #ff2b2b;
-            --dark: #050303;
-        }
-
         body {
             margin: 0;
             padding: 0;
-            background: var(--dark);
-            /* Tu degradado original */
-            background-image: linear-gradient(180deg, #1a1412, #050303);
-            color: #eee;
-            font-family: 'Montserrat', sans-serif;
+            /* Tu fondo original del player */
+            background: linear-gradient(180deg, #1a1412, #050303);
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: white;
+            overflow: hidden;
         }
 
         .container {
             text-align: center;
-            padding: 20px;
-            max-width: 480px;
-            width: 100%;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        /* EFECTO GLITCH PARA LA PORTADA */
+        .glitch-wrapper {
+            position: relative;
+            margin-bottom: 30px;
         }
 
         .portada {
             width: 100%;
-            height: auto;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
-            margin-bottom: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.05);
+            display: block;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
         }
 
-        /* LA FUENTE DE TERROR */
-        .proximamente {
-            font-family: 'Creepster', cursive;
-            color: var(--blood);
-            font-size: 3.5rem;
-            line-height: 1.2;
+        /* Capas de glitch */
+        .glitch-wrapper::before,
+        .glitch-wrapper::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('portada.jpg') no-repeat center;
+            background-size: cover;
+            opacity: 0.5;
+        }
+
+        .glitch-wrapper::before {
+            left: 2px;
+            text-shadow: -2px 0 #ff00c1;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 5s infinite linear alternate-reverse;
+        }
+
+        .glitch-wrapper::after {
+            left: -2px;
+            text-shadow: -2px 0 #00fff9, 2px 2px #ff00c1;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim2 1s infinite linear alternate-reverse;
+        }
+
+        /* TEXTO PRÓXIMAMENTE NORMAL */
+        h1 {
+            font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 8px;
+            font-size: 1.2rem;
             margin: 0;
-            text-shadow: 3px 3px 0px #000;
+            opacity: 0.8;
         }
 
-        /* LA FUENTE DE ESTADO */
-        .status-tag {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
-            display: inline-block;
-            color: var(--neon);
-            padding: 10px 20px;
-            font-size: 0.9rem;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            margin-top: 10px;
-            border: 1px solid var(--neon);
-            background: rgba(0, 255, 0, 0.05);
+        /* ANIMACIONES */
+        @keyframes glitch-anim {
+            0% { clip: rect(31px, 9999px, 94px, 0); }
+            20% { clip: rect(62px, 9999px, 42px, 0); }
+            40% { clip: rect(16px, 9999px, 78px, 0); }
+            60% { clip: rect(81px, 9999px, 13px, 0); }
+            80% { clip: rect(43px, 9999px, 55px, 0); }
+            100% { clip: rect(12px, 9999px, 90px, 0); }
         }
 
-        /* Efecto de parpadeo suave */
-        .flicker {
-            animation: flicker-ani 4s infinite;
-        }
-
-        @keyframes flicker-ani {
-            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
-            20%, 22%, 24%, 55% { opacity: 0.5; }
+        @keyframes glitch-anim2 {
+            0% { clip: rect(65px, 9999px, 100px, 0); }
+            20% { clip: rect(10px, 9999px, 30px, 0); }
+            40% { clip: rect(45px, 9999px, 80px, 0); }
+            60% { clip: rect(15px, 9999px, 55px, 0); }
+            80% { clip: rect(70px, 9999px, 95px, 0); }
+            100% { clip: rect(5px, 9999px, 25px, 0); }
         }
     </style>
 </head>
 <body>
 
-    <div class="container flicker">
-        <img src="portada.jpg" alt="La Casa del Terror" class="portada">
-
-        <h1 class="proximamente">Próximamente</h1>
-        
-        <div class="status-tag">Conexión Interrumpida</div>
+    <div class="container">
+        <div class="glitch-wrapper">
+            <img src="portada.jpg" class="portada" alt="Portada">
+        </div>
+        <h1>Próximamente</h1>
     </div>
 
 </body>
