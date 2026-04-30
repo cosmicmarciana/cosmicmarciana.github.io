@@ -1,130 +1,86 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>PRÓXIMAMENTE | La Casa del Terror</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PRÓXIMAMENTE | La Casa del Terror</title>
+    <style>
+        :root {
+            --neon: #00ff00;
+            --blood: #ff2b2b;
+            --dark: #050303;
+        }
 
-<style>
-  :root {
-    --neon: #00ff00;
-    --blood: #ff2b2b;
-  }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--dark);
+            /* Tu fondo original */
+            background-image: linear-gradient(180deg, #1a1412, #050303);
+            color: #eee;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
 
-  body {
-    margin: 0;
-    background: #050303;
-    color: #eaeaea;
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    overflow: hidden;
-  }
+        .container {
+            text-align: center;
+            padding: 20px;
+            max-width: 450px;
+            width: 100%;
+        }
 
-  /* Fondo oscuro con degradado */
-  .bg {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    background: radial-gradient(circle at center, #1a1412 0%, #050303 100%);
-  }
+        .portada {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 43, 43, 0.2);
+            margin-bottom: 30px;
+            display: block;
+        }
 
-  /* CONTENEDOR DE LA TELE */
-  .tv-box {
-    position: relative;
-    width: 100%;
-    max-width: 500px;
-    margin: 0 auto;
-  }
+        .proximamente {
+            color: var(--blood);
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            animation: flicker 3s infinite;
+        }
 
-  /* LA IMAGEN DE TU TELE (tele.webp) */
-  .tv-frame {
-    width: 100%;
-    display: block;
-    position: relative;
-    z-index: 5; /* Por encima de la portada */
-    pointer-events: none;
-    filter: drop-shadow(0 0 30px rgba(0,0,0,0.8));
-  }
+        .status-tag {
+            display: inline-block;
+            border: 1px solid var(--neon);
+            color: var(--neon);
+            padding: 8px 15px;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            border-radius: 2px;
+            text-transform: uppercase;
+            background: rgba(0, 255, 0, 0.05);
+        }
 
-  /* EL HUECO DE LA PANTALLA (Donde se ve portada.jpg) */
-  .screen {
-    position: absolute;
-    top: 21%;    /* Ajuste para el cristal de tu tele */
-    left: 17.5%;
-    width: 63%;
-    height: 48.5%;
-    z-index: 1;  /* Por debajo del marco de la tele */
-    overflow: hidden;
-    background: #000;
-    border-radius: 50% / 15%; /* Curvatura tipo tubo de imagen */
-  }
-
-  .portada {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: brightness(0.8) contrast(1.2);
-    animation: signal-noise 0.2s infinite alternate;
-  }
-
-  /* Efecto de rayas y ruido */
-  .overlay {
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      transparent 0px,
-      rgba(255, 255, 255, 0.05) 1px,
-      transparent 3px
-    );
-    z-index: 6;
-    pointer-events: none;
-  }
-
-  .footer-text {
-    text-align: center;
-    margin-top: 20px;
-  }
-
-  .glitch-red {
-    color: var(--blood);
-    text-transform: uppercase;
-    letter-spacing: 5px;
-    font-weight: bold;
-    font-size: 14px;
-    text-shadow: 2px 2px #000;
-  }
-
-  @keyframes signal-noise {
-    from { transform: translateX(0.5px); }
-    to { transform: translateX(-0.5px); }
-  }
-</style>
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; text-shadow: 0 0 10px var(--blood); }
+            55% { opacity: 1; }
+        }
+    </style>
 </head>
 <body>
 
-  <div class="bg"></div>
+    <div class="container">
+        <!-- Tu imagen de portada -->
+        <img src="portada.jpg" alt="La Casa del Terror" class="portada">
 
-  <div class="container">
-    <div class="tv-box">
-      <!-- Capa 1: Tu portada debajo -->
-      <div class="screen">
-        <img src="portada.jpg" class="portada">
-      </div>
-
-      <!-- Capa 2: Tu tele encima -->
-      <img src="tele.webp" class="tv-frame">
-
-      <!-- Capa 3: Rayas de interferencia -->
-      <div class="overlay"></div>
+        <div class="proximamente">Próximamente</div>
+        
+        <div class="status-tag">Disponible en plataformas</div>
     </div>
-
-    <div class="footer-text">
-      <p class="glitch-red">SEÑAL INTERRUMPIDA... PRÓXIMAMENTE</p>
-    </div>
-  </div>
 
 </body>
 </html>
