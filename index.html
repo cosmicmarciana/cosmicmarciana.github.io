@@ -5,94 +5,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>PRÓXIMAMENTE</title>
     <style>
-        /* EL FONDO DE TU PLAYER */
+        /* TU FONDO DE ESPIRAL ANIMADA */
         body {
             margin: 0;
             padding: 0;
-            background-color: #050303;
-            background-image: linear-gradient(180deg, #1a1412 0%, #050303 100%);
+            background: #050303;
             height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-family: Arial, Helvetica, sans-serif; /* Tipografía normal */
+            font-family: Arial, sans-serif;
             color: white;
             overflow: hidden;
+            position: relative;
+        }
+
+        /* Generador de la espiral del player */
+        body::before {
+            content: "";
+            position: absolute;
+            width: 300%;
+            height: 300%;
+            background: repeating-conic-gradient(
+                from 0deg,
+                #050303 0deg 15deg,
+                #1a1412 15deg 30deg
+            );
+            animation: spiral 20s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes spiral {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .container {
             text-align: center;
             width: 90%;
-            max-width: 420px;
+            max-width: 400px;
+            z-index: 10;
         }
 
-        /* EFECTO GLITCH PARA LA PORTADA */
-        .glitch-box {
+        /* GLITCH AGRESIVO EN TODA LA PORTADA */
+        .glitch-wrapper {
             position: relative;
             width: 100%;
             margin-bottom: 40px;
-            box-shadow: 0 0 60px rgba(0,0,0,0.9);
+            box-shadow: 0 0 100px rgba(0,0,0,0.9);
         }
 
         .portada {
             width: 100%;
+            height: auto;
             display: block;
             position: relative;
-            z-index: 1;
+            animation: shake 0.2s infinite;
         }
 
-        /* Capas de glitch que se mueven */
-        .glitch-box::before,
-        .glitch-box::after {
+        /* Capas que "rompen" la imagen de arriba a abajo */
+        .glitch-wrapper::before,
+        .glitch-wrapper::after {
             content: "";
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background: url('portada.jpg') no-repeat center;
             background-size: cover;
-            opacity: 0.4;
-            z-index: 2;
-        }
-
-        .glitch-box::before {
-            animation: glitch-vhs 3s infinite linear alternate-reverse;
-            clip: rect(10px, 9999px, 30px, 0);
-            left: 3px;
-        }
-
-        .glitch-box::after {
-            animation: glitch-vhs 2s infinite linear alternate;
-            clip: rect(60px, 9999px, 80px, 0);
-            left: -3px;
-        }
-
-        /* TEXTO PRÓXIMAMENTE NORMAL */
-        .texto-proximamente {
-            font-size: 1.1rem;
-            letter-spacing: 10px;
-            text-transform: uppercase;
-            font-weight: 300; /* Más fino para que sea más elegante */
             opacity: 0.7;
-            margin: 0;
         }
 
-        @keyframes glitch-vhs {
-            0% { clip: rect(42px, 9999px, 44px, 0); }
-            20% { clip: rect(12px, 9999px, 50px, 0); }
-            40% { clip: rect(85px, 9999px, 90px, 0); }
-            60% { clip: rect(30px, 9999px, 35px, 0); }
-            80% { clip: rect(70px, 9999px, 75px, 0); }
-            100% { clip: rect(15px, 9999px, 20px, 0); }
+        .glitch-wrapper::before {
+            animation: glitch-total 1.5s infinite linear alternate-reverse;
+            filter: hue-rotate(90deg);
+            left: 5px;
+        }
+
+        .glitch-wrapper::after {
+            animation: glitch-total 1s infinite linear alternate;
+            filter: hue-rotate(-90deg);
+            left: -5px;
+        }
+
+        h1 {
+            font-size: 1.2rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 12px;
+            margin: 0;
+            opacity: 0.8;
+            text-shadow: 0 0 10px rgba(0,0,0,1);
+        }
+
+        /* Animación de glitch que recorre toda la altura */
+        @keyframes glitch-total {
+            0% { clip-path: inset(0% 0 80% 0); transform: translate(-5px); }
+            20% { clip-path: inset(80% 0 0% 0); transform: translate(5px); }
+            40% { clip-path: inset(30% 0 30% 0); transform: translate(-8px); }
+            60% { clip-path: inset(10% 0 70% 0); transform: translate(8px); }
+            80% { clip-path: inset(50% 0 10% 0); transform: translate(-5px); }
+            100% { clip-path: inset(0% 0 0% 0); transform: translate(0); }
+        }
+
+        @keyframes shake {
+            0% { transform: translate(0); }
+            50% { transform: translate(1px, 1px); }
+            100% { transform: translate(0); }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="glitch-box">
+        <div class="glitch-wrapper">
             <img src="portada.jpg" class="portada" alt="Portada">
         </div>
-        <p class="texto-proximamente">Próximamente</p>
+        <h1>Próximamente</h1>
     </div>
 
 </body>
