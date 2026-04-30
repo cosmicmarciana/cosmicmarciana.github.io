@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>PRÓXIMAMENTE | La Casa del Terror</title>
+    <!-- IMPORTAMOS TUS FUENTES -->
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --neon: #00ff00;
@@ -15,10 +18,10 @@
             margin: 0;
             padding: 0;
             background: var(--dark);
+            /* Tu degradado original */
             background-image: linear-gradient(180deg, #1a1412, #050303);
             color: #eee;
-            /* Tipografía pesada y agresiva */
-            font-family: 'Impact', 'Arial Black', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -28,58 +31,63 @@
         .container {
             text-align: center;
             padding: 20px;
-            max-width: 500px;
+            max-width: 480px;
             width: 100%;
         }
 
         .portada {
             width: 100%;
             height: auto;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.9);
-            margin-bottom: 25px;
-            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+            margin-bottom: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.05);
         }
 
+        /* LA FUENTE DE TERROR */
         .proximamente {
+            font-family: 'Creepster', cursive;
             color: var(--blood);
-            font-size: 3rem; /* Mucho más grande */
-            line-height: 1;
+            font-size: 3.5rem;
+            line-height: 1.2;
             text-transform: uppercase;
-            margin-bottom: 10px;
-            letter-spacing: -1px; /* Letras pegadas para que se vea más rudo */
-            font-style: italic;
+            margin: 0;
+            text-shadow: 3px 3px 0px #000;
         }
 
+        /* LA FUENTE DE ESTADO */
         .status-tag {
-            display: inline-block;
-            background: var(--neon);
-            color: #000; /* Texto negro sobre fondo verde para que salte a la vista */
-            padding: 5px 15px;
-            font-size: 1.2rem;
-            text-transform: uppercase;
+            font-family: 'Montserrat', sans-serif;
             font-weight: 900;
-            transform: skewX(-10deg); /* Efecto de inclinación */
+            display: inline-block;
+            color: var(--neon);
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: 10px;
+            border: 1px solid var(--neon);
+            background: rgba(0, 255, 0, 0.05);
         }
 
-        /* Pequeño parpadeo estilo VHS estropeado */
-        @keyframes glitch {
-            0% { opacity: 1; }
-            95% { opacity: 1; }
-            96% { opacity: 0.8; }
-            100% { opacity: 1; }
+        /* Efecto de parpadeo suave */
+        .flicker {
+            animation: flicker-ani 4s infinite;
         }
-        
-        .container { animation: glitch 4s infinite; }
+
+        @keyframes flicker-ani {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+            20%, 22%, 24%, 55% { opacity: 0.5; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div class="container flicker">
         <img src="portada.jpg" alt="La Casa del Terror" class="portada">
 
-        <div class="proximamente">SEÑAL INTERRUMIDA</div>
+        <h1 class="proximamente">Próximamente</h1>
         
-        <div class="status-tag">PRÓXIMAMENTE...</div>
+        <div class="status-tag">Conexión Interrumpida</div>
     </div>
 
 </body>
