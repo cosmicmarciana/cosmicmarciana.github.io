@@ -15,7 +15,7 @@
   body {
     margin: 0;
     padding: 0;
-    background: #050303; /* Fondo negro puro de tu web */
+    background: #050303;
     color: var(--ink);
     font-family: Arial, sans-serif;
     display: flex;
@@ -25,113 +25,137 @@
     overflow: hidden;
   }
 
-  /* El mismo fondo de texturas que ya usas */
-  .bg-texture {
+  /* Tu textura de fondo original */
+  .bg {
     position: fixed;
     inset: 0;
-    background: 
-      repeating-radial-gradient(circle at 30% 40%, rgba(255,255,255,.04) 0, transparent 7px),
-      linear-gradient(180deg, #1a1412, #050303);
     z-index: -1;
+    background: linear-gradient(180deg, #1a1412, #0e0a09 50%, #050303);
   }
 
-  .container {
+  .wrap {
+    width: 100%;
+    max-width: 500px;
     text-align: center;
     padding: 20px;
-    max-width: 500px;
   }
 
-  /* Efecto TV para la portada */
-  .crt-frame {
+  /* LA TELEVISIÓN (Tu estructura original) */
+  .crt {
     position: relative;
-    display: inline-block;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 0 30px rgba(0,0,0,0.8), 0 0 15px rgba(0,255,0,0.1);
-    margin-bottom: 30px;
+    width: fit-content;
+    margin: 0 auto 30px;
+    isolation: isolate;
   }
 
-  .crt-frame::before {
+  /* La imagen de la tele vacía (o con la portada) */
+  #cover-tv {
+    width: 100%;
+    max-width: 420px;
+    border-radius: 12px;
+    display: block;
+    filter: drop-shadow(0 0 20px rgba(0,0,0,0.8));
+    animation: tv-flicker 4s infinite;
+  }
+
+  /* LA PANTALLA VHS (Donde va tu portada) */
+  .tv-screen {
+    position: absolute;
+    left: 17.63%;
+    top: 22.75%;
+    width: 62.99%;
+    height: 46.83%;
+    overflow: hidden;
+    z-index: 3;
+    border-radius: 4px;
+    background: #000;
+  }
+
+  .portada-vhs {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.8; /* Un poco de transparencia para que el ruido se note más */
+    filter: contrast(1.2) brightness(0.9);
+  }
+
+  /* Efecto de líneas CRT */
+  .tv-screen::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(to bottom, rgba(255,255,255,.03) 0px, transparent 3px);
+    background: repeating-linear-gradient(to bottom, rgba(255,255,255,.05) 0px, transparent 2px);
+    z-index: 4;
     pointer-events: none;
-    z-index: 2;
   }
 
-  .portada {
-    display: block;
-    width: 100%;
-    max-width: 350px;
-    height: auto;
-    filter: brightness(0.9) contrast(1.1);
-    animation: flicker 4s infinite;
+  /* Glitch de interferencia */
+  .vhs-noise {
+    position: absolute;
+    inset: 0;
+    background: url('https://media.giphy.com/media/oEI9uWUicKgS2UzSre/giphy.gif'); /* Ruido estático opcional */
+    opacity: 0.1;
+    z-index: 5;
+    mix-blend-mode: screen;
+    pointer-events: none;
   }
 
-  /* Tu Glitch Rojo */
-  .glitch-title {
+  /* Textos */
+  .title {
     color: var(--blood);
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 800;
-    text-transform: uppercase;
     letter-spacing: .25em;
-    position: relative;
-    text-shadow: 0 0 10px rgba(255,43,43,0.3);
-    margin-bottom: 10px;
-  }
-
-  /* Botón estilo neón */
-  .status-btn {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 12px 24px;
-    border: 1px solid var(--neon);
-    background: rgba(0, 255, 0, 0.05);
-    color: var(--neon);
-    text-decoration: none;
-    font-size: 14px;
-    letter-spacing: 2px;
-    border-radius: 999px;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
-    animation: pulse-neon 2s infinite ease-in-out;
-  }
-
-  @keyframes flicker {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.97; }
-    52% { opacity: 0.99; }
-  }
-
-  @keyframes pulse-neon {
-    0%, 100% { box-shadow: 0 0 15px rgba(0, 255, 0, 0.2); transform: scale(1); }
-    50% { box-shadow: 0 0 30px rgba(0, 255, 0, 0.4); transform: scale(1.02); }
-  }
-
-  .sub {
-    font-size: 12px;
-    opacity: 0.6;
-    letter-spacing: 3px;
     text-transform: uppercase;
+    margin-bottom: 5px;
+    animation: red-flicker 3s infinite;
+  }
+
+  .status {
+    display: inline-block;
     margin-top: 15px;
+    padding: 10px 20px;
+    border: 1px solid var(--neon);
+    color: var(--neon);
+    border-radius: 999px;
+    font-size: 12px;
+    letter-spacing: 2px;
+    box-shadow: 0 0 15px rgba(0,255,0,0.1);
+  }
+
+  @keyframes tv-flicker {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(0.98); }
+  }
+
+  @keyframes red-flicker {
+    0%, 100% { opacity: 1; }
+    80% { opacity: 0.8; }
+    85% { opacity: 1; text-shadow: 0 0 10px var(--blood); }
   }
 </style>
 </head>
 <body>
 
-  <div class="bg-texture"></div>
+<div class="bg"></div>
 
-  <div class="container">
-    <div class="crt-frame">
-      <!-- Asegúrate de que el nombre coincida con tu imagen -->
-      <img src="portada.jpg" alt="Portada" class="portada">
-    </div>
-
-    <div class="glitch-title">EL VIAJE COMIENZA</div>
-    <div class="sub">Primer single en camino</div>
+<div class="wrap">
+  
+  <div class="crt">
+    <!-- Aquí usamos la misma imagen de la TV que ya tienes en tu carpeta -->
+    <img src="portada.jpg" id="cover-tv" alt="TV">
     
-    <div class="status-btn">PRÓXIMAMENTE EN SPOTIFY</div>
+    <!-- Este es el hueco de la pantalla donde "metemos" la portada -->
+    <div class="tv-screen">
+      <img src="portada.jpg" class="portada-vhs">
+      <div class="vhs-noise"></div>
+    </div>
   </div>
+
+  <div class="title">Señal entrante...</div>
+  <div class="status">PRÓXIMAMENTE EN PLATAFORMAS</div>
+
+</div>
 
 </body>
 </html>
