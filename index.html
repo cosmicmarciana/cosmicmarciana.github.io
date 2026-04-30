@@ -14,72 +14,72 @@
         body {
             margin: 0;
             padding: 0;
-            background-color: var(--dark);
-            /* Tu fondo original */
+            background: var(--dark);
             background-image: linear-gradient(180deg, #1a1412, #050303);
             color: #eee;
-            font-family: 'Courier New', Courier, monospace;
+            /* Tipografía pesada y agresiva */
+            font-family: 'Impact', 'Arial Black', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden;
         }
 
         .container {
             text-align: center;
             padding: 20px;
-            max-width: 450px;
+            max-width: 500px;
             width: 100%;
         }
 
         .portada {
             width: 100%;
             height: auto;
-            border-radius: 4px;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 43, 43, 0.2);
-            margin-bottom: 30px;
-            display: block;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.9);
+            margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .proximamente {
             color: var(--blood);
-            font-size: 1.5rem;
-            font-weight: bold;
-            letter-spacing: 5px;
+            font-size: 3rem; /* Mucho más grande */
+            line-height: 1;
             text-transform: uppercase;
-            margin-bottom: 15px;
-            animation: flicker 3s infinite;
+            margin-bottom: 10px;
+            letter-spacing: -1px; /* Letras pegadas para que se vea más rudo */
+            font-style: italic;
         }
 
         .status-tag {
             display: inline-block;
-            border: 1px solid var(--neon);
-            color: var(--neon);
-            padding: 8px 15px;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
-            border-radius: 2px;
+            background: var(--neon);
+            color: #000; /* Texto negro sobre fondo verde para que salte a la vista */
+            padding: 5px 15px;
+            font-size: 1.2rem;
             text-transform: uppercase;
-            background: rgba(0, 255, 0, 0.05);
+            font-weight: 900;
+            transform: skewX(-10deg); /* Efecto de inclinación */
         }
 
-        @keyframes flicker {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; text-shadow: 0 0 10px var(--blood); }
-            55% { opacity: 1; }
+        /* Pequeño parpadeo estilo VHS estropeado */
+        @keyframes glitch {
+            0% { opacity: 1; }
+            95% { opacity: 1; }
+            96% { opacity: 0.8; }
+            100% { opacity: 1; }
         }
+        
+        .container { animation: glitch 4s infinite; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- Tu imagen de portada -->
         <img src="portada.jpg" alt="La Casa del Terror" class="portada">
 
-        <div class="proximamente">Próximamente</div>
+        <div class="proximamente">SEÑAL INTERRUMIDA</div>
         
-        <div class="status-tag">Disponible en plataformas</div>
+        <div class="status-tag">PRÓXIMAMENTE...</div>
     </div>
 
 </body>
