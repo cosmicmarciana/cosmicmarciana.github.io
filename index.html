@@ -4,10 +4,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>PRÓXIMAMENTE</title>
-    
-    <!-- Esto asegura que la imagen cargue rápido -->
-    <link rel="preload" as="image" href="portada.jpg">
-
     <style>
         body {
             margin: 0;
@@ -22,10 +18,9 @@
             color: white;
             overflow: hidden;
             position: relative;
-            cursor: pointer;
         }
 
-        /* TU ESPIRAL SIGUE IGUAL */
+        /* TU ESPIRAL ANIMADA SIEMPRE ACTIVA */
         body::before {
             content: "";
             position: absolute;
@@ -45,7 +40,7 @@
 
         @keyframes spiral {
             from { transform: translate(-50%, -50%) rotate(0deg); }
-            to { transform: rotate(360deg) translate(-50%, -50%); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
         .container {
@@ -53,14 +48,6 @@
             width: 85%;
             max-width: 450px; 
             z-index: 10;
-            /* Solo cambia esto: empieza invisible */
-            opacity: 0;
-            transition: opacity 0.4s ease-in;
-        }
-
-        /* Clase que se activa al cargar */
-        .container.loaded {
-            opacity: 1;
         }
 
         .glitch-wrapper {
@@ -78,11 +65,15 @@
             animation: shake 0.3s infinite ease-in-out;
         }
 
+        /* GLITCH QUE CUBRE TODA LA IMAGEN (FIXED) */
         .glitch-wrapper::before,
         .glitch-wrapper::after {
             content: "";
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: url('portada.jpg') no-repeat center;
             background-size: cover;
             opacity: 0.6;
@@ -101,33 +92,35 @@
             left: -3px;
         }
 
+        /* Animación que recorre TODA la altura de la foto */
+        @keyframes glitch-total {
+            0% { clip-path: inset(0% 0 85% 0); transform: translate(-5px); }
+            20% { clip-path: inset(80% 0 0% 0); transform: translate(5px); }
+            40% { clip-path: inset(30% 0 30% 0); transform: translate(-8px); }
+            60% { clip-path: inset(10% 0 70% 0); transform: translate(8px); }
+            80% { clip-path: inset(50% 0 10% 0); transform: translate(-5px); }
+            100% { clip-path: inset(0% 0 0% 0); transform: translate(0); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translate(0); }
+            50% { transform: translate(1px, 1px); }
+        }
+
         h1 {
             font-size: clamp(1rem, 4vw, 1.3rem); 
             text-transform: uppercase;
             letter-spacing: 10px;
             margin: 0;
-            opacity: 0.6;
-        }
-
-        @keyframes glitch-total {
-            0% { clip-path: inset(10% 0 80% 0); transform: translate(-2px); }
-            50% { clip-path: inset(30% 0 35% 0); transform: translate(-4px); }
-            100% { clip-path: inset(5% 0 85% 0); transform: translate(0); }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translate(0); }
-            50% { transform: translate(0.5px, 0.5px); }
+            opacity: 0.7;
         }
     </style>
 </head>
-<body onclick="playAudio()">
+<body onclick="document.getElementById('musica').play()">
 
-    <!-- El ID ayuda al JavaScript a saber qué mostrar -->
-    <div class="container" id="capaPrincipal">
+    <div class="container">
         <div class="glitch-wrapper">
-            <!-- El onload dispara la función cuando la foto baja entera -->
-            <img src="portada.jpg" class="portada" alt="Portada" onload="aparecer()">
+            <img src="portada.jpg" class="portada" alt="Portada">
         </div>
         <h1>Próximamente</h1>
     </div>
@@ -135,16 +128,6 @@
     <audio id="musica" loop>
         <source src="musica.mp3" type="audio/mpeg">
     </audio>
-
-    <script>
-        function aparecer() {
-            document.getElementById("capaPrincipal").classList.add("loaded");
-        }
-
-        function playAudio() {
-            document.getElementById("musica").play();
-        }
-    </script>
 
 </body>
 </html>
