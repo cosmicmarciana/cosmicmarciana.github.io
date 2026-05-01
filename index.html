@@ -13,12 +13,12 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
-    font-family:Arial, sans-serif;
-    color:white;
     overflow:hidden;
+    color:white;
+    font-family:Arial, sans-serif;
 }
 
-/* ESPIRAL */
+/* espiral */
 body::before{
     content:"";
     position:absolute;
@@ -29,77 +29,82 @@ body::before{
     transform:translate(-50%,-50%);
     z-index:-1;
 }
-
 @keyframes spin{
     to{transform:translate(-50%,-50%) rotate(360deg);}
 }
 
-/* CONTENEDOR */
-#main{
+#wrap{
+    text-align:center;
     width:85%;
     max-width:450px;
-    text-align:center;
 }
 
-/* GLITCH REAL (SIN RECARGAS) */
-.glitch{
-    position:relative;
-    overflow:hidden;
-}
-
-.glitch img{
+canvas{
     width:100%;
     display:block;
+    margin-bottom:20px;
 }
-
-/* duplicados reales */
-.glitch img.clone{
-    position:absolute;
-    top:0;
-    left:0;
-    pointer-events:none;
-    mix-blend-mode:screen;
-}
-
-/* capas */
-.red{ transform:translate(2px,0); filter:hue-rotate(90deg); }
-.blue{ transform:translate(-2px,0); filter:hue-rotate(-90deg); }
-
-/* animación */
-@keyframes slice1{
-    0%{clip-path:inset(10% 0 80% 0);}
-    50%{clip-path:inset(40% 0 40% 0);}
-    100%{clip-path:inset(0 0 0 0);}
-}
-
-@keyframes slice2{
-    0%{clip-path:inset(70% 0 10% 0);}
-    50%{clip-path:inset(20% 0 60% 0);}
-    100%{clip-path:inset(0 0 0 0);}
-}
-
-.red{ animation:slice1 1.5s infinite; }
-.blue{ animation:slice2 1.2s infinite; }
 
 h1{
-    font-size:1.1rem;
     letter-spacing:10px;
+    font-size:1.1rem;
     opacity:.7;
-    margin-top:20px;
 }
 </style>
 </head>
 
 <body>
 
-<div id="main">
-    <div class="glitch">
-        <img src="portada.webp" id="base">
-        <img src="portada.webp" class="clone red">
-        <img src="portada.webp" class="clone blue">
-    </div>
+<div id="wrap">
+    <canvas id="c"></canvas>
     <h1>PRÓXIMAMENTE</h1>
 </div>
+
+<audio id="musica" loop>
+    <source src="musica.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
+const audio = document.getElementById("musica");
+
+const img = new Image();
+img.src = "portada.webp";
+
+img.onload = () => {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    draw();
+};
+
+function draw(){
+    ctx.drawImage(img,0,0);
+
+    // slices glitch
+    for(let i=0;i<6;i++){
+        let y = Math.random()*canvas.height;
+        let h = Math.random()*20 + 5;
+        let offset = (Math.random()-0.5)*20;
+
+        ctx.drawImage(canvas,0,y,canvas.width,h,offset,y,canvas.width,h);
+    }
+
+    // RGB shift
+    let shift = 2;
+    ctx.globalCompositeOperation = "lighter";
+    ctx.drawImage(canvas, shift,0);
+    ctx.drawImage(canvas, -shift,0);
+    ctx.globalCompositeOperation = "source-over";
+
+    requestAnimationFrame(draw);
+}
+
+/* ACTIVAR AUDIO CON CLICK (necesario en navegadores) */
+document.body.addEventListener("click", () => {
+    audio.play().catch(()=>{});
+}, { once: true });
+</script>
 
 </body>
 </html>
