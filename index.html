@@ -3,108 +3,95 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>PRÓXIMAMENTE</title>
+    <title>COSMIC MARCIANA</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            background: #050303;
-            height: 100dvh; 
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-family: Arial, sans-serif;
-            color: white;
-            overflow: hidden;
-            position: relative;
+            margin: 0; padding: 0; background: #050303;
+            height: 100dvh; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            font-family: Arial, sans-serif; color: white; overflow: hidden;
         }
 
-        /* FONDO ESPIRAL - FIJO Y SIN ERRORES */
+        /* FONDO ESPIRAL PSICODÉLICA */
         body::before {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 300vmax; 
-            height: 300vmax;
-            background: repeating-conic-gradient(
-                from 0deg,
-                #050303 0deg 15deg,
-                #1a1412 15deg 30deg
-            );
-            animation: spiral 30s linear infinite;
-            z-index: -1;
-            transform: translate(-50%, -50%);
+            content: ""; position: absolute; top: 50%; left: 50%;
+            width: 300vmax; height: 300vmax;
+            background: repeating-conic-gradient(from 0deg, #050303 0deg 15deg, #1a1412 15deg 30deg);
+            animation: spiral 30s linear infinite; z-index: -1; transform: translate(-50%, -50%);
         }
-
         @keyframes spiral {
             from { transform: translate(-50%, -50%) rotate(0deg); }
             to { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
-        .container {
-            text-align: center;
-            width: 85%;
-            max-width: 450px; 
-            z-index: 10;
+        /* CONTENEDOR OCULTO POR DEFECTO */
+        #main-container {
+            display: none; /* No se renderiza hasta que la imagen existe en RAM */
+            text-align: center; width: 85%; max-width: 450px; z-index: 10;
         }
 
-        /* GLITCH TOTAL - NUEVA TÉCNICA QUE NO ROMPE LA IMAGEN */
         .glitch-wrapper {
-            position: relative;
-            width: 100%;
-            margin-bottom: 30px;
-            box-shadow: 0 0 80px rgba(0,0,0,0.8);
-            overflow: hidden;
+            position: relative; width: 100%; margin-bottom: 30px;
+            box-shadow: 0 0 80px rgba(0,0,0,0.9); line-height: 0;
         }
 
-        .portada {
-            width: 100%;
-            height: auto;
-            display: block;
-            /* Aplicamos el glitch directamente sobre la imagen principal */
-            animation: glitch-direct 3s infinite;
+        .portada { width: 100%; height: auto; display: block; animation: shake 0.2s infinite; }
+
+        /* GLITCH AGRESIVO TOTAL */
+        .glitch-wrapper::before, .glitch-wrapper::after {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('portada.jpg') no-repeat center; background-size: cover;
+            opacity: 0.6; z-index: 2;
+        }
+        .glitch-wrapper::before {
+            animation: glitch-anim 2s infinite linear alternate-reverse;
+            filter: hue-rotate(90deg); left: 4px;
+        }
+        .glitch-wrapper::after {
+            animation: glitch-anim 1.5s infinite linear alternate;
+            filter: hue-rotate(-90deg); left: -4px;
         }
 
-        h1 {
-            font-size: clamp(1.1rem, 4vw, 1.4rem); 
-            text-transform: uppercase;
-            letter-spacing: 12px;
-            margin: 0;
-            opacity: 0.7;
-            font-weight: normal;
-        }
+        h1 { font-size: 1.2rem; text-transform: uppercase; letter-spacing: 12px; opacity: 0.7; font-weight: normal; margin: 0; }
 
-        /* ESTA ANIMACIÓN MUEVE Y "ROMPE" LA IMAGEN SIN NECESITAR COPIAS */
-        @keyframes glitch-direct {
-            0% { transform: translate(0); filter: none; }
-            2% { transform: translate(-5px, 2px); filter: hue-rotate(90deg) brightness(1.2); }
-            4% { transform: translate(5px, -2px); filter: hue-rotate(-90deg) contrast(1.5); }
-            6% { transform: translate(0); filter: none; }
-            /* Saltos repentinos en toda la imagen */
-            48% { transform: translate(0); clip-path: inset(0 0 0 0); }
-            50% { transform: translate(-10px); clip-path: inset(20% 0 50% 0); }
-            52% { transform: translate(10px); clip-path: inset(60% 0 10% 0); }
-            54% { transform: translate(0); clip-path: inset(0 0 0 0); }
-            100% { transform: translate(0); }
+        @keyframes glitch-anim {
+            0% { clip-path: inset(10% 0 85% 0); transform: translate(-5px); }
+            25% { clip-path: inset(60% 0 10% 0); transform: translate(5px); }
+            50% { clip-path: inset(30% 0 40% 0); transform: translate(-8px); }
+            75% { clip-path: inset(80% 0 5% 0); transform: translate(8px); }
+            100% { clip-path: inset(0 0 0 0); }
         }
-
-        /* Música al hacer clic */
+        @keyframes shake {
+            0%, 100% { transform: translate(0); }
+            50% { transform: translate(1px, 1px); }
+        }
     </style>
 </head>
 <body onclick="document.getElementById('musica').play()">
 
-    <div class="container">
+    <div id="main-container">
         <div class="glitch-wrapper">
             <img src="portada.jpg" class="portada" alt="Portada">
         </div>
         <h1>Próximamente</h1>
     </div>
 
-    <audio id="musica" loop>
-        <source src="musica.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="musica" loop><source src="musica.mp3" type="audio/mpeg"></audio>
 
+    <script>
+        // MÉTODO DE SEGURIDAD ABSOLUTA
+        const loader = new Image();
+        loader.src = "portada.jpg";
+
+        // Solo cuando la imagen está físicamente cargada, mostramos el bloque
+        loader.onload = function() {
+            document.getElementById('main-container').style.display = 'block';
+        };
+
+        // Si la imagen falla o no existe, mostramos el texto a los 2 segundos
+        setTimeout(() => {
+            document.getElementById('main-container').style.display = 'block';
+        }, 2000);
+    </script>
 </body>
 </html>
