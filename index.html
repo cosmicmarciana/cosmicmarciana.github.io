@@ -6,7 +6,7 @@
 <title>COSMIC MARCIANA</title>
 
 <style>
-body {
+body{
     margin:0;
     background:#050303;
     height:100vh;
@@ -39,63 +39,47 @@ body::before{
     width:85%;
     max-width:450px;
     text-align:center;
-    opacity:0;
-    transition:opacity .6s ease;
 }
-#main.visible{opacity:1;}
 
+/* GLITCH REAL (SIN RECARGAS) */
 .glitch{
     position:relative;
     overflow:hidden;
 }
 
-/* IMAGEN BASE */
 .glitch img{
     width:100%;
     display:block;
 }
 
-/* CAPAS GLITCH */
-.glitch::before,
-.glitch::after{
-    content:"";
+/* duplicados reales */
+.glitch img.clone{
     position:absolute;
-    inset:0;
-    background:inherit;
-    background-image:inherit;
-    mix-blend-mode:screen;
+    top:0;
+    left:0;
     pointer-events:none;
+    mix-blend-mode:screen;
 }
 
-/* rojo */
-.glitch::before{
-    transform:translate(2px,0);
-    filter:hue-rotate(90deg);
-    animation:glitch1 1.8s infinite;
-}
+/* capas */
+.red{ transform:translate(2px,0); filter:hue-rotate(90deg); }
+.blue{ transform:translate(-2px,0); filter:hue-rotate(-90deg); }
 
-/* azul */
-.glitch::after{
-    transform:translate(-2px,0);
-    filter:hue-rotate(-90deg);
-    animation:glitch2 1.3s infinite;
-}
-
-@keyframes glitch1{
+/* animación */
+@keyframes slice1{
     0%{clip-path:inset(10% 0 80% 0);}
-    25%{clip-path:inset(60% 0 10% 0);}
-    50%{clip-path:inset(30% 0 40% 0);}
-    75%{clip-path:inset(80% 0 5% 0);}
+    50%{clip-path:inset(40% 0 40% 0);}
     100%{clip-path:inset(0 0 0 0);}
 }
 
-@keyframes glitch2{
+@keyframes slice2{
     0%{clip-path:inset(70% 0 10% 0);}
-    25%{clip-path:inset(20% 0 60% 0);}
-    50%{clip-path:inset(50% 0 30% 0);}
-    75%{clip-path:inset(10% 0 80% 0);}
+    50%{clip-path:inset(20% 0 60% 0);}
     100%{clip-path:inset(0 0 0 0);}
 }
+
+.red{ animation:slice1 1.5s infinite; }
+.blue{ animation:slice2 1.2s infinite; }
 
 h1{
     font-size:1.1rem;
@@ -109,32 +93,13 @@ h1{
 <body>
 
 <div id="main">
-    <div class="glitch" id="glitch">
-        <img src="portada.jpg" id="img" alt="">
+    <div class="glitch">
+        <img src="portada.jpg" id="base">
+        <img src="portada.jpg" class="clone red">
+        <img src="portada.jpg" class="clone blue">
     </div>
     <h1>PRÓXIMAMENTE</h1>
 </div>
-
-<script>
-const img = document.getElementById("img");
-const main = document.getElementById("main");
-const glitch = document.getElementById("glitch");
-
-/* CUANDO LA IMAGEN ESTÁ LISTA */
-function init(){
-    // fijamos la imagen como fondo REAL para las capas glitch
-    glitch.style.backgroundImage = `url(${img.src})`;
-
-    main.classList.add("visible");
-}
-
-/* GARANTÍA DE CARGA */
-if (img.complete) {
-    init();
-} else {
-    img.onload = init;
-}
-</script>
 
 </body>
 </html>
