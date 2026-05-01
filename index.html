@@ -3,29 +3,34 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>COSMIC MARCIANA</title>
+    <title>PRÓXIMAMENTE</title>
+    
+    <!-- Esto asegura que la imagen cargue rápido -->
+    <link rel="preload" as="image" href="portada.jpg">
+
     <style>
         body {
             margin: 0;
             padding: 0;
             background: #050303;
-            /* Usamos vh y vw dinámicos para que encaje en cualquier dispositivo */
             height: 100dvh; 
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: Arial, sans-serif;
             color: white;
             overflow: hidden;
             position: relative;
+            cursor: pointer;
         }
 
-        /* FONDO ESPIRAL OPTIMIZADO */
+        /* TU ESPIRAL SIGUE IGUAL */
         body::before {
             content: "";
             position: absolute;
-            /* Tamaño extra para cubrir rotación en todas las resoluciones */
+            top: 50%;
+            left: 50%;
             width: 300vmax; 
             height: 300vmax;
             background: repeating-conic-gradient(
@@ -35,27 +40,27 @@
             );
             animation: spiral 30s linear infinite;
             z-index: -1;
-            transform-origin: center;
+            transform: translate(-50%, -50%);
         }
 
         @keyframes spiral {
             from { transform: translate(-50%, -50%) rotate(0deg); }
-            to { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-        /* Ajuste para centrar la espiral siempre */
-        body::before {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            to { transform: rotate(360deg) translate(-50%, -50%); }
         }
 
         .container {
             text-align: center;
             width: 85%;
-            /* Limita el tamaño en PC para que no sea gigante */
             max-width: 450px; 
             z-index: 10;
+            /* Solo cambia esto: empieza invisible */
+            opacity: 0;
+            transition: opacity 0.4s ease-in;
+        }
+
+        /* Clase que se activa al cargar */
+        .container.loaded {
+            opacity: 1;
         }
 
         .glitch-wrapper {
@@ -70,11 +75,9 @@
             width: 100%;
             height: auto;
             display: block;
-            position: relative;
             animation: shake 0.3s infinite ease-in-out;
         }
 
-        /* Capas de Glitch mejoradas para rendimiento móvil */
         .glitch-wrapper::before,
         .glitch-wrapper::after {
             content: "";
@@ -88,58 +91,60 @@
 
         .glitch-wrapper::before {
             animation: glitch-total 2s infinite linear alternate-reverse;
-            filter: hue-rotate(90deg) brightness(1.2);
+            filter: hue-rotate(90deg);
             left: 3px;
         }
 
         .glitch-wrapper::after {
             animation: glitch-total 1.5s infinite linear alternate;
-            filter: hue-rotate(-90deg) contrast(1.3);
+            filter: hue-rotate(-90deg);
             left: -3px;
         }
 
         h1 {
-            /* Fuente normal, limpia y escalable */
             font-size: clamp(1rem, 4vw, 1.3rem); 
-            font-weight: 500;
             text-transform: uppercase;
-            letter-spacing: clamp(5px, 2vw, 12px);
+            letter-spacing: 10px;
             margin: 0;
-            opacity: 0.8;
-            text-shadow: 0 2px 10px rgba(0,0,0,1);
-            /* Asegura que no se corte en móviles pequeños */
-            white-space: nowrap; 
+            opacity: 0.6;
         }
 
         @keyframes glitch-total {
             0% { clip-path: inset(10% 0 80% 0); transform: translate(-2px); }
-            25% { clip-path: inset(70% 0 5% 0); transform: translate(2px); }
             50% { clip-path: inset(30% 0 35% 0); transform: translate(-4px); }
-            75% { clip-path: inset(55% 0 15% 0); transform: translate(4px); }
             100% { clip-path: inset(5% 0 85% 0); transform: translate(0); }
         }
 
         @keyframes shake {
             0%, 100% { transform: translate(0); }
-            25% { transform: translate(0.5px, 0.5px); }
-            75% { transform: translate(-0.5px, -0.5px); }
-        }
-
-        /* Ajustes específicos para móviles muy pequeños */
-        @media (max-height: 500px) {
-            .container { max-width: 280px; }
-            h1 { margin-top: 10px; }
+            50% { transform: translate(0.5px, 0.5px); }
         }
     </style>
 </head>
-<body>
+<body onclick="playAudio()">
 
-    <div class="container">
+    <!-- El ID ayuda al JavaScript a saber qué mostrar -->
+    <div class="container" id="capaPrincipal">
         <div class="glitch-wrapper">
-            <img src="portada.jpg" class="portada" alt="Portada">
+            <!-- El onload dispara la función cuando la foto baja entera -->
+            <img src="portada.jpg" class="portada" alt="Portada" onload="aparecer()">
         </div>
         <h1>Próximamente</h1>
     </div>
+
+    <audio id="musica" loop>
+        <source src="musica.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        function aparecer() {
+            document.getElementById("capaPrincipal").classList.add("loaded");
+        }
+
+        function playAudio() {
+            document.getElementById("musica").play();
+        }
+    </script>
 
 </body>
 </html>
