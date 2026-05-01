@@ -14,31 +14,38 @@ body{
     justify-content:center;
     align-items:center;
     overflow:hidden;
-    color:white;
     font-family:Arial, sans-serif;
+    color:white;
 }
 
-/* espiral */
+/* ESPIRAL PSICODÉLICA */
 body::before{
     content:"";
     position:absolute;
     top:50%;left:50%;
-    width:300vmax;height:300vmax;
-    background:repeating-conic-gradient(#050303 0 15deg,#1a1412 15deg 30deg);
+    width:300vmax;
+    height:300vmax;
+    background:repeating-conic-gradient(
+        #050303 0 15deg,
+        #1a1412 15deg 30deg
+    );
     animation:spin 40s linear infinite;
     transform:translate(-50%,-50%);
     z-index:-1;
 }
+
 @keyframes spin{
     to{transform:translate(-50%,-50%) rotate(360deg);}
 }
 
+/* CONTENEDOR */
 #wrap{
-    text-align:center;
     width:85%;
     max-width:450px;
+    text-align:center;
 }
 
+/* CANVAS */
 canvas{
     width:100%;
     display:block;
@@ -49,6 +56,7 @@ h1{
     letter-spacing:10px;
     font-size:1.1rem;
     opacity:.7;
+    margin:0;
 }
 </style>
 </head>
@@ -60,50 +68,73 @@ h1{
     <h1>PRÓXIMAMENTE</h1>
 </div>
 
-<audio id="musica" loop>
+<audio id="audio" loop>
     <source src="musica.mp3" type="audio/mpeg">
 </audio>
 
 <script>
 const canvas = document.getElementById("c");
 const ctx = canvas.getContext("2d");
-const audio = document.getElementById("musica");
+const audio = document.getElementById("audio");
 
 const img = new Image();
 img.src = "portada.webp";
 
-img.onload = () => {
-    canvas.width = img.width;
-    canvas.height = img.height;
-    draw();
-};
+let w, h;
 
-function draw(){
-    ctx.drawImage(img,0,0);
-
-    // slices glitch
-    for(let i=0;i<6;i++){
-        let y = Math.random()*canvas.height;
-        let h = Math.random()*20 + 5;
-        let offset = (Math.random()-0.5)*20;
-
-        ctx.drawImage(canvas,0,y,canvas.width,h,offset,y,canvas.width,h);
-    }
-
-    // RGB shift
-    let shift = 2;
-    ctx.globalCompositeOperation = "lighter";
-    ctx.drawImage(canvas, shift,0);
-    ctx.drawImage(canvas, -shift,0);
-    ctx.globalCompositeOperation = "source-over";
-
-    requestAnimationFrame(draw);
-}
-
-/* ACTIVAR AUDIO CON CLICK (necesario en navegadores) */
+/* ACTIVAR AUDIO (obligatorio por navegador) */
 document.body.addEventListener("click", () => {
     audio.play().catch(()=>{});
-}, { once: true });
+}, { once:true });
+
+/* CUANDO CARGA IMAGEN */
+img.onload = () => {
+    w = canvas.width = img.width;
+    h = canvas.height = img.height;
+    loop();
+};
+
+/* GLITCH REAL */
+function glitch(){
+    ctx.drawImage(img,0,0,w,h);
+
+    // cortes horizontales
+    for(let i=0;i<10;i++){
+        let y = Math.random()*h;
+        let sh = Math.random()*25 + 5;
+        let dx = (Math.random()-0.5)*40;
+
+        ctx.drawImage(
+            canvas,
+            0,y,w,sh,
+            dx,y,w,sh
+        );
+    }
+
+    // bloques verticales
+    for(let i=0;i<2;i++){
+        let x = Math.random()*w;
+        let sw = Math.random()*80 + 20;
+
+        ctx.drawImage(
+            canvas,
+            x,0,sw,h,
+            x+(Math.random()-0.5)*30,0,sw,h
+        );
+    }
+
+    // flash ocasional (sensación “fallo real”)
+    if(Math.random() < 0.08){
+        ctx.fillStyle = "rgba(255,255,255,0.04)";
+        ctx.fillRect(0,0,w,h);
+    }
+}
+
+/* LOOP */
+function loop(){
+    glitch();
+    requestAnimationFrame(loop);
+}
 </script>
 
 </body>
