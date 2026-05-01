@@ -2,190 +2,138 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>__COSMIC MARCIANA</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COSMIC MARCIANA</title>
 
 <style>
 body {
-    margin: 0;
-    background: #050303;
-    height: 100dvh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: Arial, sans-serif;
-    color: white;
-    overflow: hidden;
+    margin:0;
+    background:#050303;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family:Arial, sans-serif;
+    color:white;
+    overflow:hidden;
 }
 
-/* ESPIRAL PSICODÉLICA */
-body::before {
-    content: "";
-    position: absolute;
-    top: 50%; left: 50%;
-    width: 300vmax; height: 300vmax;
-    background: repeating-conic-gradient(from 0deg, #050303 0deg 15deg, #1a1412 15deg 30deg);
-    animation: spiral 40s linear infinite;
-    transform: translate(-50%, -50%);
-    z-index: -2;
+/* ESPIRAL */
+body::before{
+    content:"";
+    position:absolute;
+    top:50%;left:50%;
+    width:300vmax;height:300vmax;
+    background:repeating-conic-gradient(#050303 0 15deg,#1a1412 15deg 30deg);
+    animation:spin 40s linear infinite;
+    transform:translate(-50%,-50%);
+    z-index:-1;
 }
 
-@keyframes spiral {
-    from { transform: translate(-50%, -50%) rotate(0deg); }
-    to { transform: translate(-50%, -50%) rotate(360deg); }
+@keyframes spin{
+    to{transform:translate(-50%,-50%) rotate(360deg);}
 }
 
 /* CONTENEDOR */
-#main-container {
-    text-align: center;
-    width: 85%;
-    max-width: 450px;
-    opacity: 0;
-    transition: opacity 1s ease;
+#main{
+    width:85%;
+    max-width:450px;
+    text-align:center;
+    opacity:0;
+    transition:opacity .6s ease;
 }
+#main.visible{opacity:1;}
 
-#main-container.visible {
-    opacity: 1;
-}
-
-/* WRAPPER */
-.glitch-wrapper {
-    position: relative;
-    overflow: hidden;
-    margin-bottom: 30px;
-    filter: contrast(1.1) saturate(1.1);
+.glitch{
+    position:relative;
+    overflow:hidden;
 }
 
 /* IMAGEN BASE */
-.portada {
-    width: 100%;
-    display: block;
+.glitch img{
+    width:100%;
+    display:block;
 }
 
-/* RGB SPLIT */
-.rgb {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: url('portada.jpg') center/cover no-repeat;
-    mix-blend-mode: screen;
-    pointer-events: none;
+/* CAPAS GLITCH */
+.glitch::before,
+.glitch::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:inherit;
+    background-image:inherit;
+    mix-blend-mode:screen;
+    pointer-events:none;
 }
 
-.r { filter: hue-rotate(0deg); transform: translate(2px,0); }
-.g { filter: hue-rotate(120deg); transform: translate(-2px,0); }
-.b { filter: hue-rotate(240deg); transform: translate(0,1px); }
-
-/* VHS SCANLINES */
-.scanlines {
-    position: absolute;
-    width: 100%; height: 100%;
-    background: repeating-linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.03) 0px,
-        rgba(255,255,255,0.03) 1px,
-        transparent 2px,
-        transparent 4px
-    );
-    pointer-events: none;
-    mix-blend-mode: overlay;
-    animation: scanmove 6s linear infinite;
+/* rojo */
+.glitch::before{
+    transform:translate(2px,0);
+    filter:hue-rotate(90deg);
+    animation:glitch1 1.8s infinite;
 }
 
-@keyframes scanmove {
-    from { transform: translateY(0); }
-    to { transform: translateY(10px); }
+/* azul */
+.glitch::after{
+    transform:translate(-2px,0);
+    filter:hue-rotate(-90deg);
+    animation:glitch2 1.3s infinite;
 }
 
-/* DISTORSIÓN VHS */
-.distortion {
-    position: absolute;
-    width: 100%; height: 100%;
-    background: url('portada.jpg') center/cover no-repeat;
-    opacity: 0.15;
-    mix-blend-mode: lighten;
-    animation: distort 3s infinite;
+@keyframes glitch1{
+    0%{clip-path:inset(10% 0 80% 0);}
+    25%{clip-path:inset(60% 0 10% 0);}
+    50%{clip-path:inset(30% 0 40% 0);}
+    75%{clip-path:inset(80% 0 5% 0);}
+    100%{clip-path:inset(0 0 0 0);}
 }
 
-@keyframes distort {
-    0% { transform: translate(0,0) skewX(0deg); }
-    20% { transform: translate(2px,-1px) skewX(1deg); }
-    40% { transform: translate(-3px,1px) skewX(-1deg); }
-    60% { transform: translate(1px,0) skewX(0.5deg); }
-    80% { transform: translate(-1px,-1px) skewX(-0.5deg); }
-    100% { transform: translate(0,0) skewX(0deg); }
+@keyframes glitch2{
+    0%{clip-path:inset(70% 0 10% 0);}
+    25%{clip-path:inset(20% 0 60% 0);}
+    50%{clip-path:inset(50% 0 30% 0);}
+    75%{clip-path:inset(10% 0 80% 0);}
+    100%{clip-path:inset(0 0 0 0);}
 }
 
-/* TEXTO */
-h1 {
-    font-size: 1.2rem;
-    text-transform: uppercase;
-    letter-spacing: 12px;
-    opacity: 0.7;
-    margin: 0;
-}
-
-/* MODO AUDIO (más intensidad) */
-.audio-on .rgb {
-    animation: rgbShift 0.2s infinite;
-}
-
-.audio-on .distortion {
-    animation: distort 0.6s infinite;
-    opacity: 0.3;
-}
-
-@keyframes rgbShift {
-    0% { transform: translate(0,0); }
-    50% { transform: translate(4px,-2px); }
-    100% { transform: translate(-4px,2px); }
+h1{
+    font-size:1.1rem;
+    letter-spacing:10px;
+    opacity:.7;
+    margin-top:20px;
 }
 </style>
 </head>
 
 <body>
 
-<div id="main-container">
-    <div class="glitch-wrapper">
-        <img src="portada.jpg" class="portada" id="img">
-
-        <div class="rgb r"></div>
-        <div class="rgb g"></div>
-        <div class="rgb b"></div>
-
-        <div class="distortion"></div>
-        <div class="scanlines"></div>
+<div id="main">
+    <div class="glitch" id="glitch">
+        <img src="portada.jpg" id="img" alt="">
     </div>
-
-    <h1>Próximamente</h1>
+    <h1>PRÓXIMAMENTE</h1>
 </div>
 
-<audio id="musica" loop>
-    <source src="musica.mp3" type="audio/mpeg">
-</audio>
-
 <script>
-const img = document.getElementById('img');
-const container = document.getElementById('main-container');
-const audio = document.getElementById('musica');
-const body = document.body;
+const img = document.getElementById("img");
+const main = document.getElementById("main");
+const glitch = document.getElementById("glitch");
 
-/* CARGA LIMPIA */
+/* CUANDO LA IMAGEN ESTÁ LISTA */
+function init(){
+    // fijamos la imagen como fondo REAL para las capas glitch
+    glitch.style.backgroundImage = `url(${img.src})`;
+
+    main.classList.add("visible");
+}
+
+/* GARANTÍA DE CARGA */
 if (img.complete) {
-    show();
+    init();
 } else {
-    img.onload = show;
+    img.onload = init;
 }
-
-function show() {
-    container.classList.add('visible');
-}
-
-/* ACTIVAR AUDIO + GLITCH */
-body.addEventListener('click', () => {
-    audio.play().catch(() => {});
-    body.classList.add('audio-on');
-}, { once: true });
 </script>
 
 </body>
