@@ -18,17 +18,13 @@ body{
     color:white;
 }
 
-/* ESPIRAL PSICODÉLICA */
+/* espiral */
 body::before{
     content:"";
     position:absolute;
     top:50%;left:50%;
-    width:300vmax;
-    height:300vmax;
-    background:repeating-conic-gradient(
-        #050303 0 15deg,
-        #1a1412 15deg 30deg
-    );
+    width:300vmax;height:300vmax;
+    background:repeating-conic-gradient(#050303 0 15deg,#1a1412 15deg 30deg);
     animation:spin 40s linear infinite;
     transform:translate(-50%,-50%);
     z-index:-1;
@@ -38,25 +34,37 @@ body::before{
     to{transform:translate(-50%,-50%) rotate(360deg);}
 }
 
-/* CONTENEDOR */
+/* layout */
 #wrap{
     width:85%;
     max-width:450px;
     text-align:center;
 }
 
-/* CANVAS */
-canvas{
+/* botón */
+#enter{
+    padding:12px 24px;
+    border:1px solid white;
+    background:transparent;
+    color:white;
+    letter-spacing:4px;
+    cursor:pointer;
+    font-size:14px;
+}
+
+/* oculto al inicio */
+#canvas{
     width:100%;
-    display:block;
+    display:none;
     margin-bottom:20px;
 }
 
-h1{
+#title{
+    margin-top:20px;
+    opacity:.7;
     letter-spacing:10px;
     font-size:1.1rem;
-    opacity:.7;
-    margin:0;
+    display:none;
 }
 </style>
 </head>
@@ -64,8 +72,11 @@ h1{
 <body>
 
 <div id="wrap">
-    <canvas id="c"></canvas>
-    <h1>PRÓXIMAMENTE</h1>
+    <button id="enter">ENTRAR</button>
+
+    <canvas id="canvas"></canvas>
+
+    <h1 id="title">PRÓXIMAMENTE</h1>
 </div>
 
 <audio id="audio" loop>
@@ -73,68 +84,84 @@ h1{
 </audio>
 
 <script>
-const canvas = document.getElementById("c");
+const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const audio = document.getElementById("audio");
+
+const btn = document.getElementById("enter");
+const title = document.getElementById("title");
 
 const img = new Image();
 img.src = "portada.webp";
 
-let w, h;
+let w,h;
+let started = false;
 
-/* ACTIVAR AUDIO (obligatorio por navegador) */
-document.body.addEventListener("click", () => {
-    audio.play().catch(()=>{});
-}, { once:true });
+/* START */
+btn.addEventListener("click", async () => {
+    started = true;
 
-/* CUANDO CARGA IMAGEN */
-img.onload = () => {
-    w = canvas.width = img.width;
-    h = canvas.height = img.height;
-    loop();
-};
+    btn.style.display = "none";
+    canvas.style.display = "block";
+    title.style.display = "block";
 
-/* GLITCH REAL */
+    await audio.play().catch(()=>{});
+
+    img.onload = () => {
+        w = canvas.width = img.width;
+        h = canvas.height = img.height;
+        loop();
+    };
+
+    if(img.complete){
+        w = canvas.width = img.width;
+        h = canvas.height = img.height;
+        loop();
+    }
+});
+
+/* GLITCH */
 function glitch(){
     ctx.drawImage(img,0,0,w,h);
 
-    // cortes horizontales
     for(let i=0;i<10;i++){
         let y = Math.random()*h;
-        let sh = Math.random()*25 + 5;
+        let sh = Math.random()*25+5;
         let dx = (Math.random()-0.5)*40;
 
-        ctx.drawImage(
-            canvas,
-            0,y,w,sh,
-            dx,y,w,sh
-        );
+        ctx.drawImage(canvas,0,y,w,sh,dx,y,w,sh);
     }
 
-    // bloques verticales
     for(let i=0;i<2;i++){
         let x = Math.random()*w;
-        let sw = Math.random()*80 + 20;
+        let sw = Math.random()*80+20;
 
-        ctx.drawImage(
-            canvas,
-            x,0,sw,h,
-            x+(Math.random()-0.5)*30,0,sw,h
-        );
+        ctx.drawImage(canvas,x,0,sw,h,x+(Math.random()-0.5)*30,0,sw,h);
     }
 
-    // flash ocasional (sensación “fallo real”)
-    if(Math.random() < 0.08){
-        ctx.fillStyle = "rgba(255,255,255,0.04)";
+    if(Math.random()<0.08){
+        ctx.fillStyle="rgba(255,255,255,0.04)";
         ctx.fillRect(0,0,w,h);
     }
 }
 
-/* LOOP */
 function loop(){
+    if(!started) return;
     glitch();
     requestAnimationFrame(loop);
 }
+
+/* PAUSAR AUDIO AL SALIR */
+function stopAudio(){
+    audio.pause();
+    audio.currentTime = 0;
+}
+
+document.addEventListener("visibilitychange", () => {
+    if(document.hidden) stopAudio();
+});
+
+window.addEventListener("pagehide", stopAudio);
 </script>
 
 </body>
