@@ -6,14 +6,21 @@
 <title>COSMIC MARCIANA</title>
 
 <style>
-body{
+html, body{
     margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    max-width:100%;
+    overflow:hidden;
+}
+
+body{
     background:#050303;
-    height:100vh;
+    min-height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
-    overflow:hidden;
     font-family:Arial, sans-serif;
     color:white;
 }
@@ -21,9 +28,11 @@ body{
 /* espiral */
 body::before{
     content:"";
-    position:absolute;
-    top:50%;left:50%;
-    width:300vmax;height:300vmax;
+    position:fixed;
+    top:50%;
+    left:50%;
+    width:300vmax;
+    height:300vmax;
     background:repeating-conic-gradient(#050303 0 15deg,#1a1412 15deg 30deg);
     animation:spin 40s linear infinite;
     transform:translate(-50%,-50%);
@@ -36,7 +45,7 @@ body::before{
 
 /* layout */
 #wrap{
-    width:85%;
+    width:86%;
     max-width:450px;
     text-align:center;
 }
@@ -52,19 +61,63 @@ body::before{
     font-size:14px;
 }
 
-/* oculto al inicio */
+/* canvas */
 #canvas{
-    width:100%;
     display:none;
-    margin-bottom:20px;
+    width:100%;
+    max-width:420px;
+    max-height:58vh;
+    object-fit:contain;
+    margin:0 auto 18px;
 }
 
+/* texto noticia */
 #title{
-    margin-top:20px;
-    opacity:.7;
-    letter-spacing:10px;
-    font-size:1.1rem;
+    margin-top:18px;
+    opacity:.78;
+    letter-spacing:3px;
+    font-size:.78rem;
+    line-height:1.8;
     display:none;
+    text-transform:lowercase;
+}
+
+#title .news{
+    font-size:.82rem;
+    letter-spacing:5px;
+    margin-bottom:12px;
+    text-transform:uppercase;
+    opacity:.95;
+}
+
+/* móvil */
+@media (max-width:480px){
+    #wrap{
+        width:88%;
+        max-width:360px;
+    }
+
+    #canvas{
+        max-width:330px;
+        max-height:52vh;
+    }
+
+    #title{
+        font-size:.68rem;
+        letter-spacing:2px;
+        line-height:1.75;
+    }
+
+    #title .news{
+        font-size:.72rem;
+        letter-spacing:4px;
+    }
+
+    #enter{
+        font-size:13px;
+        letter-spacing:3px;
+        padding:11px 22px;
+    }
 }
 </style>
 </head>
@@ -76,7 +129,12 @@ body::before{
 
     <canvas id="canvas"></canvas>
 
-    <h1 id="title">PRÓXIMAMENTE</h1>
+    <div id="title">
+        <div class="news">ÚLTIMAS NOTICIAS</div>
+        <div>parada técnica en ruta hacia la tierra</div>
+        <div>llegada en 3 semanas</div>
+        <div>primera transmisión de la casa del terror en curso</div>
+    </div>
 </div>
 
 <audio id="audio" loop>
@@ -96,6 +154,7 @@ img.src = "portada.webp";
 
 let w,h;
 let started = false;
+let animationStarted = false;
 
 /* START */
 btn.addEventListener("click", async () => {
@@ -107,18 +166,26 @@ btn.addEventListener("click", async () => {
 
     await audio.play().catch(()=>{});
 
-    img.onload = () => {
-        w = canvas.width = img.width;
-        h = canvas.height = img.height;
-        loop();
-    };
-
     if(img.complete){
-        w = canvas.width = img.width;
-        h = canvas.height = img.height;
-        loop();
+        setupCanvas();
+    }else{
+        img.onload = setupCanvas;
     }
 });
+
+/* AJUSTE CANVAS */
+function setupCanvas(){
+    if(animationStarted) return;
+    animationStarted = true;
+
+    const maxW = 900;
+    const scale = Math.min(1, maxW / img.width);
+
+    w = canvas.width = Math.floor(img.width * scale);
+    h = canvas.height = Math.floor(img.height * scale);
+
+    loop();
+}
 
 /* GLITCH */
 function glitch(){
