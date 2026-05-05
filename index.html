@@ -71,7 +71,7 @@ body::before{
     margin:0 auto 18px;
 }
 
-/* texto noticia */
+/* texto */
 #title{
     margin-top:18px;
     opacity:.78;
@@ -173,7 +173,7 @@ btn.addEventListener("click", async () => {
     }
 });
 
-/* AJUSTE CANVAS */
+/* CANVAS AJUSTADO */
 function setupCanvas(){
     if(animationStarted) return;
     animationStarted = true;
@@ -187,26 +187,26 @@ function setupCanvas(){
     loop();
 }
 
-/* GLITCH */
+/* GLITCH SUAVE (como antes) */
 function glitch(){
     ctx.drawImage(img,0,0,w,h);
 
-    for(let i=0;i<10;i++){
+    for(let i=0;i<6;i++){
         let y = Math.random()*h;
-        let sh = Math.random()*25+5;
-        let dx = (Math.random()-0.5)*40;
+        let sh = Math.random()*18+4;
+        let dx = (Math.random()-0.5)*20;
 
         ctx.drawImage(canvas,0,y,w,sh,dx,y,w,sh);
     }
 
-    for(let i=0;i<2;i++){
+    for(let i=0;i<1;i++){
         let x = Math.random()*w;
-        let sw = Math.random()*80+20;
+        let sw = Math.random()*60+15;
 
-        ctx.drawImage(canvas,x,0,sw,h,x+(Math.random()-0.5)*30,0,sw,h);
+        ctx.drawImage(canvas,x,0,sw,h,x+(Math.random()-0.5)*15,0,sw,h);
     }
 
-    if(Math.random()<0.08){
+    if(Math.random()<0.04){
         ctx.fillStyle="rgba(255,255,255,0.04)";
         ctx.fillRect(0,0,w,h);
     }
@@ -218,7 +218,7 @@ function loop(){
     requestAnimationFrame(loop);
 }
 
-/* PAUSAR AUDIO AL SALIR */
+/* PAUSAR AUDIO */
 function stopAudio(){
     audio.pause();
     audio.currentTime = 0;
