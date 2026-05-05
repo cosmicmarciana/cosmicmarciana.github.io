@@ -25,7 +25,6 @@ body{
     color:white;
 }
 
-/* espiral */
 body::before{
     content:"";
     position:fixed;
@@ -43,14 +42,12 @@ body::before{
     to{transform:translate(-50%,-50%) rotate(360deg);}
 }
 
-/* layout */
 #wrap{
     width:86%;
     max-width:450px;
     text-align:center;
 }
 
-/* botón */
 #enter{
     padding:12px 24px;
     border:1px solid white;
@@ -61,7 +58,6 @@ body::before{
     font-size:14px;
 }
 
-/* canvas */
 #canvas{
     display:none;
     width:100%;
@@ -71,15 +67,15 @@ body::before{
     margin:0 auto 18px;
 }
 
-/* texto */
 #title{
     margin-top:18px;
-    opacity:.78;
+    opacity:.82;
     letter-spacing:3px;
     font-size:.78rem;
-    line-height:1.8;
+    line-height:1.85;
     display:none;
     text-transform:lowercase;
+    animation:textSignal 3.2s infinite steps(2,end);
 }
 
 #title .news{
@@ -90,7 +86,39 @@ body::before{
     opacity:.95;
 }
 
-/* móvil */
+@keyframes textSignal{
+    0%, 100%{
+        opacity:.82;
+        transform:translateX(0);
+        text-shadow:none;
+    }
+    8%{
+        opacity:.55;
+        transform:translateX(-1px);
+        text-shadow:2px 0 rgba(255,0,0,.35), -2px 0 rgba(0,255,255,.25);
+    }
+    10%{
+        opacity:.9;
+        transform:translateX(1px);
+        text-shadow:-2px 0 rgba(255,0,0,.25), 2px 0 rgba(0,255,255,.3);
+    }
+    12%, 70%{
+        opacity:.78;
+        transform:translateX(0);
+        text-shadow:none;
+    }
+    72%{
+        opacity:.5;
+        transform:translateX(1px);
+        text-shadow:1px 0 rgba(255,0,0,.28), -1px 0 rgba(0,255,255,.22);
+    }
+    74%{
+        opacity:.86;
+        transform:translateX(0);
+        text-shadow:none;
+    }
+}
+
 @media (max-width:480px){
     #wrap{
         width:88%;
@@ -131,9 +159,9 @@ body::before{
 
     <div id="title">
         <div class="news">ÚLTIMAS NOTICIAS</div>
-        <div>parada técnica en ruta hacia la tierra</div>
+        <div>la señal ya está en marcha</div>
         <div>llegada en 3 semanas</div>
-        <div>primera transmisión de la casa del terror en curso</div>
+        <div>la primera canción de la casa del terror en camino</div>
     </div>
 </div>
 
@@ -156,7 +184,6 @@ let w,h;
 let started = false;
 let animationStarted = false;
 
-/* START */
 btn.addEventListener("click", async () => {
     started = true;
 
@@ -173,7 +200,6 @@ btn.addEventListener("click", async () => {
     }
 });
 
-/* CANVAS AJUSTADO */
 function setupCanvas(){
     if(animationStarted) return;
     animationStarted = true;
@@ -187,7 +213,6 @@ function setupCanvas(){
     loop();
 }
 
-/* GLITCH SUAVE (como antes) */
 function glitch(){
     ctx.drawImage(img,0,0,w,h);
 
@@ -218,7 +243,6 @@ function loop(){
     requestAnimationFrame(loop);
 }
 
-/* PAUSAR AUDIO */
 function stopAudio(){
     audio.pause();
     audio.currentTime = 0;
