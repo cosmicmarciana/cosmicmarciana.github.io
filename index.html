@@ -2,125 +2,150 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>COSMIC MARCIANA</title>
 
 <style>
-:root{
-  --screen-left: 13%;
-  --screen-top: 12%;
-  --screen-width: 74%;
-  --screen-height: 58%;
+html, body{
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    max-width:100%;
+    overflow:hidden;
 }
 
 body{
-  margin:0;
-  height:100vh;
-  background:#050303;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-  font-family:Arial,sans-serif;
-  color:white;
+    background:#050303;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family:Arial, sans-serif;
+    color:white;
 }
 
 body::before{
-  content:"";
-  position:absolute;
-  top:50%;
-  left:50%;
-  width:300vmax;
-  height:300vmax;
-  background:repeating-conic-gradient(#050303 0 15deg,#1a1412 15deg 30deg);
-  animation:spin 45s linear infinite;
-  transform:translate(-50%,-50%);
-  z-index:-2;
+    content:"";
+    position:fixed;
+    top:50%;
+    left:50%;
+    width:300vmax;
+    height:300vmax;
+    background:repeating-conic-gradient(#050303 0 15deg,#1a1412 15deg 30deg);
+    animation:spin 40s linear infinite;
+    transform:translate(-50%,-50%);
+    z-index:-1;
 }
 
 @keyframes spin{
-  to{transform:translate(-50%,-50%) rotate(360deg);}
+    to{transform:translate(-50%,-50%) rotate(360deg);}
 }
 
 #wrap{
-  width:90%;
-  max-width:520px;
-  text-align:center;
-  position:relative;
-  z-index:2;
+    width:86%;
+    max-width:450px;
+    text-align:center;
 }
 
-.tv{
-  position:relative;
-  width:100%;
+#enter{
+    padding:12px 24px;
+    border:1px solid white;
+    background:transparent;
+    color:white;
+    letter-spacing:4px;
+    cursor:pointer;
+    font-size:14px;
 }
 
-.tv-img{
-  width:100%;
-  display:block;
-  position:relative;
-  z-index:3;
-  pointer-events:none;
+#canvas{
+    display:none;
+    width:100%;
+    max-width:420px;
+    max-height:58vh;
+    object-fit:contain;
+    margin:0 auto 18px;
 }
 
-.screen{
-  position:absolute;
-  left:var(--screen-left);
-  top:var(--screen-top);
-  width:var(--screen-width);
-  height:var(--screen-height);
-  overflow:hidden;
-  background:#050303;
-  z-index:1;
+#title{
+    margin-top:18px;
+    opacity:.82;
+    letter-spacing:3px;
+    font-size:.78rem;
+    line-height:1.85;
+    display:none;
+    text-transform:lowercase;
+    animation:textSignal 3.2s infinite steps(2,end);
 }
 
-.screen canvas{
-  width:100%;
-  height:100%;
-  display:block;
+#title .news{
+    font-size:.82rem;
+    letter-spacing:5px;
+    margin-bottom:12px;
+    text-transform:uppercase;
+    opacity:.95;
 }
 
-.scanlines{
-  position:absolute;
-  inset:0;
-  background:repeating-linear-gradient(
-    to bottom,
-    rgba(255,255,255,.07) 0px,
-    rgba(255,255,255,.07) 1px,
-    transparent 2px,
-    transparent 4px
-  );
-  mix-blend-mode:overlay;
-  opacity:.35;
-  pointer-events:none;
+@keyframes textSignal{
+    0%, 100%{
+        opacity:.82;
+        transform:translateX(0);
+        text-shadow:none;
+    }
+    8%{
+        opacity:.55;
+        transform:translateX(-1px);
+        text-shadow:2px 0 rgba(255,0,0,.35), -2px 0 rgba(0,255,255,.25);
+    }
+    10%{
+        opacity:.9;
+        transform:translateX(1px);
+        text-shadow:-2px 0 rgba(255,0,0,.25), 2px 0 rgba(0,255,255,.3);
+    }
+    12%, 70%{
+        opacity:.78;
+        transform:translateX(0);
+        text-shadow:none;
+    }
+    72%{
+        opacity:.5;
+        transform:translateX(1px);
+        text-shadow:1px 0 rgba(255,0,0,.28), -1px 0 rgba(0,255,255,.22);
+    }
+    74%{
+        opacity:.86;
+        transform:translateX(0);
+        text-shadow:none;
+    }
 }
 
-.artist{
-  margin-top:18px;
-  font-size:.7rem;
-  letter-spacing:6px;
-  opacity:.5;
-}
+@media (max-width:480px){
+    #wrap{
+        width:88%;
+        max-width:360px;
+    }
 
-.title{
-  margin-top:10px;
-  font-size:1.05rem;
-  letter-spacing:8px;
-}
+    #canvas{
+        max-width:330px;
+        max-height:52vh;
+    }
 
-button{
-  margin-top:22px;
-  background:transparent;
-  color:white;
-  border:1px solid rgba(255,255,255,.65);
-  padding:12px 26px;
-  letter-spacing:5px;
-  font-size:.72rem;
-  cursor:pointer;
-}
+    #title{
+        font-size:.68rem;
+        letter-spacing:2px;
+        line-height:1.75;
+    }
 
-button:hover{
-  border-color:white;
+    #title .news{
+        font-size:.72rem;
+        letter-spacing:4px;
+    }
+
+    #enter{
+        font-size:13px;
+        letter-spacing:3px;
+        padding:11px 22px;
+    }
 }
 </style>
 </head>
@@ -128,93 +153,103 @@ button:hover{
 <body>
 
 <div id="wrap">
+    <button id="enter">ENTRAR</button>
 
-  <div class="tv">
-    <div class="screen">
-      <canvas id="canvas"></canvas>
-      <div class="scanlines"></div>
+    <canvas id="canvas"></canvas>
+
+    <div id="title">
+        <div class="news">ÚLTIMAS NOTICIAS</div>
+        <div>la señal ya está en marcha</div>
+        <div>llegada en breve</div>
+        <div>el primer single de la casa del terror en camino</div>
     </div>
-
-    <img src="tele.webp" class="tv-img" alt="">
-  </div>
-
-  <div class="artist">COSMIC MARCIANA</div>
-  <div class="title">LA CASA DEL TERROR</div>
-
-  <button id="playBtn">ESCUCHAR</button>
-
 </div>
 
 <audio id="audio" loop>
-  <source src="la-casa-del-terror.mp3" type="audio/mpeg">
+    <source src="musica.mp3" type="audio/mpeg">
 </audio>
 
 <script>
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const audio = document.getElementById("audio");
-const btn = document.getElementById("playBtn");
 
-let playing = false;
+const btn = document.getElementById("enter");
+const title = document.getElementById("title");
+
+const img = new Image();
+img.src = "portada.webp";
+
 let w,h;
+let started = false;
+let animationStarted = false;
 
-function resize(){
-  const rect = canvas.getBoundingClientRect();
-  w = canvas.width = rect.width * devicePixelRatio;
-  h = canvas.height = rect.height * devicePixelRatio;
-}
+btn.addEventListener("click", async () => {
+    started = true;
 
-window.addEventListener("resize", resize);
-resize();
+    btn.style.display = "none";
+    canvas.style.display = "block";
+    title.style.display = "block";
 
-function drawGlitch(){
-  ctx.fillStyle = "#050303";
-  ctx.fillRect(0,0,w,h);
-
-  ctx.fillStyle = "#d8ffd8";
-  ctx.font = `${Math.floor(w*0.08)}px monospace`;
-  ctx.textAlign = "center";
-
-  ctx.fillText("LA CASA", w/2, h*.38);
-  ctx.fillText("DEL TERROR", w/2, h*.52);
-
-  for(let i=0;i<12;i++){
-    const y = Math.random()*h;
-    const sh = Math.random()*18+4;
-    const dx = (Math.random()-.5)*45;
-
-    ctx.drawImage(canvas,0,y,w,sh,dx,y,w,sh);
-  }
-
-  if(Math.random()<.12){
-    ctx.fillStyle="rgba(255,255,255,.08)";
-    ctx.fillRect(0,Math.random()*h,w,Math.random()*20+4);
-  }
-
-  requestAnimationFrame(drawGlitch);
-}
-
-drawGlitch();
-
-btn.addEventListener("click", async ()=>{
-  if(audio.paused){
     await audio.play().catch(()=>{});
-    btn.textContent = "DETENER";
-  }else{
-    audio.pause();
-    audio.currentTime = 0;
-    btn.textContent = "ESCUCHAR";
-  }
+
+    if(img.complete){
+        setupCanvas();
+    }else{
+        img.onload = setupCanvas;
+    }
 });
 
-function stopAudio(){
-  audio.pause();
-  audio.currentTime = 0;
-  btn.textContent = "ESCUCHAR";
+function setupCanvas(){
+    if(animationStarted) return;
+    animationStarted = true;
+
+    const maxW = 900;
+    const scale = Math.min(1, maxW / img.width);
+
+    w = canvas.width = Math.floor(img.width * scale);
+    h = canvas.height = Math.floor(img.height * scale);
+
+    loop();
 }
 
-document.addEventListener("visibilitychange", ()=>{
-  if(document.hidden) stopAudio();
+function glitch(){
+    ctx.drawImage(img,0,0,w,h);
+
+    for(let i=0;i<6;i++){
+        let y = Math.random()*h;
+        let sh = Math.random()*18+4;
+        let dx = (Math.random()-0.5)*20;
+
+        ctx.drawImage(canvas,0,y,w,sh,dx,y,w,sh);
+    }
+
+    for(let i=0;i<1;i++){
+        let x = Math.random()*w;
+        let sw = Math.random()*60+15;
+
+        ctx.drawImage(canvas,x,0,sw,h,x+(Math.random()-0.5)*15,0,sw,h);
+    }
+
+    if(Math.random()<0.04){
+        ctx.fillStyle="rgba(255,255,255,0.04)";
+        ctx.fillRect(0,0,w,h);
+    }
+}
+
+function loop(){
+    if(!started) return;
+    glitch();
+    requestAnimationFrame(loop);
+}
+
+function stopAudio(){
+    audio.pause();
+    audio.currentTime = 0;
+}
+
+document.addEventListener("visibilitychange", () => {
+    if(document.hidden) stopAudio();
 });
 
 window.addEventListener("pagehide", stopAudio);
@@ -222,3 +257,5 @@ window.addEventListener("pagehide", stopAudio);
 
 </body>
 </html>
+
+
