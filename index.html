@@ -6,23 +6,32 @@
 <title>COSMIC MARCIANA</title>
 
 <style>
-body{
+html, body{
     margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    max-width:100%;
+    overflow:hidden;
+}
+
+body{
     background:#050303;
-    height:100vh;
+    min-height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
-    overflow:hidden;
     font-family:Arial, sans-serif;
     color:white;
 }
 
 body::before{
     content:"";
-    position:absolute;
-    top:50%;left:50%;
-    width:300vmax;height:300vmax;
+    position:fixed;
+    top:50%;
+    left:50%;
+    width:300vmax;
+    height:300vmax;
     background:repeating-conic-gradient(#050303 0 15deg,#1a1412 15deg 30deg);
     animation:spin 40s linear infinite;
     transform:translate(-50%,-50%);
@@ -34,63 +43,109 @@ body::before{
 }
 
 #wrap{
-    width:85%;
+    width:86%;
     max-width:450px;
     text-align:center;
 }
 
-#enter,
-#singleBtn{
+#enter{
     padding:12px 24px;
-    border:1px solid rgba(255,255,255,.75);
+    border:1px solid white;
     background:transparent;
     color:white;
     letter-spacing:4px;
     cursor:pointer;
-    font-size:13px;
+    font-size:14px;
 }
 
-#enter:hover,
-#singleBtn:hover{
-    border-color:white;
-}
-
-canvas{
+#canvas{
+    display:none;
     width:100%;
-    display:none;
-    margin-bottom:20px;
+    max-width:420px;
+    max-height:58vh;
+    object-fit:contain;
+    margin:0 auto 18px;
 }
 
-#content{
-    display:none;
-}
-
-h1{
-    letter-spacing:10px;
-    font-size:1.1rem;
-    opacity:.7;
-    margin:0 0 30px;
-}
-
-.signal{
-    font-size:.75rem;
-    letter-spacing:4px;
-    opacity:.65;
-    margin-bottom:14px;
-}
-
-.single-title{
-    font-size:1.2rem;
-    letter-spacing:6px;
-    text-transform:uppercase;
-    margin-bottom:22px;
-}
-
-.status{
-    margin-top:14px;
-    font-size:.7rem;
+#title{
+    margin-top:18px;
+    opacity:.82;
     letter-spacing:3px;
-    opacity:.45;
+    font-size:.78rem;
+    line-height:1.85;
+    display:none;
+    text-transform:lowercase;
+    animation:textSignal 3.2s infinite steps(2,end);
+}
+
+#title .news{
+    font-size:.82rem;
+    letter-spacing:5px;
+    margin-bottom:12px;
+    text-transform:uppercase;
+    opacity:.95;
+}
+
+@keyframes textSignal{
+    0%, 100%{
+        opacity:.82;
+        transform:translateX(0);
+        text-shadow:none;
+    }
+    8%{
+        opacity:.55;
+        transform:translateX(-1px);
+        text-shadow:2px 0 rgba(255,0,0,.35), -2px 0 rgba(0,255,255,.25);
+    }
+    10%{
+        opacity:.9;
+        transform:translateX(1px);
+        text-shadow:-2px 0 rgba(255,0,0,.25), 2px 0 rgba(0,255,255,.3);
+    }
+    12%, 70%{
+        opacity:.78;
+        transform:translateX(0);
+        text-shadow:none;
+    }
+    72%{
+        opacity:.5;
+        transform:translateX(1px);
+        text-shadow:1px 0 rgba(255,0,0,.28), -1px 0 rgba(0,255,255,.22);
+    }
+    74%{
+        opacity:.86;
+        transform:translateX(0);
+        text-shadow:none;
+    }
+}
+
+@media (max-width:480px){
+    #wrap{
+        width:88%;
+        max-width:360px;
+    }
+
+    #canvas{
+        max-width:330px;
+        max-height:52vh;
+    }
+
+    #title{
+        font-size:.68rem;
+        letter-spacing:2px;
+        line-height:1.75;
+    }
+
+    #title .news{
+        font-size:.72rem;
+        letter-spacing:4px;
+    }
+
+    #enter{
+        font-size:13px;
+        letter-spacing:3px;
+        padding:11px 22px;
+    }
 }
 </style>
 </head>
@@ -102,140 +157,105 @@ h1{
 
     <canvas id="canvas"></canvas>
 
-    <div id="content">
-        <h1>PRÓXIMAMENTE</h1>
-
-        <div class="signal">TRANSMISIÓN 01 DETECTADA</div>
-        <div class="single-title">LA CASA DEL TERROR</div>
-
-        <button id="singleBtn">ESCUCHAR SEÑAL</button>
-        <div class="status" id="status">SEÑAL INACTIVA</div>
+    <div id="title">
+        <div class="news">ÚLTIMAS NOTICIAS</div>
+        <div>la señal ya está en marcha</div>
+        <div>llegada en breve</div>
+        <div>el primer single de la casa del terror en camino</div>
     </div>
 </div>
 
-<audio id="ambiente" loop>
+<audio id="audio" loop>
     <source src="musica.mp3" type="audio/mpeg">
-</audio>
-
-<audio id="single">
-    <source src="04-la_casa_del_terror.mp3" type="audio/mpeg">
 </audio>
 
 <script>
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+const audio = document.getElementById("audio");
 
-const enter = document.getElementById("enter");
-const content = document.getElementById("content");
-const ambiente = document.getElementById("ambiente");
-const single = document.getElementById("single");
-const singleBtn = document.getElementById("singleBtn");
-const statusText = document.getElementById("status");
+const btn = document.getElementById("enter");
+const title = document.getElementById("title");
 
 const img = new Image();
 img.src = "portada.webp";
 
-let w, h;
+let w,h;
 let started = false;
-let animating = false;
+let animationStarted = false;
 
-/* ENTRADA */
-enter.addEventListener("click", async () => {
+btn.addEventListener("click", async () => {
     started = true;
 
-    enter.style.display = "none";
+    btn.style.display = "none";
     canvas.style.display = "block";
-    content.style.display = "block";
+    title.style.display = "block";
 
-    await ambiente.play().catch(()=>{});
+    await audio.play().catch(()=>{});
 
     if(img.complete){
-        initCanvas();
+        setupCanvas();
     }else{
-        img.onload = initCanvas;
+        img.onload = setupCanvas;
     }
 });
 
-/* CANVAS */
-function initCanvas(){
-    w = canvas.width = img.width;
-    h = canvas.height = img.height;
+function setupCanvas(){
+    if(animationStarted) return;
+    animationStarted = true;
 
-    if(!animating){
-        animating = true;
-        loop();
-    }
+    const maxW = 900;
+    const scale = Math.min(1, maxW / img.width);
+
+    w = canvas.width = Math.floor(img.width * scale);
+    h = canvas.height = Math.floor(img.height * scale);
+
+    loop();
 }
 
-/* GLITCH */
 function glitch(){
     ctx.drawImage(img,0,0,w,h);
 
-    for(let i=0;i<10;i++){
+    for(let i=0;i<6;i++){
         let y = Math.random()*h;
-        let sh = Math.random()*25+5;
-        let dx = (Math.random()-0.5)*40;
+        let sh = Math.random()*18+4;
+        let dx = (Math.random()-0.5)*20;
+
         ctx.drawImage(canvas,0,y,w,sh,dx,y,w,sh);
     }
 
-    for(let i=0;i<2;i++){
+    for(let i=0;i<1;i++){
         let x = Math.random()*w;
-        let sw = Math.random()*80+20;
-        ctx.drawImage(canvas,x,0,sw,h,x+(Math.random()-0.5)*30,0,sw,h);
+        let sw = Math.random()*60+15;
+
+        ctx.drawImage(canvas,x,0,sw,h,x+(Math.random()-0.5)*15,0,sw,h);
     }
 
-    if(Math.random()<0.08){
+    if(Math.random()<0.04){
         ctx.fillStyle="rgba(255,255,255,0.04)";
         ctx.fillRect(0,0,w,h);
     }
 }
 
 function loop(){
-    if(started && w && h){
-        glitch();
-    }
+    if(!started) return;
+    glitch();
     requestAnimationFrame(loop);
 }
 
-/* PLAYER SINGLE */
-singleBtn.addEventListener("click", async () => {
-    if(single.paused){
-        ambiente.pause();
-        ambiente.currentTime = 0;
-
-        await single.play().catch(()=>{});
-
-        singleBtn.textContent = "DETENER SEÑAL";
-        statusText.textContent = "SEÑAL ACTIVA";
-    }else{
-        single.pause();
-        single.currentTime = 0;
-
-        singleBtn.textContent = "ESCUCHAR SEÑAL";
-        statusText.textContent = "SEÑAL INACTIVA";
-    }
-});
-
-single.addEventListener("ended", () => {
-    singleBtn.textContent = "ESCUCHAR SEÑAL";
-    statusText.textContent = "SEÑAL FINALIZADA";
-});
-
-/* PARAR AL SALIR */
-function stopAll(){
-    ambiente.pause();
-    ambiente.currentTime = 0;
-
-    single.pause();
-    single.currentTime = 0;
+function stopAudio(){
+    audio.pause();
+    audio.currentTime = 0;
 }
 
 document.addEventListener("visibilitychange", () => {
-    if(document.hidden) stopAll();
+    if(document.hidden) stopAudio();
 });
 
-window.addEventListener("pagehide", stopAll);
+window.addEventListener("pagehide", stopAudio);
 </script>
 
 </body>
 </html>
+
+
