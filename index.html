@@ -6,146 +6,85 @@
 <title>COSMIC MARCIANA</title>
 
 <style>
-html, body{
-    margin:0;
-    padding:0;
-    width:100%;
-    height:100%;
-    max-width:100%;
-    overflow:hidden;
-}
-
 body{
+    margin:0;
     background:#050303;
-    min-height:100vh;
+    height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
+    overflow:hidden;
     font-family:Arial, sans-serif;
     color:white;
 }
 
+/* ESPIRAL */
 body::before{
     content:"";
-    position:fixed;
+    position:absolute;
     top:50%;
     left:50%;
     width:300vmax;
     height:300vmax;
-    background:repeating-conic-gradient(#050303 0 15deg,#1a1412 15deg 30deg);
+    background:
+    repeating-conic-gradient(
+        #050303 0 15deg,
+        #1a1412 15deg 30deg
+    );
     animation:spin 40s linear infinite;
     transform:translate(-50%,-50%);
     z-index:-1;
 }
 
 @keyframes spin{
-    to{transform:translate(-50%,-50%) rotate(360deg);}
+    to{
+        transform:translate(-50%,-50%) rotate(360deg);
+    }
 }
 
+/* WRAP */
 #wrap{
-    width:86%;
-    max-width:450px;
+    width:85%;
+    max-width:460px;
     text-align:center;
 }
 
-#enter{
-    padding:12px 24px;
-    border:1px solid white;
-    background:transparent;
-    color:white;
-    letter-spacing:4px;
-    cursor:pointer;
-    font-size:14px;
-}
-
-#canvas{
-    display:none;
+/* CANVAS */
+canvas{
     width:100%;
-    max-width:420px;
-    max-height:58vh;
-    object-fit:contain;
-    margin:0 auto 18px;
+    display:block;
+    margin-bottom:28px;
 }
 
-#title{
-    margin-top:18px;
-    opacity:.82;
-    letter-spacing:3px;
-    font-size:.78rem;
-    line-height:1.85;
-    display:none;
-    text-transform:lowercase;
-    animation:textSignal 3.2s infinite steps(2,end);
+/* TITULOS */
+.artist{
+    font-size:.7rem;
+    letter-spacing:6px;
+    opacity:.45;
+    margin-bottom:10px;
 }
 
-#title .news{
-    font-size:.82rem;
+.title{
+    font-size:1.15rem;
+    letter-spacing:10px;
+    margin-bottom:28px;
+}
+
+/* BOTON */
+#playBtn{
+    background:transparent;
+    border:1px solid rgba(255,255,255,.6);
+    color:white;
+    padding:12px 26px;
     letter-spacing:5px;
-    margin-bottom:12px;
-    text-transform:uppercase;
-    opacity:.95;
+    font-size:.72rem;
+    cursor:pointer;
+    transition:.25s;
 }
 
-@keyframes textSignal{
-    0%, 100%{
-        opacity:.82;
-        transform:translateX(0);
-        text-shadow:none;
-    }
-    8%{
-        opacity:.55;
-        transform:translateX(-1px);
-        text-shadow:2px 0 rgba(255,0,0,.35), -2px 0 rgba(0,255,255,.25);
-    }
-    10%{
-        opacity:.9;
-        transform:translateX(1px);
-        text-shadow:-2px 0 rgba(255,0,0,.25), 2px 0 rgba(0,255,255,.3);
-    }
-    12%, 70%{
-        opacity:.78;
-        transform:translateX(0);
-        text-shadow:none;
-    }
-    72%{
-        opacity:.5;
-        transform:translateX(1px);
-        text-shadow:1px 0 rgba(255,0,0,.28), -1px 0 rgba(0,255,255,.22);
-    }
-    74%{
-        opacity:.86;
-        transform:translateX(0);
-        text-shadow:none;
-    }
-}
-
-@media (max-width:480px){
-    #wrap{
-        width:88%;
-        max-width:360px;
-    }
-
-    #canvas{
-        max-width:330px;
-        max-height:52vh;
-    }
-
-    #title{
-        font-size:.68rem;
-        letter-spacing:2px;
-        line-height:1.75;
-    }
-
-    #title .news{
-        font-size:.72rem;
-        letter-spacing:4px;
-    }
-
-    #enter{
-        font-size:13px;
-        letter-spacing:3px;
-        padding:11px 22px;
-    }
+#playBtn:hover{
+    border-color:white;
+    background:rgba(255,255,255,.05);
 }
 </style>
 </head>
@@ -153,103 +92,130 @@ body::before{
 <body>
 
 <div id="wrap">
-    <button id="enter">ENTRAR</button>
 
     <canvas id="canvas"></canvas>
 
-    <div id="title">
-        <div class="news">ÚLTIMAS NOTICIAS</div>
-        <div>la señal ya está en marcha</div>
-        <div>llegada en breve</div>
-        <div>el primer single de la casa del terror en camino</div>
+    <div class="artist">
+        COSMIC MARCIANA
     </div>
+
+    <div class="title">
+        LA CASA DEL TERROR
+    </div>
+
+    <button id="playBtn">
+        ESCUCHAR
+    </button>
+
 </div>
 
 <audio id="audio" loop>
-    <source src="musica.mp3" type="audio/mpeg">
+    <source src="04-la_casa_del_terror.mp3" type="audio/mpeg">
 </audio>
 
 <script>
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-const audio = document.getElementById("audio");
 
-const btn = document.getElementById("enter");
-const title = document.getElementById("title");
+const audio = document.getElementById("audio");
+const btn = document.getElementById("playBtn");
 
 const img = new Image();
 img.src = "portada.webp";
 
 let w,h;
-let started = false;
-let animationStarted = false;
+let playing = false;
 
-btn.addEventListener("click", async () => {
-    started = true;
-
-    btn.style.display = "none";
-    canvas.style.display = "block";
-    title.style.display = "block";
-
-    await audio.play().catch(()=>{});
-
-    if(img.complete){
-        setupCanvas();
-    }else{
-        img.onload = setupCanvas;
-    }
-});
-
-function setupCanvas(){
-    if(animationStarted) return;
-    animationStarted = true;
-
-    const maxW = 900;
-    const scale = Math.min(1, maxW / img.width);
-
-    w = canvas.width = Math.floor(img.width * scale);
-    h = canvas.height = Math.floor(img.height * scale);
-
+/* CARGA */
+img.onload = () => {
+    w = canvas.width = img.width;
+    h = canvas.height = img.height;
     loop();
-}
+};
 
+/* GLITCH */
 function glitch(){
+
     ctx.drawImage(img,0,0,w,h);
 
-    for(let i=0;i<6;i++){
+    // cortes horizontales
+    for(let i=0;i<10;i++){
+
         let y = Math.random()*h;
-        let sh = Math.random()*18+4;
-        let dx = (Math.random()-0.5)*20;
+        let sh = Math.random()*25+5;
+        let dx = (Math.random()-0.5)*40;
 
-        ctx.drawImage(canvas,0,y,w,sh,dx,y,w,sh);
+        ctx.drawImage(
+            canvas,
+            0,y,w,sh,
+            dx,y,w,sh
+        );
     }
 
-    for(let i=0;i<1;i++){
+    // bloques verticales
+    for(let i=0;i<2;i++){
+
         let x = Math.random()*w;
-        let sw = Math.random()*60+15;
+        let sw = Math.random()*80+20;
 
-        ctx.drawImage(canvas,x,0,sw,h,x+(Math.random()-0.5)*15,0,sw,h);
+        ctx.drawImage(
+            canvas,
+            x,0,sw,h,
+            x+(Math.random()-0.5)*30,0,sw,h
+        );
     }
 
-    if(Math.random()<0.04){
-        ctx.fillStyle="rgba(255,255,255,0.04)";
+    // flash ocasional
+    if(Math.random()<0.08){
+
+        ctx.fillStyle="rgba(255,255,255,.04)";
         ctx.fillRect(0,0,w,h);
     }
 }
 
+/* LOOP */
 function loop(){
-    if(!started) return;
+
     glitch();
+
     requestAnimationFrame(loop);
 }
 
+/* PLAYER */
+btn.addEventListener("click", async ()=>{
+
+    if(!playing){
+
+        await audio.play().catch(()=>{});
+
+        playing = true;
+        btn.textContent = "DETENER";
+
+    }else{
+
+        audio.pause();
+        audio.currentTime = 0;
+
+        playing = false;
+        btn.textContent = "ESCUCHAR";
+    }
+});
+
+/* PARAR AL SALIR */
 function stopAudio(){
+
     audio.pause();
     audio.currentTime = 0;
+
+    playing = false;
+    btn.textContent = "ESCUCHAR";
 }
 
-document.addEventListener("visibilitychange", () => {
-    if(document.hidden) stopAudio();
+document.addEventListener("visibilitychange", ()=>{
+
+    if(document.hidden){
+        stopAudio();
+    }
 });
 
 window.addEventListener("pagehide", stopAudio);
@@ -257,5 +223,3 @@ window.addEventListener("pagehide", stopAudio);
 
 </body>
 </html>
-
-
