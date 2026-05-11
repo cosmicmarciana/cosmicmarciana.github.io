@@ -10,16 +10,21 @@
   box-sizing:border-box;
 }
 
+html,
 body{
   margin:0;
+  width:100%;
   min-height:100vh;
   background:#000;
+  overflow:hidden;
+}
+
+body{
   color:white;
   font-family:Arial,sans-serif;
   display:flex;
   justify-content:center;
   align-items:flex-start;
-  overflow-x:hidden;
 }
 
 #wrap{
@@ -233,8 +238,8 @@ body{
   font-size:.9rem;
   letter-spacing:6px;
   opacity:.5;
-  margin-top:8px;
-  margin-bottom:34px;
+  margin-top:22px;
+  margin-bottom:38px;
 }
 
 /* PLAYER */
@@ -302,11 +307,14 @@ body{
 
   #wrap{
     padding-top:2px;
+    padding-left:12px;
+    padding-right:12px;
+    padding-bottom:20px;
   }
 
   .tvCrop{
-    width:145%;
-    margin-left:-22.5%;
+    width:138%;
+    margin-left:-19%;
     margin-bottom:10px;
   }
 
@@ -325,8 +333,8 @@ body{
   .subsignal{
     font-size:.72rem;
     letter-spacing:4px;
-    margin-top:6px;
-    margin-bottom:30px;
+    margin-top:18px;
+    margin-bottom:34px;
   }
 
   .player{
@@ -493,21 +501,6 @@ function stopAudio(){
 
   current.textContent = "0:00";
 }
-
-document.addEventListener(
-  "visibilitychange",
-  ()=>{
-
-    if(document.hidden){
-      stopAudio();
-    }
-  }
-);
-
-window.addEventListener(
-  "pagehide",
-  stopAudio
-);
 </script>
 
 </body>
