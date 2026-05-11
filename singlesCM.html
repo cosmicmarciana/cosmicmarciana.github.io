@@ -6,7 +6,9 @@
 <title>COSMIC MARCIANA — SEÑAL 01</title>
 
 <style>
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+}
 
 body{
   margin:0;
@@ -44,13 +46,12 @@ body{
   pointer-events:none;
 }
 
-/* GLITCH PANTALLA */
+/* GLITCH */
 .screenGlitch{
   position:absolute;
 
-  /* AJUSTE PRINCIPAL */
   left:31.9%;
-  top:26%;
+  top:28%;
   width:39.7%;
   height:39.8%;
 
@@ -58,15 +59,21 @@ body{
   overflow:hidden;
   pointer-events:none;
   mix-blend-mode:screen;
+
   opacity:.95;
-  filter:contrast(1.6) brightness(1.35) saturate(1.4);
+
+  filter:
+    contrast(1.6)
+    brightness(1.35)
+    saturate(1.4);
 }
 
-/* nieve / ruido general */
+/* scanlines + ruido */
 .screenGlitch::before{
   content:"";
   position:absolute;
   inset:-20%;
+
   background:
     repeating-linear-gradient(
       to bottom,
@@ -75,6 +82,7 @@ body{
       transparent 2px,
       transparent 4px
     ),
+
     repeating-linear-gradient(
       90deg,
       rgba(255,0,0,.20) 0px,
@@ -82,15 +90,20 @@ body{
       rgba(0,255,255,.16) 3px,
       transparent 6px
     );
+
   opacity:.72;
-  animation:scanMove .09s infinite steps(2), noiseShift .28s infinite steps(3);
+
+  animation:
+    scanMove .09s infinite steps(2),
+    noiseShift .28s infinite steps(3);
 }
 
-/* interferencia RGB */
+/* RGB */
 .screenGlitch::after{
   content:"";
   position:absolute;
   inset:-8%;
+
   background:
     linear-gradient(
       90deg,
@@ -98,64 +111,145 @@ body{
       rgba(0,255,255,.22),
       rgba(255,255,255,.12)
     );
+
   mix-blend-mode:screen;
   opacity:.42;
-  animation:rgbShake .12s infinite steps(2);
+
+  animation:
+    rgbShake .12s infinite steps(2);
 }
 
-/* barras horizontales gordas */
+/* barras */
 .screenGlitch span{
   position:absolute;
+
   left:-18%;
   width:136%;
   height:10%;
+
   background:rgba(255,255,255,.38);
+
   opacity:.55;
+
   mix-blend-mode:screen;
-  animation:glitchBar .42s infinite steps(2);
+
+  animation:
+    glitchBar .42s infinite steps(2);
+
   box-shadow:
     0 0 8px rgba(255,255,255,.35),
     16px 0 0 rgba(255,0,0,.22),
     -16px 0 0 rgba(0,255,255,.22);
 }
 
-.screenGlitch span:nth-child(1){top:6%; animation-duration:.31s}
-.screenGlitch span:nth-child(2){top:22%; animation-duration:.46s}
-.screenGlitch span:nth-child(3){top:39%; animation-duration:.27s}
-.screenGlitch span:nth-child(4){top:57%; animation-duration:.38s}
-.screenGlitch span:nth-child(5){top:74%; animation-duration:.52s}
-.screenGlitch span:nth-child(6){top:88%; animation-duration:.34s}
+.screenGlitch span:nth-child(1){
+  top:6%;
+  animation-duration:.31s;
+}
+
+.screenGlitch span:nth-child(2){
+  top:22%;
+  animation-duration:.46s;
+}
+
+.screenGlitch span:nth-child(3){
+  top:39%;
+  animation-duration:.27s;
+}
+
+.screenGlitch span:nth-child(4){
+  top:57%;
+  animation-duration:.38s;
+}
+
+.screenGlitch span:nth-child(5){
+  top:74%;
+  animation-duration:.52s;
+}
+
+.screenGlitch span:nth-child(6){
+  top:88%;
+  animation-duration:.34s;
+}
 
 @keyframes glitchBar{
-  0%{transform:translateX(-22px) scaleY(.5)}
-  20%{transform:translateX(28px) scaleY(1.7)}
-  40%{transform:translateX(-36px) scaleY(.8)}
-  60%{transform:translateX(42px) scaleY(1.25)}
-  80%{transform:translateX(-18px) scaleY(2)}
-  100%{transform:translateX(-22px) scaleY(.5)}
+  0%{
+    transform:translateX(-22px) scaleY(.5);
+  }
+
+  20%{
+    transform:translateX(28px) scaleY(1.7);
+  }
+
+  40%{
+    transform:translateX(-36px) scaleY(.8);
+  }
+
+  60%{
+    transform:translateX(42px) scaleY(1.25);
+  }
+
+  80%{
+    transform:translateX(-18px) scaleY(2);
+  }
+
+  100%{
+    transform:translateX(-22px) scaleY(.5);
+  }
 }
 
 @keyframes scanMove{
-  0%{transform:translateY(0)}
-  50%{transform:translateY(7px)}
-  100%{transform:translateY(0)}
+  0%{
+    transform:translateY(0);
+  }
+
+  50%{
+    transform:translateY(7px);
+  }
+
+  100%{
+    transform:translateY(0);
+  }
 }
 
 @keyframes noiseShift{
-  0%{background-position:0 0, 0 0}
-  50%{background-position:0 13px, 17px 0}
-  100%{background-position:0 0, 0 0}
+  0%{
+    background-position:0 0, 0 0;
+  }
+
+  50%{
+    background-position:0 13px, 17px 0;
+  }
+
+  100%{
+    background-position:0 0, 0 0;
+  }
 }
 
 @keyframes rgbShake{
-  0%{transform:translate(0,0) skewX(0deg)}
-  25%{transform:translate(8px,-2px) skewX(3deg)}
-  50%{transform:translate(-10px,3px) skewX(-4deg)}
-  75%{transform:translate(5px,1px) skewX(2deg)}
-  100%{transform:translate(0,0) skewX(0deg)}
+  0%{
+    transform:translate(0,0) skewX(0deg);
+  }
+
+  25%{
+    transform:translate(8px,-2px) skewX(3deg);
+  }
+
+  50%{
+    transform:translate(-10px,3px) skewX(-4deg);
+  }
+
+  75%{
+    transform:translate(5px,1px) skewX(2deg);
+  }
+
+  100%{
+    transform:translate(0,0) skewX(0deg);
+  }
 }
 
 /* textos */
+
 .signal{
   font-size:.78rem;
   letter-spacing:7px;
@@ -173,11 +267,13 @@ body{
   transform:scaleY(1.25);
 }
 
-/* mini player */
+/* player */
+
 .player{
   width:100%;
   max-width:480px;
   margin:0 auto;
+
   display:flex;
   align-items:center;
   gap:14px;
@@ -186,12 +282,19 @@ body{
 #playBtn{
   width:54px;
   height:54px;
+
   border-radius:50%;
+
   background:transparent;
+
   border:1px solid rgba(255,43,43,.75);
+
   color:#ff2b2b;
+
   font-size:1.05rem;
+
   cursor:pointer;
+
   flex:0 0 auto;
 }
 
@@ -203,9 +306,12 @@ body{
 
 .bar{
   position:relative;
+
   height:4px;
   flex:1;
+
   background:rgba(255,255,255,.16);
+
   cursor:pointer;
 }
 
@@ -213,20 +319,25 @@ body{
   position:absolute;
   left:0;
   top:0;
+
   height:100%;
   width:0%;
+
   background:#ff2b2b;
 }
 
+/* MÓVIL */
+
 @media(max-width:700px){
+
   #wrap{
     padding-top:2px;
   }
 
   .tvCrop{
-    width:116%;
-    margin-left:-8%;
-    margin-bottom:0;
+    width:145%;
+    margin-left:-22.5%;
+    margin-bottom:10px;
   }
 
   .signal{
@@ -258,6 +369,7 @@ body{
 <div id="wrap">
 
   <div class="tvCrop">
+
     <img src="teleroja.webp" alt="Tele roja Cosmic Marciana">
 
     <div class="screenGlitch">
@@ -268,18 +380,35 @@ body{
       <span></span>
       <span></span>
     </div>
+
   </div>
 
-  <div class="signal">SEÑAL 01</div>
-  <div class="title">LA CASA DEL TERROR</div>
+  <div class="signal">
+    SEÑAL 01
+  </div>
+
+  <div class="title">
+    LA CASA DEL TERROR
+  </div>
 
   <div class="player">
-    <button id="playBtn">▶</button>
-    <div class="time" id="current">0:00</div>
+
+    <button id="playBtn">
+      ▶
+    </button>
+
+    <div class="time" id="current">
+      0:00
+    </div>
+
     <div class="bar" id="bar">
       <div class="progress" id="progress"></div>
     </div>
-    <div class="time" id="duration">0:00</div>
+
+    <div class="time" id="duration">
+      0:00
+    </div>
+
   </div>
 
 </div>
@@ -297,59 +426,106 @@ const progress = document.getElementById("progress");
 const bar = document.getElementById("bar");
 
 function formatTime(sec){
-  if(!sec || isNaN(sec)) return "0:00";
+
+  if(!sec || isNaN(sec)){
+    return "0:00";
+  }
+
   const m = Math.floor(sec / 60);
-  const s = Math.floor(sec % 60).toString().padStart(2,"0");
+
+  const s = Math.floor(sec % 60)
+    .toString()
+    .padStart(2,"0");
+
   return `${m}:${s}`;
 }
 
 playBtn.addEventListener("click", async ()=>{
+
   if(audio.paused){
+
     await audio.play().catch(()=>{});
+
     playBtn.textContent = "❚❚";
+
   }else{
+
     audio.pause();
+
     playBtn.textContent = "▶";
   }
 });
 
 audio.addEventListener("loadedmetadata", ()=>{
-  duration.textContent = formatTime(audio.duration);
+
+  duration.textContent =
+    formatTime(audio.duration);
 });
 
 audio.addEventListener("timeupdate", ()=>{
-  current.textContent = formatTime(audio.currentTime);
+
+  current.textContent =
+    formatTime(audio.currentTime);
+
   if(audio.duration){
-    progress.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
+
+    progress.style.width =
+      `${(audio.currentTime / audio.duration) * 100}%`;
   }
 });
 
 audio.addEventListener("ended", ()=>{
+
   playBtn.textContent = "▶";
+
   progress.style.width = "0%";
+
   current.textContent = "0:00";
 });
 
 bar.addEventListener("click", e=>{
-  if(!audio.duration) return;
-  const rect = bar.getBoundingClientRect();
-  const pos = (e.clientX - rect.left) / rect.width;
-  audio.currentTime = pos * audio.duration;
+
+  if(!audio.duration){
+    return;
+  }
+
+  const rect =
+    bar.getBoundingClientRect();
+
+  const pos =
+    (e.clientX - rect.left) / rect.width;
+
+  audio.currentTime =
+    pos * audio.duration;
 });
 
 function stopAudio(){
+
   audio.pause();
+
   audio.currentTime = 0;
+
   playBtn.textContent = "▶";
+
   progress.style.width = "0%";
+
   current.textContent = "0:00";
 }
 
-document.addEventListener("visibilitychange", ()=>{
-  if(document.hidden) stopAudio();
-});
+document.addEventListener(
+  "visibilitychange",
+  ()=>{
 
-window.addEventListener("pagehide", stopAudio);
+    if(document.hidden){
+      stopAudio();
+    }
+  }
+);
+
+window.addEventListener(
+  "pagehide",
+  stopAudio
+);
 </script>
 
 </body>
