@@ -1,65 +1,280 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Próximamente | Nombre de tu Disco</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #121212; /* Color oscuro de fondo */
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            text-align: center;
-        }
-        .container {
-            max-width: 400px;
-            padding: 20px;
-        }
-        .portada {
-            width: 100%;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            margin-bottom: 20px;
-        }
-        h1 {
-            font-size: 1.5rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-        p {
-            color: #b3b3b3;
-            font-size: 1rem;
-        }
-        .proximamente {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            border: 1px solid white;
-            border-radius: 50px;
-            font-weight: bold;
-            text-decoration: none;
-            color: white;
-            transition: 0.3s;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>El hombre invisible — Archivo</title>
+
+<style>
+:root{
+  --bg:#050303;
+  --ink:#e8e1d8;
+  --muted:#9f9690;
+  --red:#ff2b2b;
+  --green:#00ff66;
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  min-height:100%;
+  background:var(--bg);
+  color:var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+body{
+  overflow-x:hidden;
+}
+
+/* ruido / CRT suave */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.025) 0px,
+      rgba(255,255,255,.025) 1px,
+      transparent 2px,
+      transparent 4px
+    );
+  mix-blend-mode:screen;
+  opacity:.32;
+  z-index:20;
+}
+
+body::after{
+  content:"";
+  position:fixed;
+  inset:-20%;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at center, transparent 0 45%, rgba(0,0,0,.75) 85%),
+    linear-gradient(120deg, rgba(255,0,0,.08), transparent 35%, rgba(0,255,100,.06));
+  z-index:19;
+}
+
+.page{
+  position:relative;
+  z-index:1;
+  max-width:760px;
+  margin:0 auto;
+  padding:56px 22px 80px;
+}
+
+.header{
+  text-align:center;
+  margin-bottom:46px;
+}
+
+.signal{
+  font-family: Arial, Helvetica, sans-serif;
+  letter-spacing:.22em;
+  font-size:.72rem;
+  color:var(--green);
+  text-transform:uppercase;
+  margin-bottom:18px;
+  text-shadow:0 0 8px rgba(0,255,102,.55);
+}
+
+h1{
+  margin:0;
+  font-size:clamp(2rem, 8vw, 4.4rem);
+  line-height:.9;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  color:var(--red);
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-weight:400;
+  text-shadow:
+    2px 0 rgba(0,255,100,.35),
+    -2px 0 rgba(255,0,0,.35),
+    0 0 18px rgba(255,43,43,.25);
+}
+
+.subtitle{
+  margin-top:18px;
+  font-family: Arial, Helvetica, sans-serif;
+  color:var(--muted);
+  font-size:.95rem;
+  line-height:1.5;
+}
+
+.title-fragment{
+  margin-top:28px;
+  font-family: Arial, Helvetica, sans-serif;
+  color:var(--ink);
+  font-size:.82rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+
+.divider{
+  margin:38px auto;
+  width:100%;
+  height:1px;
+  background:linear-gradient(90deg, transparent, rgba(255,43,43,.65), transparent);
+  position:relative;
+}
+
+.divider::after{
+  content:"interferencia";
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  background:var(--bg);
+  padding:0 14px;
+  font-family:Arial, Helvetica, sans-serif;
+  color:var(--muted);
+  font-size:.68rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+
+.texto{
+  font-size:clamp(1.05rem, 2.5vw, 1.18rem);
+  line-height:1.78;
+  letter-spacing:.005em;
+}
+
+.texto p{
+  margin:0 0 1.25em;
+}
+
+.texto .inicio{
+  color:#fff;
+}
+
+.nota{
+  margin:42px 0 0;
+  padding:18px 18px;
+  border:1px solid rgba(255,43,43,.35);
+  background:rgba(255,43,43,.035);
+  color:var(--muted);
+  font-family:Arial, Helvetica, sans-serif;
+  font-size:.88rem;
+  line-height:1.55;
+}
+
+.footer{
+  margin-top:58px;
+  text-align:center;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+.footer-title{
+  color:var(--green);
+  font-size:.78rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  margin-bottom:16px;
+  text-shadow:0 0 8px rgba(0,255,102,.45);
+}
+
+.button{
+  display:inline-block;
+  color:var(--ink);
+  border:1px solid rgba(255,43,43,.65);
+  padding:12px 18px;
+  text-decoration:none;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  font-size:.78rem;
+  background:rgba(255,43,43,.06);
+}
+
+.button:hover{
+  background:rgba(255,43,43,.14);
+}
+
+.small{
+  margin-top:24px;
+  color:var(--muted);
+  font-size:.72rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+
+@media(max-width:600px){
+  .page{
+    padding:42px 19px 66px;
+  }
+
+  .header{
+    margin-bottom:34px;
+  }
+
+  .texto{
+    line-height:1.72;
+  }
+}
+</style>
 </head>
+
 <body>
 
-    <div class="container">
-        <img src="portada.jpg" alt="Portada del disco" class="portada">
-        
-        <h1>Nuevo Disco</h1>
-        <p>El viaje comienza muy pronto.</p>
-        
-        <div class="proximamente">PRÓXIMAMENTE EN SPOTIFY</div>
+<main class="page">
+
+  <header class="header">
+    <div class="signal">archivo fantasma // transmisión parcial</div>
+
+    <h1>El hombre invisible</h1>
+
+    <div class="subtitle">
+      Fragmento recuperado del capítulo
     </div>
+
+    <div class="title-fragment">
+      “La casa del terror”
+    </div>
+  </header>
+
+  <div class="divider"></div>
+
+  <section class="texto">
+
+    <!-- PEGA AQUÍ TU FRAGMENTO -->
+    <!-- Sustituye estos párrafos por el texto real del libro -->
+
+    <p class="inicio">
+      Este es un fragmento provisional. Aquí irá una parte del capítulo
+      “La casa del terror”, perteneciente a <em>El hombre invisible</em>.
+    </p>
+
+    <p>
+      Puedes pegar aquí el texto directamente, separando cada párrafo con
+      etiquetas &lt;p&gt; y &lt;/p&gt;.
+    </p>
+
+    <p>
+      La idea es que no parezca una página promocional normal, sino un archivo
+      encontrado: algo íntimo, algo dañado, algo que viene de lejos.
+    </p>
+
+    <!-- FIN DEL FRAGMENTO -->
+
+  </section>
+
+  <div class="nota">
+    Fragmento de <em>El hombre invisible</em>, libro autobiográfico de Carles Almansa.
+    Una parte del camino que desemboca en <em>La casa del terror</em>.
+  </div>
+
+  <footer class="footer">
+    <div class="footer-title">SEÑAL 01 — LA CASA DEL TERROR</div>
+
+    <!-- Cambia este enlace cuando tengas la página del single lista -->
+    <a class="button" href="index.html">volver a la transmisión</a>
+
+    <div class="small">Cosmic Marciana</div>
+  </footer>
+
+</main>
 
 </body>
 </html>
