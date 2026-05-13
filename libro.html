@@ -25,7 +25,7 @@ body{
   font-family:Georgia, serif;
 }
 
-/* fondo CRT */
+/* CRT */
 
 body::before{
   content:"";
@@ -50,7 +50,7 @@ body::before{
   width:100%;
   max-width:860px;
   margin:0 auto;
-  padding:0 16px 80px;
+  padding:0 16px 90px;
 }
 
 /* ========================= */
@@ -62,7 +62,7 @@ body::before{
   width:100%;
   aspect-ratio:1448/760;
   overflow:hidden;
-  margin:0 auto 28px;
+  margin:0 auto 24px;
 }
 
 .tvCrop img{
@@ -220,6 +220,7 @@ body::before{
   letter-spacing:6px;
   opacity:.42;
   margin-bottom:12px;
+  font-family:Arial,sans-serif;
 }
 
 .title{
@@ -254,11 +255,34 @@ body::before{
 
   opacity:.5;
 
-  margin-bottom:48px;
+  margin-bottom:42px;
 
   text-transform:uppercase;
 
   font-family:Arial,sans-serif;
+}
+
+/* ========================= */
+/* PORTADA */
+/* ========================= */
+
+.bookCover{
+  text-align:center;
+  margin-bottom:52px;
+}
+
+.bookCover img{
+  width:100%;
+  max-width:240px;
+
+  opacity:.93;
+
+  filter:
+    contrast(1.03)
+    brightness(.96);
+
+  box-shadow:
+    0 0 30px rgba(0,0,0,.55);
 }
 
 /* ========================= */
@@ -332,6 +356,14 @@ body::before{
     margin-bottom:34px;
   }
 
+  .bookCover{
+    margin-bottom:40px;
+  }
+
+  .bookCover img{
+    max-width:200px;
+  }
+
   .book p{
     line-height:1.82;
   }
@@ -372,30 +404,72 @@ body::before{
   </div>
 
   <div class="subtitle">
-    fragmento del capítulo · la casa del terror
+    adelanto inédito · la casa del terror
+  </div>
+
+  <!-- PORTADA -->
+
+  <div class="bookCover">
+    <img src="plibro.webp" alt="Portada El hombre invisible">
   </div>
 
   <div class="separator"></div>
 
-  <!-- TEXTO DEL LIBRO -->
+  <!-- TEXTO -->
 
   <section class="book">
 
-    <!-- PEGA AQUÍ TU TEXTO -->
-
     <p>
-      Aquí pegas el primer párrafo del fragmento.
+      Cuando ya vi de qué hablaría en este nuevo trabajo, supe enseguida cuál sería su título: <em>La casa del terror</em>. Y esa casa no sería un lugar para asustarse, sino para entender de qué tenemos miedo.
     </p>
 
     <p>
-      Y aquí el segundo.
+      La casa del terror no es un sitio físico, ni una atracción de feria. Es una manera de mirar la vida sin filtros, de entrar en lo que duele sin apagar la luz. En esa casa cabe todo: la enfermedad, la pérdida, la violencia, la memoria que se deshace, y también la música que intenta sostenerlo todo.
     </p>
 
     <p>
-      Y así sucesivamente.
+      Para mí, este disco es eso: una forma de transformar el miedo en algo que pueda escucharse. Porque el miedo, cuando lo nombras, ya empieza a cambiar de forma. En mi casa del terror no hay monstruos, solo personas intentando no olvidar que todavía queda algo humano entre tanto ruido.
     </p>
 
-    <!-- FIN -->
+    <p>
+      El primer terror: la enfermedad. Una en concreto: perder la memoria, olvidar quién eres o quién fue la persona que tienes delante. Esa fragilidad me da miedo. Supongo que por eso terminé escribiendo <em>Él lo olvida todo</em>.
+    </p>
+
+    <p>
+      A veces pienso que <em>Él lo olvida todo</em> no habla de una persona, sino del mundo. Un mundo que se olvida de lo que duele, de lo que ha hecho, de lo que prometió no repetir. Tal vez todos tengamos un poco de esa enfermedad, aunque la llamemos de otra manera.
+    </p>
+
+    <p>
+      El segundo terror: la muerte.
+    </p>
+
+    <p>
+      Nos habíamos ido para descansar. Solo tres días, lejos del ruido, lejos de todo. Una casa pequeña, rodeada de árboles, con olor a madera y promesa de silencio. Por un momento creí que el mundo podía quedarse quieto.
+    </p>
+
+    <p>
+      Pero el silencio se rompió. Primero un grito. Después otro. Una voz de mujer, al otro lado de la noche, repitiendo algo que no entendíamos. Era un sonido que atravesaba la piel. No pedía ayuda: pedía que la realidad se detuviera.
+    </p>
+
+    <p>
+      El tercer terror: la violencia.
+    </p>
+
+    <p>
+      Desde hace años no veo las noticias. No porque me dé igual lo que pase en el mundo, sino porque no quiero vivir con el corazón lleno de barro. El mundo ya es bastante ruidoso sin pantallas que te muestran niños bajo los escombros, políticos que se ríen, inversores que juegan a ser dioses. Yo solo quiero vivir tranquilo, hacer música, mirar el cielo y sentir que la vida todavía tiene algún sentido.
+    </p>
+
+    <p>
+      Pero las noticias me llegan igual. Llegan como una sombra que estaba detrás de la risa, como un titular que se clava en mi cabeza cuando intento dormirme.
+    </p>
+
+    <p>
+      Y mientras todo arde, conecto los cables: el sonido sube lento, como una ola eléctrica que intenta limpiar el mundo.
+    </p>
+
+    <p>
+      Yo, desde mi pequeña casa del terror, sigo buscando la nota exacta que haga temblar al miedo.
+    </p>
 
   </section>
 
