@@ -2,279 +2,404 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>El hombre invisible — Archivo</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EL HOMBRE INVISIBLE — Archivo</title>
 
 <style>
-:root{
-  --bg:#050303;
-  --ink:#e8e1d8;
-  --muted:#9f9690;
-  --red:#ff2b2b;
-  --green:#00ff66;
+
+*{
+  box-sizing:border-box;
 }
 
-*{box-sizing:border-box}
-
-html,body{
-  margin:0;
-  min-height:100%;
-  background:var(--bg);
-  color:var(--ink);
-  font-family: Georgia, "Times New Roman", serif;
-}
-
+html,
 body{
+  margin:0;
+  width:100%;
+  min-height:100%;
+  background:#000;
   overflow-x:hidden;
 }
 
-/* ruido / CRT suave */
+body{
+  color:#e7dfd7;
+  font-family:Georgia, serif;
+}
+
+/* fondo CRT */
+
 body::before{
   content:"";
   position:fixed;
   inset:0;
   pointer-events:none;
+
   background:
     repeating-linear-gradient(
       to bottom,
-      rgba(255,255,255,.025) 0px,
-      rgba(255,255,255,.025) 1px,
+      rgba(255,255,255,.03) 0px,
+      rgba(255,255,255,.03) 1px,
       transparent 2px,
       transparent 4px
     );
-  mix-blend-mode:screen;
-  opacity:.32;
-  z-index:20;
+
+  opacity:.45;
+  z-index:50;
 }
 
-body::after{
-  content:"";
-  position:fixed;
-  inset:-20%;
-  pointer-events:none;
-  background:
-    radial-gradient(circle at center, transparent 0 45%, rgba(0,0,0,.75) 85%),
-    linear-gradient(120deg, rgba(255,0,0,.08), transparent 35%, rgba(0,255,100,.06));
-  z-index:19;
-}
-
-.page{
-  position:relative;
-  z-index:1;
-  max-width:760px;
+#wrap{
+  width:100%;
+  max-width:860px;
   margin:0 auto;
-  padding:56px 22px 80px;
+  padding:0 16px 80px;
 }
 
-.header{
-  text-align:center;
-  margin-bottom:46px;
+/* ========================= */
+/* TV */
+/* ========================= */
+
+.tvCrop{
+  position:relative;
+  width:100%;
+  aspect-ratio:1448/760;
+  overflow:hidden;
+  margin:0 auto 28px;
 }
+
+.tvCrop img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  display:block;
+  user-select:none;
+  pointer-events:none;
+}
+
+/* GLITCH */
+
+.screenGlitch{
+  position:absolute;
+
+  left:32.9%;
+  top:30%;
+  width:36.7%;
+  height:46.8%;
+
+  border-radius:9% / 13%;
+  overflow:hidden;
+  pointer-events:none;
+  mix-blend-mode:screen;
+
+  opacity:.95;
+
+  filter:
+    contrast(1.6)
+    brightness(1.35)
+    saturate(1.4);
+}
+
+/* scanlines + ruido */
+
+.screenGlitch::before{
+  content:"";
+  position:absolute;
+  inset:-20%;
+
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.24) 0px,
+      rgba(255,255,255,.24) 1px,
+      transparent 2px,
+      transparent 4px
+    ),
+
+    repeating-linear-gradient(
+      90deg,
+      rgba(255,0,0,.20) 0px,
+      rgba(255,0,0,.20) 2px,
+      rgba(0,255,255,.16) 3px,
+      transparent 6px
+    );
+
+  opacity:.72;
+
+  animation:
+    scanMove .09s infinite steps(2),
+    noiseShift .28s infinite steps(3);
+}
+
+/* RGB */
+
+.screenGlitch::after{
+  content:"";
+  position:absolute;
+  inset:-8%;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,0,0,.36),
+      rgba(0,255,255,.22),
+      rgba(255,255,255,.12)
+    );
+
+  mix-blend-mode:screen;
+  opacity:.42;
+
+  animation:
+    rgbShake .12s infinite steps(2);
+}
+
+/* barras */
+
+.screenGlitch span{
+  position:absolute;
+
+  left:-18%;
+  width:136%;
+  height:10%;
+
+  background:rgba(255,255,255,.38);
+
+  opacity:.55;
+
+  mix-blend-mode:screen;
+
+  animation:
+    glitchBar .42s infinite steps(2);
+
+  box-shadow:
+    0 0 8px rgba(255,255,255,.35),
+    16px 0 0 rgba(255,0,0,.22),
+    -16px 0 0 rgba(0,255,255,.22);
+}
+
+.screenGlitch span:nth-child(1){ top:6%; animation-duration:.31s; }
+.screenGlitch span:nth-child(2){ top:22%; animation-duration:.46s; }
+.screenGlitch span:nth-child(3){ top:39%; animation-duration:.27s; }
+.screenGlitch span:nth-child(4){ top:57%; animation-duration:.38s; }
+.screenGlitch span:nth-child(5){ top:74%; animation-duration:.52s; }
+.screenGlitch span:nth-child(6){ top:88%; animation-duration:.34s; }
+
+@keyframes glitchBar{
+  0%{ transform:translateX(-22px) scaleY(.5); }
+  20%{ transform:translateX(28px) scaleY(1.7); }
+  40%{ transform:translateX(-36px) scaleY(.8); }
+  60%{ transform:translateX(42px) scaleY(1.25); }
+  80%{ transform:translateX(-18px) scaleY(2); }
+  100%{ transform:translateX(-22px) scaleY(.5); }
+}
+
+@keyframes scanMove{
+  0%{ transform:translateY(0); }
+  50%{ transform:translateY(7px); }
+  100%{ transform:translateY(0); }
+}
+
+@keyframes noiseShift{
+  0%{ background-position:0 0, 0 0; }
+  50%{ background-position:0 13px, 17px 0; }
+  100%{ background-position:0 0, 0 0; }
+}
+
+@keyframes rgbShake{
+  0%{ transform:translate(0,0) skewX(0deg); }
+  25%{ transform:translate(8px,-2px) skewX(3deg); }
+  50%{ transform:translate(-10px,3px) skewX(-4deg); }
+  75%{ transform:translate(5px,1px) skewX(2deg); }
+  100%{ transform:translate(0,0) skewX(0deg); }
+}
+
+/* ========================= */
+/* TEXTOS */
+/* ========================= */
 
 .signal{
-  font-family: Arial, Helvetica, sans-serif;
-  letter-spacing:.22em;
+  text-align:center;
   font-size:.72rem;
-  color:var(--green);
-  text-transform:uppercase;
-  margin-bottom:18px;
-  text-shadow:0 0 8px rgba(0,255,102,.55);
+  letter-spacing:6px;
+  opacity:.42;
+  margin-bottom:12px;
 }
 
-h1{
-  margin:0;
-  font-size:clamp(2rem, 8vw, 4.4rem);
-  line-height:.9;
+.title{
+  text-align:center;
+
+  font-family:Impact, "Arial Black", sans-serif;
+
+  font-size:clamp(2.2rem,8vw,4.5rem);
+
+  letter-spacing:8px;
+
   text-transform:uppercase;
-  letter-spacing:.04em;
-  color:var(--red);
-  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
-  font-weight:400;
+
+  color:#b91616;
+
+  margin-bottom:16px;
+
+  transform:scaleY(1.18);
+
   text-shadow:
-    2px 0 rgba(0,255,100,.35),
-    -2px 0 rgba(255,0,0,.35),
-    0 0 18px rgba(255,43,43,.25);
+    2px 0 rgba(0,255,120,.18),
+    -2px 0 rgba(255,0,0,.2),
+    0 0 18px rgba(255,0,0,.18);
 }
 
 .subtitle{
-  margin-top:18px;
-  font-family: Arial, Helvetica, sans-serif;
-  color:var(--muted);
-  font-size:.95rem;
-  line-height:1.5;
-}
+  text-align:center;
 
-.title-fragment{
-  margin-top:28px;
-  font-family: Arial, Helvetica, sans-serif;
-  color:var(--ink);
   font-size:.82rem;
-  letter-spacing:.14em;
+
+  letter-spacing:5px;
+
+  opacity:.5;
+
+  margin-bottom:48px;
+
   text-transform:uppercase;
+
+  font-family:Arial,sans-serif;
 }
 
-.divider{
-  margin:38px auto;
+/* ========================= */
+/* TEXTO LIBRO */
+/* ========================= */
+
+.book{
+  max-width:720px;
+  margin:0 auto;
+}
+
+.book p{
+  font-size:clamp(1.08rem,2vw,1.2rem);
+  line-height:1.9;
+  margin:0 0 1.4em;
+  color:#e7dfd7;
+}
+
+.book p:first-child::first-letter{
+  font-size:2.6em;
+  line-height:.8;
+  float:left;
+  padding-right:6px;
+  color:#ff2b2b;
+}
+
+.separator{
   width:100%;
   height:1px;
-  background:linear-gradient(90deg, transparent, rgba(255,43,43,.65), transparent);
-  position:relative;
+
+  margin:44px auto;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,43,43,.7),
+      transparent
+    );
 }
 
-.divider::after{
-  content:"interferencia";
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  background:var(--bg);
-  padding:0 14px;
-  font-family:Arial, Helvetica, sans-serif;
-  color:var(--muted);
-  font-size:.68rem;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-}
+/* MÓVIL */
 
-.texto{
-  font-size:clamp(1.05rem, 2.5vw, 1.18rem);
-  line-height:1.78;
-  letter-spacing:.005em;
-}
+@media(max-width:700px){
 
-.texto p{
-  margin:0 0 1.25em;
-}
-
-.texto .inicio{
-  color:#fff;
-}
-
-.nota{
-  margin:42px 0 0;
-  padding:18px 18px;
-  border:1px solid rgba(255,43,43,.35);
-  background:rgba(255,43,43,.035);
-  color:var(--muted);
-  font-family:Arial, Helvetica, sans-serif;
-  font-size:.88rem;
-  line-height:1.55;
-}
-
-.footer{
-  margin-top:58px;
-  text-align:center;
-  font-family:Arial, Helvetica, sans-serif;
-}
-
-.footer-title{
-  color:var(--green);
-  font-size:.78rem;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-  margin-bottom:16px;
-  text-shadow:0 0 8px rgba(0,255,102,.45);
-}
-
-.button{
-  display:inline-block;
-  color:var(--ink);
-  border:1px solid rgba(255,43,43,.65);
-  padding:12px 18px;
-  text-decoration:none;
-  text-transform:uppercase;
-  letter-spacing:.12em;
-  font-size:.78rem;
-  background:rgba(255,43,43,.06);
-}
-
-.button:hover{
-  background:rgba(255,43,43,.14);
-}
-
-.small{
-  margin-top:24px;
-  color:var(--muted);
-  font-size:.72rem;
-  letter-spacing:.1em;
-  text-transform:uppercase;
-}
-
-@media(max-width:600px){
-  .page{
-    padding:42px 19px 66px;
+  #wrap{
+    padding-left:14px;
+    padding-right:14px;
+    padding-bottom:60px;
   }
 
-  .header{
+  .tvCrop{
+    width:138%;
+    margin-left:-19%;
+    margin-bottom:18px;
+  }
+
+  .signal{
+    font-size:.62rem;
+    letter-spacing:4px;
+  }
+
+  .title{
+    font-size:1.7rem;
+    letter-spacing:4px;
+  }
+
+  .subtitle{
+    font-size:.7rem;
+    letter-spacing:3px;
     margin-bottom:34px;
   }
 
-  .texto{
-    line-height:1.72;
+  .book p{
+    line-height:1.82;
   }
 }
+
 </style>
 </head>
 
 <body>
 
-<main class="page">
+<div id="wrap">
 
-  <header class="header">
-    <div class="signal">archivo fantasma // transmisión parcial</div>
+  <!-- TV -->
 
-    <h1>El hombre invisible</h1>
+  <div class="tvCrop">
 
-    <div class="subtitle">
-      Fragmento recuperado del capítulo
+    <img src="teleroja.webp" alt="Tele roja Cosmic Marciana">
+
+    <div class="screenGlitch">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
     </div>
 
-    <div class="title-fragment">
-      “La casa del terror”
-    </div>
-  </header>
+  </div>
 
-  <div class="divider"></div>
+  <!-- TEXTOS -->
 
-  <section class="texto">
+  <div class="signal">
+    ARCHIVO RECUPERADO
+  </div>
 
-    <!-- PEGA AQUÍ TU FRAGMENTO -->
-    <!-- Sustituye estos párrafos por el texto real del libro -->
+  <div class="title">
+    EL HOMBRE INVISIBLE
+  </div>
 
-    <p class="inicio">
-      Este es un fragmento provisional. Aquí irá una parte del capítulo
-      “La casa del terror”, perteneciente a <em>El hombre invisible</em>.
+  <div class="subtitle">
+    fragmento del capítulo · la casa del terror
+  </div>
+
+  <div class="separator"></div>
+
+  <!-- TEXTO DEL LIBRO -->
+
+  <section class="book">
+
+    <!-- PEGA AQUÍ TU TEXTO -->
+
+    <p>
+      Aquí pegas el primer párrafo del fragmento.
     </p>
 
     <p>
-      Puedes pegar aquí el texto directamente, separando cada párrafo con
-      etiquetas &lt;p&gt; y &lt;/p&gt;.
+      Y aquí el segundo.
     </p>
 
     <p>
-      La idea es que no parezca una página promocional normal, sino un archivo
-      encontrado: algo íntimo, algo dañado, algo que viene de lejos.
+      Y así sucesivamente.
     </p>
 
-    <!-- FIN DEL FRAGMENTO -->
+    <!-- FIN -->
 
   </section>
 
-  <div class="nota">
-    Fragmento de <em>El hombre invisible</em>, libro autobiográfico de Carles Almansa.
-    Una parte del camino que desemboca en <em>La casa del terror</em>.
-  </div>
-
-  <footer class="footer">
-    <div class="footer-title">SEÑAL 01 — LA CASA DEL TERROR</div>
-
-    <!-- Cambia este enlace cuando tengas la página del single lista -->
-    <a class="button" href="index.html">volver a la transmisión</a>
-
-    <div class="small">Cosmic Marciana</div>
-  </footer>
-
-</main>
+</div>
 
 </body>
 </html>
