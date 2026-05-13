@@ -244,7 +244,7 @@ body::before{
 }
 
 /* ========================= */
-/* PORTADA BOTÓN */
+/* PORTADA */
 /* ========================= */
 
 .bookCover{
@@ -283,9 +283,6 @@ body::before{
 .coverButton:hover img{
   transform:scale(1.025);
   opacity:1;
-  filter:
-    contrast(1.08)
-    brightness(1.02);
 }
 
 .openHint{
@@ -306,7 +303,7 @@ body::before{
 }
 
 /* ========================= */
-/* TEXTO OCULTO */
+/* CONTENIDO */
 /* ========================= */
 
 .archiveContent{
@@ -314,6 +311,7 @@ body::before{
   overflow:hidden;
   opacity:0;
   transform:translateY(22px);
+
   transition:
     opacity 1.4s ease,
     transform 1.4s ease,
@@ -321,7 +319,7 @@ body::before{
 }
 
 .archiveContent.open{
-  max-height:9000px;
+  max-height:12000px;
   opacity:1;
   transform:translateY(0);
 }
@@ -340,6 +338,10 @@ body::before{
       transparent
     );
 }
+
+/* ========================= */
+/* TEXTO */
+/* ========================= */
 
 .book{
   max-width:720px;
@@ -450,13 +452,17 @@ body::before{
   </div>
 
   <div class="bookCover">
-    <button class="coverButton" id="openArchive" aria-label="Abrir archivo">
+
+    <button class="coverButton" id="openArchive">
+
       <img src="plibro.webp" alt="Portada El hombre invisible">
+
     </button>
 
     <div class="openHint" id="openHint">
       tocar para abrir archivo
     </div>
+
   </div>
 
   <div class="archiveContent" id="archiveContent">
@@ -466,20 +472,88 @@ body::before{
     <section class="book">
 
       <p>
-        Cuando ya vi de qué hablaría en este nuevo trabajo, supe enseguida cuál sería su título: <em>La casa del terror</em>.
+        Cuando ya vi de qué hablaría en este nuevo trabajo, supe enseguida cuál sería su título: <em>La casa del terror</em>. Y esa casa no sería un lugar para asustarse, sino para entender de qué tenemos miedo.
       </p>
 
       <p>
-        La casa del terror no es un sitio físico, ni una atracción de feria. Es una manera de mirar la vida sin filtros, de entrar en lo que duele sin apagar la luz.
+        La casa del terror no es un sitio físico, ni una atracción de feria. Es una manera de mirar la vida sin filtros, de entrar en lo que duele sin apagar la luz. En esa casa cabe todo: la enfermedad, la pérdida, la violencia, la memoria que se deshace, y también la música que intenta sostenerlo todo.
       </p>
 
       <p>
-        El primer terror: la enfermedad.
+        Para mí, este disco es eso: una forma de transformar el miedo en algo que pueda escucharse. Porque el miedo, cuando lo nombras, ya empieza a cambiar de forma. En mi casa del terror no hay monstruos, solo personas intentando no olvidar que todavía queda algo humano entre tanto ruido.
+      </p>
+
+      <p>
+        Muchas veces miramos hacia otro lado. A todos nos duele saber que en el mundo hay dolor, violencia, días grises o enfermedad. Pero a veces no nos queda otra que enfrentarnos directamente a la realidad, mirar de frente la parte más fea de la vida.
+      </p>
+
+      <p>
+        Un día en que pensaba más en gris que en rosa —por suerte, normalmente suele ser al revés— imaginé una historia y la escribí.
+      </p>
+
+      <p>
+        El primer terror: la enfermedad. Una en concreto: perder la memoria, olvidar quién eres o quién fue la persona que tienes delante. Esa fragilidad me da miedo. Supongo que por eso terminé escribiendo <em>Él lo olvida todo</em>.
+      </p>
+
+      <p>
+        Ese texto no nació para hablar del Alzheimer, aunque acabó haciéndolo. Era más bien una forma de entender lo que pasa cuando alguien se borra poco a poco, cuando cada día es una primera vez que mañana ya no recordará. Hay algo aterrador y hermoso a la vez en eso: la posibilidad de empezar de nuevo, pero también la certeza de que todo se está deshaciendo.
+      </p>
+
+      <p>
+        A veces pienso que <em>Él lo olvida todo</em> no habla de una persona, sino del mundo. Un mundo que se olvida de lo que duele, de lo que ha hecho, de lo que prometió no repetir. Tal vez todos tengamos un poco de esa enfermedad, aunque la llamemos de otra manera.
+      </p>
+
+      <p>
+        Él lo olvida todo:
       </p>
 
       <p class="poem">
-        <em>Cada día me pregunta quién soy,
-y cada día le respondo con una canción diferente.</em>
+<em>Cada día me pregunta quién soy,
+y cada día le respondo con una canción diferente.
+A veces le digo que soy un marciano;
+otras, una interferencia en la radio del tiempo.
+Él ríe, y durante unos segundos parece recordarlo todo.</em>
+      </p>
+
+      <p class="poem">
+<em>Cuando me olvida,
+es como volver a empezar sin culpa,
+sin pasado,
+como si cada conversación fuera un universo nuevo
+donde aún no ha ocurrido nada.</em>
+      </p>
+
+      <p class="poem">
+<em>Pero cuando calla, siento la pérdida.
+No tanto la suya, sino la mía:
+la de hablar con alguien que vive en el presente puro,
+mientras yo arrastro todas mis versiones anteriores,
+como cintas gastadas de VHS.</em>
+      </p>
+
+      <p class="poem">
+<em>Lo encuentro cada noche.
+Le cuento que el mundo sigue ardiendo,
+que yo sigo tocando dentro de mi casa del terror,
+y que, a pesar de todo, todavía hay música.</em>
+      </p>
+
+      <p class="poem">
+<em>Él me mira con ojos vacíos y tiernos.
+—No sé quién eres —me dice.
+Y yo le contesto, muy despacio,
+con una voz que ya no busca ser recordada,
+solo seguir sonando:
+—No importa. Mañana volveré a ser quien tú quieras.</em>
+      </p>
+
+      <p>
+        A veces, para quitarle hierro al asunto, me imagino diciéndole a una persona con esta enfermedad:
+        —¿Te acuerdas cuando te acordabas?
+      </p>
+
+      <p>
+        Y oye, no hay mal que por bien no venga: ya me gustaría a mí no recordar ninguna canción de Ramoncín, por ejemplo.
       </p>
 
       <p>
@@ -487,7 +561,10 @@ y cada día le respondo con una canción diferente.</em>
       </p>
 
       <p>
-        Nos habíamos ido para descansar. Solo tres días, lejos del ruido, lejos de todo.
+        Nos habíamos ido para descansar.
+        Solo tres días, lejos del ruido, lejos de todo.
+        Una casa pequeña, rodeada de árboles, con olor a madera y promesa de silencio.
+        Por un momento creí que el mundo podía quedarse quieto.
       </p>
 
       <p>
@@ -522,14 +599,15 @@ openArchive.addEventListener("click", async () => {
     archiveContent.classList.add("open");
 
     openHint.textContent = "archivo abierto";
+
     setTimeout(() => {
 
-  archiveContent.scrollIntoView({
-    behavior:"smooth",
-    block:"start"
-  });
+      archiveContent.scrollIntoView({
+        behavior:"smooth",
+        block:"start"
+      });
 
-}, 500);
+    }, 500);
   }
 
   if(ambientAudio.paused){
@@ -558,7 +636,7 @@ openArchive.addEventListener("click", async () => {
 
 });
 
-/* detener al salir */
+/* detener música al salir */
 
 window.addEventListener("beforeunload", () => {
 
