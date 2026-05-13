@@ -522,6 +522,14 @@ openArchive.addEventListener("click", async () => {
     archiveContent.classList.add("open");
 
     openHint.textContent = "archivo abierto";
+    setTimeout(() => {
+
+  archiveContent.scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
+
+}, 500);
   }
 
   if(ambientAudio.paused){
