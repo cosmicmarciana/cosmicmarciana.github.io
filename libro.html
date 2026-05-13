@@ -422,8 +422,6 @@ body::before{
 
 <div id="wrap">
 
-  <!-- TV -->
-
   <div class="tvCrop">
 
     <img src="teleroja.webp" alt="Tele roja Cosmic Marciana">
@@ -439,8 +437,6 @@ body::before{
 
   </div>
 
-  <!-- TEXTOS -->
-
   <div class="signal">
     ARCHIVO RECUPERADO
   </div>
@@ -453,8 +449,6 @@ body::before{
     adelanto inédito · la casa del terror
   </div>
 
-  <!-- PORTADA CLICABLE -->
-
   <div class="bookCover">
     <button class="coverButton" id="openArchive" aria-label="Abrir archivo">
       <img src="plibro.webp" alt="Portada El hombre invisible">
@@ -465,8 +459,6 @@ body::before{
     </div>
   </div>
 
-  <!-- CONTENIDO OCULTO -->
-
   <div class="archiveContent" id="archiveContent">
 
     <div class="separator"></div>
@@ -474,88 +466,20 @@ body::before{
     <section class="book">
 
       <p>
-        Cuando ya vi de qué hablaría en este nuevo trabajo, supe enseguida cuál sería su título: <em>La casa del terror</em>. Y esa casa no sería un lugar para asustarse, sino para entender de qué tenemos miedo.
+        Cuando ya vi de qué hablaría en este nuevo trabajo, supe enseguida cuál sería su título: <em>La casa del terror</em>.
       </p>
 
       <p>
-        La casa del terror no es un sitio físico, ni una atracción de feria. Es una manera de mirar la vida sin filtros, de entrar en lo que duele sin apagar la luz. En esa casa cabe todo: la enfermedad, la pérdida, la violencia, la memoria que se deshace, y también la música que intenta sostenerlo todo.
+        La casa del terror no es un sitio físico, ni una atracción de feria. Es una manera de mirar la vida sin filtros, de entrar en lo que duele sin apagar la luz.
       </p>
 
       <p>
-        Para mí, este disco es eso: una forma de transformar el miedo en algo que pueda escucharse. Porque el miedo, cuando lo nombras, ya empieza a cambiar de forma. En mi casa del terror no hay monstruos, solo personas intentando no olvidar que todavía queda algo humano entre tanto ruido.
-      </p>
-
-      <p>
-        Muchas veces miramos hacia otro lado. A todos nos duele saber que en el mundo hay dolor, violencia, días grises o enfermedad. Pero a veces no nos queda otra que enfrentarnos directamente a la realidad, mirar de frente la parte más cruda de la vida.
-      </p>
-
-      <p>
-        Un día en que pensaba más en gris que en rosa —por suerte, normalmente suele ser al revés— imaginé una historia y la escribí.
-      </p>
-
-      <p>
-        El primer terror: la enfermedad. Una en concreto: perder la memoria, olvidar quién eres o quién fue la persona que tienes delante. Esa fragilidad me da miedo. Supongo que por eso terminé escribiendo <em>Él lo olvida todo</em>.
-      </p>
-
-      <p>
-        Ese texto no nació para hablar del Alzheimer, aunque acabó haciéndolo. Era más bien una forma de entender lo que pasa cuando alguien se borra poco a poco, cuando cada día es una primera vez que mañana ya no recordará. Hay algo aterrador y hermoso a la vez en eso: la posibilidad de empezar de nuevo, pero también la certeza de que todo se está deshaciendo.
-      </p>
-
-      <p>
-        A veces pienso que <em>Él lo olvida todo</em> no habla de una persona, sino del mundo. Un mundo que se olvida de lo que duele, de lo que ha hecho, de lo que prometió no repetir. Tal vez todos tengamos un poco de esa enfermedad, aunque la llamemos de otra manera.
-      </p>
-
-      <p>
-        Él lo olvida todo:
+        El primer terror: la enfermedad.
       </p>
 
       <p class="poem">
         <em>Cada día me pregunta quién soy,
-y cada día le respondo con una canción diferente.
-A veces le digo que soy un marciano;
-otras, una interferencia en la radio del tiempo.
-Él ríe, y durante unos segundos parece recordarlo todo.</em>
-      </p>
-
-      <p class="poem">
-        <em>Cuando me olvida,
-es como volver a empezar sin culpa,
-sin pasado,
-como si cada conversación fuera un universo nuevo
-donde aún no ha ocurrido nada.</em>
-      </p>
-
-      <p class="poem">
-        <em>Pero cuando calla, siento la pérdida.
-No tanto la suya, sino la mía:
-la de hablar con alguien que vive en el presente puro,
-mientras yo arrastro todas mis versiones anteriores,
-como cintas gastadas de VHS.</em>
-      </p>
-
-      <p class="poem">
-        <em>Lo encuentro cada noche.
-Le cuento que el mundo sigue ardiendo,
-que yo sigo tocando dentro de mi casa del terror,
-y que, a pesar de todo, todavía hay música.</em>
-      </p>
-
-      <p class="poem">
-        <em>Él me mira con ojos vacíos y tiernos.
-—No sé quién eres —me dice.
-Y yo le contesto, muy despacio,
-con una voz que ya no busca ser recordada,
-solo seguir sonando:
-—No importa. Mañana volveré a ser quien tú quieras.</em>
-      </p>
-
-      <p>
-        A veces, para quitarle hierro al asunto, me imagino diciéndole a una persona con esta enfermedad:
-        —¿Te acuerdas cuando te acordabas?
-      </p>
-
-      <p>
-        Y oye, no hay mal que por bien no venga: ya me gustaría a mí no recordar ninguna canción de Ramoncín, por ejemplo.
+y cada día le respondo con una canción diferente.</em>
       </p>
 
       <p>
@@ -563,10 +487,7 @@ solo seguir sonando:
       </p>
 
       <p>
-        Nos habíamos ido para descansar.
-        Solo tres días, lejos del ruido, lejos de todo.
-        Una casa pequeña, rodeada de árboles, con olor a madera y promesa de silencio.
-        Por un momento creí que el mundo podía quedarse quieto.
+        Nos habíamos ido para descansar. Solo tres días, lejos del ruido, lejos de todo.
       </p>
 
       <p>
@@ -584,6 +505,7 @@ solo seguir sonando:
 </audio>
 
 <script>
+
 const openArchive = document.getElementById("openArchive");
 const archiveContent = document.getElementById("archiveContent");
 const openHint = document.getElementById("openHint");
@@ -593,40 +515,63 @@ let opened = false;
 
 openArchive.addEventListener("click", async () => {
 
-  if(opened){
-    return;
+  if(!opened){
+
+    opened = true;
+
+    archiveContent.classList.add("open");
+
+    openHint.textContent = "archivo abierto";
   }
 
-  opened = true;
+  if(ambientAudio.paused){
 
-  archiveContent.classList.add("open");
+    ambientAudio.volume = 0;
 
-  openHint.textContent = "archivo abierto";
+    await ambientAudio.play().catch(()=>{});
 
-  ambientAudio.volume = 0;
-  ambientAudio.play().catch(()=>{});
+    let vol = 0;
 
-  let vol = 0;
+    const fade = setInterval(() => {
 
-  const fade = setInterval(() => {
-    vol += 0.02;
+      vol += 0.02;
 
-    if(vol >= 0.38){
-      vol = 0.38;
-      clearInterval(fade);
-    }
+      if(vol >= 0.22){
 
-    ambientAudio.volume = vol;
-  }, 120);
+        vol = 0.22;
 
-  setTimeout(() => {
-    archiveContent.scrollIntoView({
-      behavior:"smooth",
-      block:"start"
-    });
-  }, 500);
+        clearInterval(fade);
+      }
+
+      ambientAudio.volume = vol;
+
+    }, 120);
+  }
 
 });
+
+/* detener al salir */
+
+window.addEventListener("beforeunload", () => {
+
+  ambientAudio.pause();
+
+  ambientAudio.currentTime = 0;
+
+});
+
+/* pausa si cambias de pestaña */
+
+document.addEventListener("visibilitychange", () => {
+
+  if(document.hidden){
+
+    ambientAudio.pause();
+
+  }
+
+});
+
 </script>
 
 </body>
