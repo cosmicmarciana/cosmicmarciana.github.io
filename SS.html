@@ -411,8 +411,8 @@ body{
     COSMIC MARCIANA
   </div>
 
-  <div class="title" id="trackTitle">
-    QUEMARLO TODO
+  <div class="title">
+    LA CASA DEL TERROR
   </div>
 
   <div class="subsignal" id="trackSignal">
@@ -448,12 +448,10 @@ body{
 <script>
 const tracks = [
   {
-    title: "QUEMARLO TODO",
     signal: "SEÑAL 02 · Quemarlo todo",
     file: "08-quemarlo_todo.mp3"
   },
   {
-    title: "LA CASA DEL TERROR",
     signal: "SEÑAL 01 · La casa del terror",
     file: "04-la_casa_del_terror.mp3"
   }
@@ -465,7 +463,6 @@ const current = document.getElementById("current");
 const duration = document.getElementById("duration");
 const progress = document.getElementById("progress");
 const bar = document.getElementById("bar");
-const trackTitle = document.getElementById("trackTitle");
 const trackSignal = document.getElementById("trackSignal");
 const trackList = document.getElementById("trackList");
 
@@ -535,8 +532,6 @@ function loadTrack(index, autoplay){
   const track = tracks[currentTrack];
 
   resetPlayer();
-
-  trackTitle.textContent = track.title;
 
   trackSignal.textContent = track.signal;
 
