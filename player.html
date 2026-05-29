@@ -1666,7 +1666,7 @@
       </div>
     </div>
 
-    <audio id="audio" preload="metadata" playsinline></audio>
+    <audio id="audio" preload="auto" playsinline></audio>
 
     <div class="sig">EMISIÓN NO AUTORIZADA · NO MIRES ATRÁS!</div>
   </main>
@@ -2460,12 +2460,33 @@
     document.addEventListener("touchcancel", endScrub, { passive:true });
 
     audio.addEventListener("timeupdate", ()=>{
-      if(!audio.duration) return;
-      currentTimeEl.textContent = formatTime(audio.currentTime);
-      totalTimeEl.textContent = formatTime(audio.duration);
-      setProgressUI(audio.currentTime / audio.duration);
-      saveCurrentTime();
-    });
+  if(!audio.duration) return;
+
+  currentTimeEl.textContent = formatTime(audio.currentTime);
+  totalTimeEl.textContent = formatTime(audio.duration);
+  setProgressUI(audio.currentTime / audio.duration);
+  saveCurrentTime();
+
+  // ✅ Seguro anti-Android: si llega casi al final y no salta ended
+  if(
+    !audio.paused &&
+    audio.duration - audio.currentTime < 0.35 &&
+    audio.duration > 2
+  ){
+    audio.pause();
+
+    if(loopMode === 1) return playTrack(currentIndex);
+    if(loopMode === 2) return nextTrack();
+    if(shuffleOn) return nextTrack();
+
+    if(currentIndex === tracks.length - 1){
+      stopTrack();
+      setStatus("Final del disco.");
+    } else {
+      nextTrack();
+    }
+  }
+});
 
     audio.addEventListener("loadedmetadata", ()=>{
       if(audio.duration) totalTimeEl.textContent = formatTime(audio.duration);
