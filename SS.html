@@ -55,19 +55,15 @@ body{
 
 .screenGlitch{
   position:absolute;
-
   left:32.9%;
   top:30%;
   width:36.7%;
   height:46.8%;
-
   border-radius:9% / 13%;
   overflow:hidden;
   pointer-events:none;
   mix-blend-mode:screen;
-
   opacity:.95;
-
   filter:
     contrast(1.6)
     brightness(1.35)
@@ -78,7 +74,6 @@ body{
   content:"";
   position:absolute;
   inset:-20%;
-
   background:
     repeating-linear-gradient(
       to bottom,
@@ -87,7 +82,6 @@ body{
       transparent 2px,
       transparent 4px
     ),
-
     repeating-linear-gradient(
       90deg,
       rgba(255,0,0,.20) 0px,
@@ -95,9 +89,7 @@ body{
       rgba(0,255,255,.16) 3px,
       transparent 6px
     );
-
   opacity:.72;
-
   animation:
     scanMove .09s infinite steps(2),
     noiseShift .28s infinite steps(3);
@@ -107,7 +99,6 @@ body{
   content:"";
   position:absolute;
   inset:-8%;
-
   background:
     linear-gradient(
       90deg,
@@ -115,30 +106,22 @@ body{
       rgba(0,255,255,.22),
       rgba(255,255,255,.12)
     );
-
   mix-blend-mode:screen;
   opacity:.42;
-
   animation:
     rgbShake .12s infinite steps(2);
 }
 
 .screenGlitch span{
   position:absolute;
-
   left:-18%;
   width:136%;
   height:10%;
-
   background:rgba(255,255,255,.38);
-
   opacity:.55;
-
   mix-blend-mode:screen;
-
   animation:
     glitchBar .42s infinite steps(2);
-
   box-shadow:
     0 0 8px rgba(255,255,255,.35),
     16px 0 0 rgba(255,0,0,.22),
@@ -197,14 +180,11 @@ body{
   text-transform:uppercase;
   color:#b91616;
   margin-bottom:12px;
-
   transform:scaleY(1.25);
-
   animation:titleShake 2.4s infinite steps(1);
 }
 
 @keyframes titleShake{
-
   0%,88%,100%{
     transform:scaleY(1.25) translate(0,0);
     filter:none;
@@ -242,7 +222,6 @@ body{
   width:100%;
   max-width:480px;
   margin:0 auto 28px;
-
   display:flex;
   flex-direction:column;
   gap:10px;
@@ -253,13 +232,10 @@ body{
   background:transparent;
   border:1px solid rgba(255,43,43,.32);
   color:rgba(255,255,255,.52);
-
   font-size:.72rem;
   letter-spacing:4px;
   text-transform:none;
-
   padding:11px 12px;
-
   cursor:pointer;
 }
 
@@ -274,7 +250,6 @@ body{
   width:100%;
   max-width:480px;
   margin:0 auto;
-
   display:flex;
   align-items:center;
   gap:14px;
@@ -283,19 +258,12 @@ body{
 #playBtn{
   width:54px;
   height:54px;
-
   border-radius:50%;
-
   background:transparent;
-
   border:1px solid rgba(255,43,43,.75);
-
   color:#ff2b2b;
-
   font-size:1.05rem;
-
   cursor:pointer;
-
   flex:0 0 auto;
 }
 
@@ -307,12 +275,9 @@ body{
 
 .bar{
   position:relative;
-
   height:4px;
   flex:1;
-
   background:rgba(255,255,255,.16);
-
   cursor:pointer;
 }
 
@@ -320,10 +285,8 @@ body{
   position:absolute;
   left:0;
   top:0;
-
   height:100%;
   width:0%;
-
   background:#ff2b2b;
 }
 
@@ -515,10 +478,19 @@ function renderTrackButtons(){
     btn.addEventListener("click", ()=>{
 
       if(index === currentTrack){
+
+        audio.currentTime = 0;
+
+        audio.play().then(()=>{
+
+          playBtn.textContent = "❚❚";
+
+        }).catch(()=>{});
+
         return;
       }
 
-      loadTrack(index, false);
+      loadTrack(index, true);
     });
 
     trackList.appendChild(btn);
@@ -587,11 +559,16 @@ audio.addEventListener("timeupdate", ()=>{
 
 audio.addEventListener("ended", ()=>{
 
-  playBtn.textContent = "▶";
+  const nextTrack = currentTrack + 1;
 
-  progress.style.width = "0%";
+  if(nextTrack < tracks.length){
 
-  current.textContent = "0:00";
+    loadTrack(nextTrack, true);
+
+  }else{
+
+    loadTrack(0, false);
+  }
 });
 
 bar.addEventListener("click", e=>{
