@@ -1,0 +1,201 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>La Casa del Terror — Cosmic Marciana</title>
+
+  <meta name="description" content="Transmisión abierta de Cosmic Marciana desde La Casa del Terror." />
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, rgba(120, 0, 90, 0.35), transparent 35%),
+        radial-gradient(circle at bottom, rgba(0, 90, 120, 0.25), transparent 35%),
+        #050505;
+      color: #f2f2f2;
+      font-family: Georgia, "Times New Roman", serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 820px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 42px 34px;
+      background: rgba(0, 0, 0, 0.58);
+      box-shadow: 0 0 45px rgba(255, 0, 160, 0.18);
+    }
+
+    .label {
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #ff4fd8;
+      margin-bottom: 26px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(36px, 8vw, 78px);
+      line-height: 0.9;
+      text-transform: uppercase;
+      letter-spacing: -0.04em;
+      color: #ff2a2a;
+      text-shadow: 3px 3px 0 #000, 0 0 18px rgba(255, 42, 42, 0.6);
+    }
+
+    .subtitle {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #cfcfcf;
+      margin-bottom: 34px;
+    }
+
+    .text {
+      font-size: clamp(18px, 2.6vw, 24px);
+      line-height: 1.55;
+      max-width: 720px;
+    }
+
+    .text p {
+      margin: 0 0 22px;
+    }
+
+    .small {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #c7c7c7;
+      margin-top: 34px;
+      font-family: Arial, sans-serif;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 38px;
+    }
+
+    .button {
+      display: inline-block;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: #fff;
+      text-decoration: none;
+      padding: 14px 18px;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.06);
+      transition: all 0.2s ease;
+    }
+
+    .button:hover {
+      background: #ff2a2a;
+      border-color: #ff2a2a;
+      color: #000;
+    }
+
+    .footer {
+      margin-top: 42px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(255,255,255,0.14);
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #888;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 16px;
+        align-items: flex-start;
+      }
+
+      .container {
+        padding: 32px 22px;
+      }
+
+      .buttons {
+        flex-direction: column;
+      }
+
+      .button {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <div class="label">Transmisión abierta</div>
+
+    <h1>La Casa del Terror</h1>
+
+    <div class="subtitle">Cosmic Marciana</div>
+
+    <section class="text">
+      <p>Podía haber ido a Venus, que dicen que se come muy bien. A Saturno, que toda la galaxia sabe que los paseos por sus anillos son la puta hostia.</p>
+
+      <p>Pero no.</p>
+
+      <p>Vine a la Tierra a presentar mi nuevo disco.</p>
+
+      <p>Mira que me lo habían advertido, pero quise darle una oportunidad al planeta.</p>
+
+      <p>Es verdad que las fiestas por aquí molan. Las he vivido.</p>
+
+      <p>Lo que no me esperaba era encontrar una especie capaz de pasarse horas mirando una pantalla mientras ignora todo lo que tiene delante.</p>
+
+      <p>No sé.</p>
+
+      <p>Creo que les falta algo.</p>
+
+      <p>Y empiezo a sospechar que no he venido a dárselo yo.</p>
+
+      <p>Tengo ganas de volver a casa.</p>
+
+      <p>Os voy a dejar toda la transmisión de señales de <em>La Casa del Terror</em> abierta para que quien quiera pueda escuchar, descargar o borrar de su memoria.</p>
+
+      <p>En todo caso:</p>
+
+      <p><strong>Bienvenue a La Casa del Terror.</strong></p>
+
+      <p>Es el único sitio donde, aparte de estar invitados, estáis obligados a pasaros en algún momento.</p>
+    </section>
+
+    <div class="buttons">
+      <a class="button" href="https://cosmicmarciana.com" target="_blank">Entrar en la nave</a>
+      <a class="button" href="CAMBIA_ESTO_POR_TU_ENLACE_DE_SPOTIFY" target="_blank">Escuchar en Spotify</a>
+      <a class="button" href="CAMBIA_ESTO_POR_EL_PLAYER_O_DESCARGA" target="_blank">Escuchar señales</a>
+    </div>
+
+    <div class="small">
+      Señal emitida desde algún punto poco fiable de la galaxia.
+    </div>
+
+    <footer class="footer">
+      Cosmic Marciana · 2026
+    </footer>
+  </main>
+</body>
+</html>
+```
