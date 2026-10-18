@@ -2600,6 +2600,9 @@
       openBtn.focus();
     }
 
+    // Acceso directo desde /tienda/ o player.html#tienda-pirata.
+    if (window.location.hash === "#tienda-pirata") open();
+
     openBtn.addEventListener("click", open);
     closeBtn.addEventListener("click", close);
 
