@@ -49,6 +49,8 @@ const ENLACE_COMPRA = "https://www.amazon.es/dp/B0HST5D9NJ";
 if (ENLACE_COMPRA.trim()) {
   document.querySelectorAll('.buy-link').forEach(boton => {
     boton.href = ENLACE_COMPRA;
+boton.target = '_blank';
+boton.rel = 'noopener noreferrer';
     boton.removeAttribute('aria-disabled');
     boton.textContent = 'Comprar el libro ↗';
     boton.setAttribute('aria-label', 'Comprar El hombre invisible en Amazon');
